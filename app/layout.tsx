@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import "./globals.css";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Grubel Property Services",
+    template: "%s | Grubel Property Services",
+  },
+  description:
+    "Preventative property checks, minor repair support, and turnover prep for homeowners, landlords, and property managers in Arizona.",
+  metadataBase: new URL("https://grubelps.com"),
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className="min-h-screen bg-white text-charcoal antialiased">
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </body>
+    </html>
+  );
+}
