@@ -85,22 +85,22 @@ function HeroWorkflowCollage() {
         <WorkflowImage
           alt="Phone photo used for a virtual property inspection"
           label="Virtual Inspection"
-          src="/hero-virtual-inspection.jpg"
+          src="/hero/virtual-inspection.jpg"
         />
         <WorkflowImage
           alt="Exterior property condition inspection"
           label="Property Check"
-          src="/hero-exterior-inspection.jpg"
+          src="/hero/property-check.jpg"
         />
         <WorkflowImage
           alt="Repair and maintenance walkthrough inside a property"
           label="Repairs"
-          src="/hero-repair-maintenance.jpg"
+          src="/hero/repairs.jpg"
         />
         <WorkflowImage
           alt="Vacant room prepared for turnover"
           label="Turnover Prep"
-          src="/hero-turnover-prep.jpg"
+          src="/hero/turnover-prep.jpg"
         />
       </div>
 
@@ -112,7 +112,7 @@ function HeroWorkflowCollage() {
             fill
             priority
             sizes="(min-width: 1024px) 430px, 560px"
-            src="/hero-turnover-prep.jpg"
+            src="/hero/turnover-prep.jpg"
           />
           <ImageLabel className="left-4 top-4" label="Turnover Prep" />
         </div>
@@ -124,7 +124,7 @@ function HeroWorkflowCollage() {
             fill
             priority
             sizes="260px"
-            src="/hero-virtual-inspection.jpg"
+            src="/hero/virtual-inspection.jpg"
           />
           <ImageLabel className="left-3 top-3" label="Virtual Inspection" />
         </div>
@@ -135,7 +135,7 @@ function HeroWorkflowCollage() {
             className="object-cover"
             fill
             sizes="288px"
-            src="/hero-repair-maintenance.jpg"
+            src="/hero/repairs.jpg"
           />
           <ImageLabel className="left-3 top-3" label="Repairs" />
         </div>
@@ -146,7 +146,7 @@ function HeroWorkflowCollage() {
             className="object-cover"
             fill
             sizes="288px"
-            src="/hero-exterior-inspection.jpg"
+            src="/hero/property-check.jpg"
           />
           <ImageLabel className="left-3 top-3" label="Property Check" />
         </div>
