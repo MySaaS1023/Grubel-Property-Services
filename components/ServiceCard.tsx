@@ -16,7 +16,7 @@ export function ServiceCard({ title, description, href }: ServiceCardProps) {
       <h3 className="mt-6 text-xl font-black text-navy">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-charcoal/72">{description}</p>
       <span className="mt-5 inline-flex text-sm font-bold text-accentDark transition group-hover:text-navy">
-        Learn more
+        Request Service
       </span>
     </Link>
   );

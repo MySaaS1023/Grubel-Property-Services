@@ -1,26 +1,27 @@
 import { CTASection } from "@/components/CTASection";
 import { PageHero } from "@/components/PageHero";
 
-const turnoverServices = [
+const vacancySupport = [
   "Vacancy checks",
-  "Move-in / move-out readiness",
-  "Trash-out coordination",
-  "Turnover preparation",
-  "Final walkthrough support",
-  "Property condition upkeep",
-  "Lock/change coordination support",
-  "Vendor coordination",
-  "Preservation documentation",
-  "Occupancy readiness support",
-  "Ongoing property care",
+  "Property condition observations",
+  "Upkeep coordination",
+  "Occupancy monitoring",
 ];
 
-const designedFor = [
-  "Property managers",
-  "Landlords",
-  "Rental owners",
-  "Multi-unit operators",
-  "Commercial property owners",
+const readinessServices = [
+  "Move-in/move-out preparation",
+  "Turnover coordination",
+  "Trash-out coordination",
+  "Final walkthrough support",
+  "Occupancy readiness",
+];
+
+const preservationServices = [
+  "Ongoing property upkeep",
+  "Preservation support",
+  "Vendor coordination",
+  "Maintenance recommendations",
+  "Readiness documentation",
 ];
 
 export default function TurnoverPrepPage() {
@@ -29,42 +30,38 @@ export default function TurnoverPrepPage() {
       <PageHero
         eyebrow="Property Preservation"
         title="Property Preservation"
-        description="Property preservation and occupancy-readiness services focused on vacancy upkeep, turnover coordination, ongoing property care, and overall property condition support."
-        primaryCta={{ href: "/request-service", label: "Request Property Preservation" }}
+        description="Property preservation and occupancy-readiness services designed to support vacant, rental, residential, and commercial properties."
+        primaryCta={{ href: "/request-service", label: "Request Service" }}
       />
-      <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <div>
-            <h2 className="text-3xl font-black text-navy">
-              Preservation Services Include
-            </h2>
-            <p className="mt-4 leading-7 text-charcoal/72">
-              Practical support for vacancy upkeep, property condition, and
-              occupancy readiness.
-            </p>
-          </div>
-          <ul className="columns-1 gap-8 space-y-3 sm:columns-2">
-            {turnoverServices.map((item) => (
-              <li className="break-inside-avoid border-l-4 border-accent py-2 pl-4 font-bold text-charcoal" key={item}>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-      <section className="bg-stonewash py-16">
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2">
-          <h2 className="text-3xl font-black text-navy">Designed For</h2>
-          <div className="flex flex-wrap gap-x-6 gap-y-3 text-base font-bold text-charcoal">
-            {designedFor.map((item) => (
-              <span key={item}>
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ServiceList title="Vacancy Support" items={vacancySupport} />
+      <ServiceList title="Turnover & Readiness" items={readinessServices} muted />
+      <ServiceList title="Property Preservation Services" items={preservationServices} />
       <CTASection title="Request Property Preservation" />
     </>
+  );
+}
+
+function ServiceList({
+  title,
+  items,
+  muted = false,
+}: {
+  title: string;
+  items: string[];
+  muted?: boolean;
+}) {
+  return (
+    <section className={`${muted ? "bg-stonewash" : "bg-white"} py-16`}>
+      <div className="mx-auto max-w-6xl px-6">
+        <h2 className="text-3xl font-black text-navy">{title}</h2>
+        <ul className="mt-6 columns-1 gap-8 space-y-3 sm:columns-2 lg:columns-3">
+          {items.map((item) => (
+            <li className="break-inside-avoid border-l-4 border-accent bg-white/70 py-2 pl-4 font-bold text-charcoal" key={item}>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }

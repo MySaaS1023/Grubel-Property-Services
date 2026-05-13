@@ -2,42 +2,29 @@ import { CTASection } from "@/components/CTASection";
 import { PageHero } from "@/components/PageHero";
 
 const maintenanceServices = [
-  "Drywall patching and repair",
+  "Drywall patching",
   "Paint touch-ups",
-  "Door adjustments and repairs",
-  "Cabinet hardware replacement",
   "Fixture replacement",
-  "Caulking and sealing",
-  "Fence and gate repairs",
-  "Trim repairs",
-  "Minor plumbing fixture replacement",
-  "Minor electrical fixture replacement",
-  "Trash-out coordination",
-  "Exterior cleanup",
-  "General property upkeep",
+  "Caulking/sealing",
+  "Property upkeep",
+  "Preventative maintenance",
 ];
 
 const repairServices = [
-  "Flooring replacement support",
-  "Interior repair coordination",
-  "Exterior repair coordination",
-  "Water damage repair coordination",
-  "Turnover repair punch lists",
-  "Move-out repair support",
-  "Property damage repair support",
-  "Tenant damage repairs",
-  "Commercial maintenance repairs",
-  "Safety concern corrections",
-  "Structural issue referral coordination",
+  "Punch-list repairs",
+  "Flooring repair support",
+  "Trim/cabinet repair",
+  "Fence/gate repair",
+  "Exterior repairs",
+  "Maintenance coordination",
 ];
 
 const projectSupport = [
-  "Contractor coordination",
-  "Scope walkthroughs",
+  "Vendor coordination",
+  "Project support",
   "Repair documentation",
-  "Project oversight support",
-  "Vendor communication",
-  "Scheduling coordination",
+  "Service scheduling",
+  "Property walkthrough support",
 ];
 
 export default function RepairPage() {
@@ -45,9 +32,9 @@ export default function RepairPage() {
     <>
       <PageHero
         eyebrow="Maintenance & Repair"
-        title="Property Maintenance & Repair"
-        description="Construction-minded maintenance, repair, and property support services designed to keep residential, rental, and commercial properties functional, maintained, and operational."
-        primaryCta={{ href: "/request-service", label: "Request Maintenance & Repair" }}
+        title="Maintenance & Repair"
+        description="Construction-minded maintenance, repair, and property support services for residential, rental, and commercial properties."
+        primaryCta={{ href: "/request-service", label: "Request Service" }}
       />
       <ServiceList title="Maintenance Services" items={maintenanceServices} />
       <ServiceList title="Repair Services" items={repairServices} muted />
@@ -63,7 +50,7 @@ export default function RepairPage() {
           </div>
         </div>
       </section>
-      <CTASection title="Request Property Maintenance & Repair" />
+      <CTASection title="Request Maintenance & Repair" />
     </>
   );
 }

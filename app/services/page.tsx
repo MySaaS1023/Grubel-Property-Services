@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const services = [
   {
-    title: "Property Maintenance & Repair",
+    title: "Maintenance & Repair",
     description:
       "Construction-minded maintenance, repair, and property support services designed to keep residential, rental, and commercial properties functional, maintained, and operational.",
     examples: [
@@ -33,6 +33,23 @@ const services = [
       "Vendor coordination",
       "Preservation documentation",
       "Occupancy readiness support",
+    ],
+  },
+  {
+    title: "Builds & Remodels",
+    description:
+      "Construction-minded improvement and remodeling services for residential, rental, and commercial properties.",
+    examples: [
+      "Kitchen updates",
+      "Bathroom remodels",
+      "Flooring installation",
+      "Property upgrades",
+      "Tenant improvements",
+      "Renovation support",
+      "Trim/cabinet upgrades",
+      "Drywall and paint improvements",
+      "Exterior upgrades",
+      "Commercial improvements",
     ],
   },
 ];
@@ -78,7 +95,7 @@ export default function ServicesPage() {
                   className="mt-4 inline-flex text-sm font-bold text-accentDark transition hover:text-navy"
                   href="/request-service"
                 >
-                  Get Quote
+                  Request Service
                 </Link>
               </article>
             ))}

@@ -4,16 +4,22 @@ import { ServiceCard } from "@/components/ServiceCard";
 
 const services = [
   {
-    title: "Property Maintenance & Repair",
+    title: "Maintenance & Repair",
     description:
-      "Hands-on maintenance, repairs, and property support for residential, rental, and commercial spaces.",
-    href: "/repair",
+      "Hands-on maintenance, repair, and property support services designed to keep residential and commercial properties functional and operational.",
+    href: "/request-service",
   },
   {
     title: "Property Preservation",
     description:
-      "Vacancy, turnover, and occupancy-readiness support to help keep properties protected and ready.",
-    href: "/turnover-prep",
+      "Property preservation and occupancy-readiness services focused on vacancy upkeep, turnover support, and overall property condition.",
+    href: "/request-service",
+  },
+  {
+    title: "Builds & Remodels",
+    description:
+      "Construction-minded improvement and remodeling services for residential, rental, and commercial properties.",
+    href: "/request-service",
   },
 ];
 
