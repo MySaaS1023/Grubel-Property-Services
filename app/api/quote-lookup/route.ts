@@ -1,49 +1,5 @@
 import { NextResponse } from "next/server";
-
-const mockQuotes = [
-  {
-    quoteNumber: "GPS-1001",
-    customerName: "Test Customer",
-    serviceType: "Virtual Inspection",
-    propertyAddress: "123 Main St, Phoenix, AZ",
-    amount: 7500,
-    displayAmount: "$75.00",
-    paymentStatus: "unpaid",
-    serviceStatus: "Awaiting Payment",
-    scheduledDate: "Pending payment",
-    assignedTeam: "Scheduling pending",
-    nextStep: "Complete your deposit to confirm scheduling.",
-    notes: "Please complete your deposit to confirm scheduling.",
-  },
-  {
-    quoteNumber: "GPS-1002",
-    customerName: "Test Deposit Customer",
-    serviceType: "Repair",
-    propertyAddress: "456 Oak Ave, Mesa, AZ",
-    amount: 10000,
-    displayAmount: "$100.00",
-    paymentStatus: "deposit_paid",
-    serviceStatus: "Scheduled",
-    scheduledDate: "May 22, 2026",
-    assignedTeam: "Repair Coordination Team",
-    nextStep: "Grubel Property Services will confirm arrival details before the scheduled visit.",
-    notes: "Deposit received. Your repair service has been scheduled.",
-  },
-  {
-    quoteNumber: "GPS-1003",
-    customerName: "Test Paid Customer",
-    serviceType: "Turnover Prep",
-    propertyAddress: "789 Desert View Rd, Scottsdale, AZ",
-    amount: 15000,
-    displayAmount: "$150.00",
-    paymentStatus: "paid",
-    serviceStatus: "In Progress",
-    scheduledDate: "May 24, 2026",
-    assignedTeam: "Turnover Prep Team",
-    nextStep: "Turnover prep is underway. Completion notes will be shared after final walkthrough.",
-    notes: "Payment received. Work is currently in progress.",
-  },
-] as const;
+import { getPortalRecord } from "@/lib/operations-data";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -63,13 +19,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Quote number is required." }, { status: 400 });
   }
 
-  // Future database connection point: replace this mock lookup with Supabase
-  // or another database query by quote number.
-  const quote = mockQuotes.find((item) => item.quoteNumber === quoteNumber);
+  // Future Supabase integration point: replace this mock lookup with a query
+  // joining quotes, projects, payments, uploads, and messages by quote number.
+  const portalRecord = getPortalRecord(quoteNumber);
 
-  if (!quote) {
+  if (!portalRecord) {
     return NextResponse.json({ error: "Quote not found." }, { status: 404 });
   }
 
-  return NextResponse.json({ quote });
+  const { quote, project, payment, uploads, messages } = portalRecord;
+
+  return NextResponse.json({
+    quote: {
+      quoteNumber: quote.quoteNumber,
+      customerName: quote.customerName,
+      serviceType: quote.serviceType,
+      propertyAddress: quote.propertyAddress,
+      amount: quote.amount,
+      displayAmount: quote.displayAmount,
+      paymentStatus: quote.paymentStatus,
+      serviceStatus: project?.status ?? quote.quoteStatus,
+      scheduledDate: project?.scheduledDate ?? "Pending",
+      assignedTeam: project?.assignedTeam ?? "Pending assignment",
+      nextStep: project?.nextStep ?? quote.notes,
+      notes: project?.notes ?? quote.notes,
+      quoteStatus: quote.quoteStatus,
+      expiresAt: quote.expiresAt,
+      paidAt: payment?.paidAt,
+      paymentMethod: payment?.method ?? "Pending",
+      uploads,
+      messages,
+      invoiceHistory: payment ? [payment] : [],
+    },
+  });
 }

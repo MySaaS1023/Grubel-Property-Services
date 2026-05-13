@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { queueOperationalEmail } from "@/lib/email";
+import { prepareUploadRecord } from "@/lib/uploads";
 import { validateServiceRequest } from "@/lib/validation";
 
 const allowedFileTypes = new Set([
@@ -49,11 +51,13 @@ export async function POST(request: Request) {
     }
   }
 
-  const uploadedFiles = files.map((file) => ({
-    fileName: file.name,
-    size: file.size,
-    type: file.type,
-  }));
+  const uploadedFiles = files.map((file) =>
+    prepareUploadRecord({
+      category: "customer_project_photo",
+      file,
+      relatedId: validation.data.email,
+    }),
+  );
 
   // Email delivery can be added here later with Resend or Nodemailer.
   // Future cloud storage point: upload files to private object storage and save
@@ -61,6 +65,15 @@ export async function POST(request: Request) {
   console.info("New Grubel Property Services request", {
     ...validation.data,
     uploadedFiles,
+  });
+
+  await queueOperationalEmail({
+    type: "new_service_request",
+    subject: "New service request received",
+    data: {
+      ...validation.data,
+      uploadedFiles,
+    },
   });
 
   return NextResponse.json({

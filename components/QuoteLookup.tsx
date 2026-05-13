@@ -2,8 +2,33 @@
 
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/Button";
+import type { ReactNode } from "react";
 
-type PaymentStatus = "unpaid" | "deposit_paid" | "paid";
+type PaymentStatus = "Unpaid" | "Deposit Paid" | "Paid";
+
+type PortalUpload = {
+  id?: string;
+  fileName: string;
+  fileType?: string;
+  size: number;
+  uploadedBy?: string;
+  createdAt?: string;
+};
+
+type PortalMessage = {
+  id: string;
+  senderName: string;
+  body: string;
+  createdAt: string;
+};
+
+type InvoiceHistory = {
+  id: string;
+  displayAmount: string;
+  status: string;
+  method: string;
+  paidAt?: string;
+};
 
 type Quote = {
   quoteNumber: string;
@@ -25,6 +50,13 @@ type Quote = {
   assignedTeam: string;
   nextStep: string;
   notes: string;
+  quoteStatus: string;
+  expiresAt?: string;
+  paidAt?: string;
+  paymentMethod: string;
+  uploads: PortalUpload[];
+  messages: PortalMessage[];
+  invoiceHistory: InvoiceHistory[];
 };
 
 export function QuoteLookup() {
@@ -96,7 +128,7 @@ export function QuoteLookup() {
     }
   }
 
-  const hasPayment = quote?.paymentStatus === "paid" || quote?.paymentStatus === "deposit_paid";
+  const hasPayment = quote?.paymentStatus === "Paid" || quote?.paymentStatus === "Deposit Paid";
 
   return (
     <div className="grid gap-8">
@@ -125,76 +157,117 @@ export function QuoteLookup() {
         </Button>
       </form>
 
-      {quote && !hasPayment ? (
+      {quote ? (
         <article className="rounded-lg border border-slate-200 bg-stonewash p-6 shadow-sm">
-          <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.18em] text-accentDark">
-                Quote Ready
+                {hasPayment ? "Project Dashboard" : "Quote Ready"}
               </p>
               <h2 className="mt-2 text-2xl font-black text-navy">
                 {quote.quoteNumber}
               </h2>
+              <p className="mt-2 text-sm font-semibold text-charcoal/70">
+                {quote.customerName}
+              </p>
             </div>
-            <div className="text-left sm:text-right">
-              <div className="text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
-                Balance Due
-              </div>
-              <div className="mt-1 text-2xl font-black text-charcoal">
-                {quote.displayAmount}
-              </div>
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge label={quote.paymentStatus} />
+              <StatusBadge label={quote.serviceStatus} />
             </div>
           </div>
 
-          <dl className="mt-6 grid gap-4 md:grid-cols-2">
+          <DashboardSection title="Project Overview">
             <PortalField label="Service Type" value={quote.serviceType} />
             <PortalField label="Property Address" value={quote.propertyAddress} />
-            <PortalField label="Quote Amount" value={quote.displayAmount} />
-            <PortalField label="Payment Status" value={formatStatus(quote.paymentStatus)} />
-            <PortalField label="Service Status" value={quote.serviceStatus} />
-            <PortalField label="Next Step" value={quote.nextStep} />
-          </dl>
-
-          {paymentError ? (
-            <p className="mt-5 rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
-              {paymentError}
-            </p>
-          ) : null}
-          <Button className="mt-5" disabled={paying} onClick={handleProceedToPayment}>
-            {paying ? "Opening Payment..." : "Proceed to Payment"}
-          </Button>
-        </article>
-      ) : null}
-
-      {quote && hasPayment ? (
-        <article className="rounded-lg border border-slate-200 bg-stonewash p-6 shadow-sm">
-          <div className="border-b border-slate-200 pb-5">
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-accentDark">
-              Project Dashboard
-            </p>
-            <h2 className="mt-2 text-2xl font-black text-navy">
-              {quote.quoteNumber}
-            </h2>
-          </div>
-
-          <dl className="mt-6 grid gap-4 md:grid-cols-2">
-            <PortalField label="Quote Number" value={quote.quoteNumber} />
-            <PortalField label="Service Type" value={quote.serviceType} />
-            <PortalField label="Property Address" value={quote.propertyAddress} />
-            <PortalField label="Payment Status" value={formatStatus(quote.paymentStatus)} />
-            <PortalField label="Service Status" value={quote.serviceStatus} />
-            <PortalField label="Scheduled Date" value={quote.scheduledDate} />
+            <PortalField label="Upcoming Schedule" value={quote.scheduledDate} />
             <PortalField label="Assigned Team" value={quote.assignedTeam} />
-            <PortalField label="Next Step" value={quote.nextStep} />
-          </dl>
+          </DashboardSection>
 
-          <div className="mt-6 rounded-md bg-white p-4">
-            <div className="text-sm font-black text-navy">Notes</div>
-            <p className="mt-2 text-sm leading-6 text-charcoal/72">{quote.notes}</p>
-          </div>
+          <DashboardSection title="Quote Information">
+            <PortalField label="Quote Number" value={quote.quoteNumber} />
+            <PortalField label="Quote Amount" value={quote.displayAmount} />
+            <PortalField label="Quote Status" value={quote.quoteStatus} />
+            <PortalField label="Quote Expires" value={quote.expiresAt ?? "Not set"} />
+          </DashboardSection>
+
+          <DashboardSection title="Payment Summary">
+            <PortalField label="Payment Status" value={quote.paymentStatus} />
+            <PortalField label="Payment Method" value={quote.paymentMethod} />
+            <PortalField label="Balance Due" value={hasPayment ? "$0.00" : quote.displayAmount} />
+            <PortalField label="Paid Date" value={quote.paidAt ?? "Not paid"} />
+          </DashboardSection>
+
+          {!hasPayment ? (
+            <div className="mt-6 rounded-md bg-white p-4">
+              <div className="text-sm font-black text-navy">Next Steps</div>
+              <p className="mt-2 text-sm leading-6 text-charcoal/72">{quote.nextStep}</p>
+              {paymentError ? (
+                <p className="mt-4 rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
+                  {paymentError}
+                </p>
+              ) : null}
+              <Button className="mt-4" disabled={paying} onClick={handleProceedToPayment}>
+                {paying ? "Opening Payment..." : "Proceed to Payment"}
+              </Button>
+            </div>
+          ) : null}
+
+          <DashboardSection title="Service Updates">
+            <PortalField label="Service Status" value={quote.serviceStatus} />
+            <PortalField label="Next Step" value={quote.nextStep} />
+            <PortalField label="Notes" value={quote.notes} />
+            <PortalField
+              label="Latest Message"
+              value={quote.messages[0]?.body ?? "No messages yet."}
+            />
+          </DashboardSection>
+
+          <DashboardSection title="Uploaded Files">
+            {quote.uploads.length ? (
+              quote.uploads.map((upload) => (
+                <PortalField
+                  key={upload.id ?? upload.fileName}
+                  label={upload.fileName}
+                  value={`${formatFileSize(upload.size)}${upload.uploadedBy ? ` uploaded by ${upload.uploadedBy}` : ""}`}
+                />
+              ))
+            ) : (
+              <PortalField label="Files" value="No uploaded files yet." />
+            )}
+          </DashboardSection>
+
+          <DashboardSection title="Invoice / Payment History">
+            {quote.invoiceHistory.length ? (
+              quote.invoiceHistory.map((invoice) => (
+                <PortalField
+                  key={invoice.id}
+                  label={`${invoice.status} - ${invoice.displayAmount}`}
+                  value={`${invoice.method}${invoice.paidAt ? ` on ${invoice.paidAt}` : ""}`}
+                />
+              ))
+            ) : (
+              <PortalField label="History" value="No payment history yet." />
+            )}
+          </DashboardSection>
         </article>
       ) : null}
     </div>
+  );
+}
+
+function DashboardSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <section className="mt-6">
+      <h3 className="text-xl font-black text-navy">{title}</h3>
+      <dl className="mt-4 grid gap-4 md:grid-cols-2">{children}</dl>
+    </section>
   );
 }
 
@@ -209,9 +282,22 @@ function PortalField({ label, value }: { label: string; value: string }) {
   );
 }
 
-function formatStatus(status: PaymentStatus) {
-  return status
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+function StatusBadge({ label }: { label: string }) {
+  return (
+    <span className="inline-flex rounded-full bg-navy px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white">
+      {label}
+    </span>
+  );
+}
+
+function formatFileSize(size: number) {
+  if (size < 1024) {
+    return `${size} B`;
+  }
+
+  if (size < 1024 * 1024) {
+    return `${Math.round(size / 1024)} KB`;
+  }
+
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }

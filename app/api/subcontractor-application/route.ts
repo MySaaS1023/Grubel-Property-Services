@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { queueOperationalEmail } from "@/lib/email";
 
 const requiredFieldsByType = {
   handyman: [
@@ -82,6 +83,12 @@ export async function POST(request: Request) {
   );
 
   console.info("New subcontractor application", submission);
+
+  await queueOperationalEmail({
+    type: "subcontractor_application_received",
+    subject: "New subcontractor application received",
+    data: submission,
+  });
 
   return NextResponse.json({
     success: true,
