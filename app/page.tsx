@@ -22,15 +22,6 @@ const services = [
   },
 ];
 
-const whyChoose = [
-  "Preventative maintenance approach",
-  "Reliable hands-on support",
-  "Clear communication",
-  "Property-ready focus",
-];
-
-const audiences = ["Homeowners", "Landlords", "Property managers", "Rental owners"];
-
 export default function Home() {
   return (
     <>
@@ -84,40 +75,6 @@ export default function Home() {
           <div className="mt-8 grid gap-5 md:grid-cols-3">
             {services.map((service) => (
               <ServiceCard key={service.title} {...service} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-stonewash py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <div>
-            <h2 className="text-3xl font-black text-navy">
-              Why Choose Grubel Property Services
-            </h2>
-            <p className="mt-4 leading-7 text-charcoal/72">
-              Small issues are easier to handle when they are noticed early,
-              communicated clearly, and addressed with practical property care.
-            </p>
-          </div>
-          <ul className="grid gap-3 text-base font-bold leading-7 text-charcoal">
-            {whyChoose.map((item) => (
-              <li className="border-l-4 border-accent bg-white/70 py-2 pl-4" key={item}>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-black text-navy">Who We Help</h2>
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-lg font-black text-charcoal">
-            {audiences.map((audience) => (
-              <span key={audience}>
-                {audience}
-              </span>
             ))}
           </div>
         </div>

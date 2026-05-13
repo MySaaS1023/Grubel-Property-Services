@@ -15,6 +15,16 @@ const sections = [
           "Yes. We work with residential and commercial property owners, managers, landlords, and investors.",
       },
       {
+        question: "Why choose Grubel Property Services?",
+        answer:
+          "Grubel Property Services brings a construction-minded, hands-on approach to property maintenance, repair coordination, turnover prep, and operational support. The focus is clear communication, practical next steps, reliable service, and helping properties stay in better condition.",
+      },
+      {
+        question: "Who does Grubel Property Services help?",
+        answer:
+          "We help Homeowners, Landlords, Property managers, Rental owners, investors, and commercial property owners with maintenance, property checks, repair coordination, turnover prep, and project support.",
+      },
+      {
         question: "How does the customer flow work?",
         answer:
           "Start with Services, request a quote through the Request Service form, receive a quote number, then use the Customer Portal for payment and project tracking.",
