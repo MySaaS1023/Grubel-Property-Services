@@ -1,12 +1,27 @@
 import { CTASection } from "@/components/CTASection";
 import { PageHero } from "@/components/PageHero";
 
-const steps = [
-  "Walkthrough for visible readiness items",
-  "Minor touch-ups and basic fixes",
-  "Maintenance check before new occupants arrive",
-  "Owner or manager punch-list support",
-  "Final readiness communication",
+const turnoverServices = [
+  "Move-out condition walkthroughs",
+  "Punch-list creation",
+  "Trash-out coordination",
+  "Minor repair coordination",
+  "Cleaning coordination",
+  "Paint touch-up coordination",
+  "Fixture replacement",
+  "Readiness checks",
+  "Maintenance recommendations",
+  "Vendor coordination",
+  "Lock/change coordination support",
+  "Final property readiness walkthrough",
+];
+
+const designedFor = [
+  "Property managers",
+  "Landlords",
+  "Rental owners",
+  "Multi-unit operators",
+  "Commercial property owners",
 ];
 
 export default function TurnoverPrepPage() {
@@ -14,29 +29,45 @@ export default function TurnoverPrepPage() {
     <>
       <PageHero
         eyebrow="Turnover Prep"
-        title="Move-in ready support between occupants."
-        description="Grubel Property Services helps prepare rentals and homes between tenants or occupants with practical readiness checks, basic upkeep, and minor repair support."
-        primaryCta={{ href: "/contact", label: "Request Turnover Prep" }}
+        title="Turnover Preparation Services"
+        description="Property turnover support designed to help prepare units, homes, and commercial spaces for the next occupant."
+        primaryCta={{ href: "/contact", label: "Request Turnover Support" }}
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1fr] lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
           <div>
-            <h2 className="text-3xl font-black text-navy">Turnover Support</h2>
+            <h2 className="text-3xl font-black text-navy">
+              Turnover Services Include
+            </h2>
             <p className="mt-4 leading-7 text-charcoal/72">
-              Turnover prep helps owners reduce downtime and present a cleaner,
-              more complete property for the next occupant.
+              Practical coordination and readiness support between occupants.
             </p>
           </div>
-          <div className="grid gap-4">
-            {steps.map((step) => (
-              <div className="rounded-lg border border-slate-200 bg-stonewash p-5 font-bold text-charcoal" key={step}>
-                {step}
+          <div className="grid gap-4 sm:grid-cols-2">
+            {turnoverServices.map((item) => (
+              <div
+                className="rounded-lg border border-slate-200 bg-stonewash p-5 font-bold text-charcoal"
+                key={item}
+              >
+                {item}
               </div>
             ))}
           </div>
         </div>
       </section>
-      <CTASection title="Prepare the property for its next occupant." />
+      <section className="bg-stonewash py-16">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <h2 className="text-3xl font-black text-navy">Designed For</h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {designedFor.map((item) => (
+              <div className="rounded-lg border border-slate-200 bg-white p-5 font-bold text-charcoal" key={item}>
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <CTASection title="Request Turnover Support" />
     </>
   );
 }

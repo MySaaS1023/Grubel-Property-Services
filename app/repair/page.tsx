@@ -1,12 +1,43 @@
 import { CTASection } from "@/components/CTASection";
 import { PageHero } from "@/components/PageHero";
 
-const tasks = [
-  "Minor repairs and punch-list items",
-  "General upkeep and maintenance support",
-  "Door, hardware, fixture, and surface touch-ups",
-  "Rental-ready fixes that do not require a specialty trade",
-  "Clear communication when a licensed trade is needed",
+const maintenanceServices = [
+  "Drywall patching and repair",
+  "Paint touch-ups",
+  "Door adjustments and repairs",
+  "Cabinet hardware replacement",
+  "Fixture replacement",
+  "Caulking and sealing",
+  "Fence and gate repairs",
+  "Trim repairs",
+  "Minor plumbing fixture replacement",
+  "Minor electrical fixture replacement",
+  "Trash-out coordination",
+  "Exterior cleanup",
+  "General property upkeep",
+];
+
+const repairServices = [
+  "Flooring replacement support",
+  "Interior repair coordination",
+  "Exterior repair coordination",
+  "Water damage repair coordination",
+  "Turnover repair punch lists",
+  "Move-out repair support",
+  "Property damage repair support",
+  "Tenant damage repairs",
+  "Commercial maintenance repairs",
+  "Safety concern corrections",
+  "Structural issue referral coordination",
+];
+
+const projectSupport = [
+  "Contractor coordination",
+  "Scope walkthroughs",
+  "Repair documentation",
+  "Project oversight support",
+  "Vendor communication",
+  "Scheduling coordination",
 ];
 
 export default function RepairPage() {
@@ -14,31 +45,53 @@ export default function RepairPage() {
     <>
       <PageHero
         eyebrow="Repair"
-        title="Maintenance and Fix support for small property needs."
-        description="Grubel Property Services handles practical minor repairs and upkeep tasks that help keep a property clean, functional, and ready for use."
-        primaryCta={{ href: "/contact", label: "Request Repair" }}
+        title="Property Repair & Maintenance Services"
+        description="Hands-on repair, maintenance, and property improvement support for residential and commercial properties."
+        primaryCta={{ href: "/contact", label: "Request Repair Service" }}
       />
+      <ServiceList title="Maintenance Services" items={maintenanceServices} />
+      <ServiceList title="Repair Services" items={repairServices} muted />
+      <ServiceList title="Project Support" items={projectSupport} />
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-black text-navy">Repair Scope</h2>
-            <p className="mt-4 leading-7 text-charcoal/72">
-              The Repair service is focused on minor fixes, everyday upkeep, and
-              practical maintenance. Grubel Property Services does not advertise
-              major construction, remodeling, electrical, plumbing, or
-              structural work.
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="rounded-lg border border-accent/30 bg-accent/10 p-6">
+            <h2 className="text-2xl font-black text-navy">Important Notice</h2>
+            <p className="mt-3 leading-7 text-charcoal/75">
+              Some services may require licensed specialty contractors depending
+              on project scope and local requirements.
             </p>
-          </div>
-          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {tasks.map((task) => (
-              <div className="rounded-lg border border-slate-200 p-5 font-bold text-charcoal" key={task}>
-                {task}
-              </div>
-            ))}
           </div>
         </div>
       </section>
-      <CTASection title="Get minor repairs and upkeep handled with Grubel Property Services." />
+      <CTASection title="Request Repair Service" />
     </>
+  );
+}
+
+function ServiceList({
+  title,
+  items,
+  muted = false,
+}: {
+  title: string;
+  items: string[];
+  muted?: boolean;
+}) {
+  return (
+    <section className={`${muted ? "bg-stonewash" : "bg-white"} py-16`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-black text-navy">{title}</h2>
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((item) => (
+            <div
+              className="rounded-lg border border-slate-200 bg-white p-5 font-bold text-charcoal shadow-sm"
+              key={item}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

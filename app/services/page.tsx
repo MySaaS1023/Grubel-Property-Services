@@ -4,10 +4,10 @@ import { ServiceCard } from "@/components/ServiceCard";
 
 const services = [
   {
-    title: "Inspection",
+    title: "Virtual Inspection",
     href: "/inspection",
     description:
-      "Preventative property checks, visible condition walkthroughs, and maintenance check notes for owners who want a practical view of property condition.",
+      "Virtual property inspections, visible condition walkthroughs, and maintenance check notes for owners who want a practical view of property condition.",
   },
   {
     title: "Repair",
@@ -29,7 +29,7 @@ export default function ServicesPage() {
       <PageHero
         eyebrow="Grubel Property Services"
         title="Practical property service for checks, upkeep, and readiness."
-        description="Grubel Property Services keeps the scope clear: preventative property checks, minor repairs, maintenance support, and turnover prep."
+        description="Grubel Property Services keeps the scope clear: virtual inspections, preventative property checks, minor repairs, maintenance support, and turnover prep."
         primaryCta={{ href: "/contact", label: "Request Service" }}
       />
       <section className="bg-white py-16">

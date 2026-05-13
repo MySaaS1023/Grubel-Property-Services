@@ -7,8 +7,8 @@ export function Footer() {
         <div>
           <div className="text-lg font-black">Grubel Property Services</div>
           <p className="mt-3 max-w-md text-sm leading-6 text-white/75">
-            Preventative property checks, minor repair support, maintenance
-            checkups, and turnover prep for Arizona properties.
+            Construction-minded property maintenance, repair, turnover prep, and
+            project support for residential and commercial properties.
           </p>
           <p className="mt-3 text-xs font-semibold text-white/60">
             All payments are processed securely.
@@ -16,11 +16,13 @@ export function Footer() {
         </div>
         <div>
           <div className="text-sm font-bold uppercase tracking-[0.16em] text-white/60">
-            Company
+            Work With Us
           </div>
           <div className="mt-4 grid gap-2 text-sm text-white/80">
-            <Link href="/about">About</Link>
-            <Link href="/contact">Request Service</Link>
+            <Link href="/handy-man">Handy Man</Link>
+            <Link href="/residential">Residential</Link>
+            <Link href="/commercial">Commercial</Link>
+            <Link href="/subcontractor-portal">Subcontractor Portal</Link>
           </div>
         </div>
         <div>
@@ -30,6 +32,10 @@ export function Footer() {
           <div className="mt-4 grid gap-2 text-sm text-white/80">
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms</Link>
+            <Link href="/subcontractor-terms">Subcontractor Terms</Link>
+            <Link href="/subcontractor-agreement-notice">
+              Subcontractor Agreement Notice
+            </Link>
           </div>
         </div>
       </div>

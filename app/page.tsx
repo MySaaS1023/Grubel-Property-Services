@@ -4,9 +4,9 @@ import { ServiceCard } from "@/components/ServiceCard";
 
 const services = [
   {
-    title: "Inspection",
+    title: "Virtual Inspection",
     description:
-      "Preventative property checks and visible condition walkthroughs to help catch small issues early.",
+      "Virtual property inspections and visible condition walkthroughs to help catch small issues early.",
     href: "/inspection",
   },
   {

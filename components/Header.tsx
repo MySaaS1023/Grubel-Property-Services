@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/Button";
 
 const serviceItems = [
-  { href: "/inspection", label: "Inspection" },
+  { href: "/inspection", label: "Virtual Inspection" },
   { href: "/repair", label: "Repair" },
   { href: "/turnover-prep", label: "Turnover Prep" },
 ];
