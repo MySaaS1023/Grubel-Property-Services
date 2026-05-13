@@ -1,5 +1,3 @@
-import { existsSync } from "fs";
-import { join } from "path";
 import { Button } from "@/components/Button";
 import { CTASection } from "@/components/CTASection";
 import { ServiceCard } from "@/components/ServiceCard";
@@ -26,16 +24,11 @@ const services = [
 ];
 
 const heroImages = {
-  consultation: getHeroImage("/hero/consultation.jpg"),
-  maintenance: getHeroImage("/hero/maintenance.jpg"),
-  preservation: getHeroImage("/hero/property-preservation.jpg"),
-  propertyCheck: getHeroImage("/hero/property-check.jpg"),
+  consultation: "/hero/consultation.jpg",
+  maintenance: "/hero/maintenance.jpg",
+  preservation: "/hero/property-preservation.jpg",
+  propertyCheck: "/hero/property-check.jpg",
 };
-
-function getHeroImage(src: string) {
-  const publicPath = join(process.cwd(), "public", ...src.split("/").filter(Boolean));
-  return existsSync(publicPath) ? src : null;
-}
 
 export default function Home() {
   return (
@@ -144,7 +137,7 @@ function WorkflowPanel({
   src,
 }: {
   label: string;
-  src: string | null;
+  src: string;
 }) {
   return (
     <div className="relative min-h-36 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-lg shadow-black/25">
@@ -154,22 +147,16 @@ function WorkflowPanel({
   );
 }
 
-function PanelVisual({ src }: { src: string | null }) {
-  if (src) {
-    return (
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `linear-gradient(180deg, rgba(8, 32, 58, 0.05), rgba(8, 32, 58, 0.24)), url("${src}")` }}
-      />
-    );
-  }
-
+function PanelVisual({ src }: { src: string }) {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_24%,rgba(197,138,75,0.24),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%),linear-gradient(90deg,rgba(255,255,255,0.055)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.055)_1px,transparent_1px)] bg-[size:auto,28px_28px,28px_28px]" />
-      <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-accent/20" />
-      <div className="absolute -bottom-12 left-8 h-32 w-32 rounded-full border border-white/10" />
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-navy/75 to-transparent" />
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `linear-gradient(180deg, rgba(8, 32, 58, 0.02), rgba(8, 32, 58, 0.22)), url("${src}")`,
+        }}
+      />
+      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-navy/70 to-transparent" />
     </div>
   );
 }
