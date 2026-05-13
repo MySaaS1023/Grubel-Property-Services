@@ -4,7 +4,7 @@ export default function PaymentPage() {
   return (
     <>
       <section className="bg-stonewash">
-        <div className="mx-auto max-w-5xl px-6 py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
           <div className="max-w-3xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               PAYMENT
@@ -20,8 +20,10 @@ export default function PaymentPage() {
         </div>
       </section>
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-5xl px-6">
-          <PaymentQuoteLookup />
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="max-w-5xl">
+            <PaymentQuoteLookup />
+          </div>
         </div>
       </section>
     </>

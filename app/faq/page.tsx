@@ -120,22 +120,24 @@ export default function FAQPage() {
   return (
     <>
       <section className="bg-stonewash">
-        <div className="mx-auto max-w-4xl px-6 py-16 lg:py-20">
-          <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
-            FAQ
-          </p>
-          <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
-            Frequently Asked Questions
-          </h1>
-          <p className="mt-5 text-lg leading-8 text-charcoal/75">
-            Answers to common questions about Grubel Property Services,
-            scheduling, payments, repairs, inspections, and subcontractor work.
-          </p>
+        <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
+          <div className="max-w-4xl">
+            <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
+              FAQ
+            </p>
+            <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
+              Frequently Asked Questions
+            </h1>
+            <p className="mt-5 text-lg leading-8 text-charcoal/75">
+              Answers to common questions about Grubel Property Services,
+              scheduling, payments, repairs, inspections, and subcontractor work.
+            </p>
+          </div>
         </div>
       </section>
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-6">
-          <div className="grid gap-10">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid max-w-4xl gap-10">
             {sections.map((section) => (
               <section key={section.title}>
                 <h2 className="text-2xl font-black text-navy">{section.title}</h2>

@@ -53,8 +53,8 @@ export default function RepairPage() {
       <ServiceList title="Repair Services" items={repairServices} muted />
       <ServiceList title="Project Support" items={projectSupport} />
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg border border-accent/30 bg-accent/10 p-6">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="max-w-4xl rounded-lg border border-accent/30 bg-accent/10 p-6">
             <h2 className="text-2xl font-black text-navy">Important Notice</h2>
             <p className="mt-3 leading-7 text-charcoal/75">
               Some services may require licensed specialty contractors depending
@@ -79,7 +79,7 @@ function ServiceList({
 }) {
   return (
     <section className={`${muted ? "bg-stonewash" : "bg-white"} py-16`}>
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-6">
         <h2 className="text-3xl font-black text-navy">{title}</h2>
         <ul className="mt-6 columns-1 gap-8 space-y-3 sm:columns-2 lg:columns-3">
           {items.map((item) => (

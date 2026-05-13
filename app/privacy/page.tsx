@@ -55,8 +55,10 @@ export default function PrivacyPage() {
 function LegalContent({ children }: { children: ReactNode }) {
   return (
     <section className="bg-white py-14">
-      <div className="mx-auto max-w-3xl space-y-4 px-4 leading-7 text-charcoal/75 sm:px-6 lg:px-8 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
-        {children}
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="max-w-3xl space-y-4 leading-7 text-charcoal/75 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
+          {children}
+        </div>
       </div>
     </section>
   );

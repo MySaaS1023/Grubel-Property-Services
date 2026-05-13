@@ -9,7 +9,8 @@ export default function SubcontractorTermsPage() {
         description="Baseline expectations for subcontractors applying to work with Grubel Property Services."
       />
       <section className="bg-white py-14">
-        <div className="mx-auto max-w-3xl space-y-4 px-4 leading-7 text-charcoal/75 sm:px-6 lg:px-8 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
+        <div className="mx-auto max-w-6xl px-6">
+        <div className="max-w-3xl space-y-4 leading-7 text-charcoal/75 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
           <h2>Independent Contractor Relationship</h2>
           <p>
             Subcontractors are independent contractors and are not employees,
@@ -59,6 +60,7 @@ export default function SubcontractorTermsPage() {
             pricing, photos, and internal communications should be treated as
             confidential unless disclosure is authorized.
           </p>
+        </div>
         </div>
       </section>
     </>

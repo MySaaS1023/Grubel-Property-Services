@@ -52,7 +52,7 @@ export default function AdminPage() {
         description="A lightweight operations CRM foundation for quotes, projects, payments, subcontractors, uploads, and notifications."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-8 px-6">
           <p className="rounded-md bg-accent/10 p-4 text-sm font-semibold leading-6 text-charcoal">
             Security prep: this route should be protected with authentication,
             admin role permissions, audit logging, and row-level database

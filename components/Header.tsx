@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:gap-6 sm:px-6 lg:gap-8 lg:px-8">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-2 sm:gap-6 lg:gap-8">
         <Link className="flex min-w-0 shrink-0 items-center" href="/">
           <Image
             alt="Grubel Property Services Logo"
@@ -62,7 +62,7 @@ export function Header() {
       </div>
 
       <nav
-        className="flex gap-4 overflow-x-auto border-t border-slate-100 px-4 py-3 text-sm font-semibold text-charcoal/75 lg:hidden"
+        className="flex gap-4 overflow-x-auto border-t border-slate-100 px-6 py-3 text-sm font-semibold text-charcoal/75 lg:hidden"
         aria-label="Mobile navigation"
       >
         <Link className="shrink-0 hover:text-accentDark" href="/">

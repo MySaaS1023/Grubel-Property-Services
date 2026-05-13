@@ -34,7 +34,7 @@ export default function SubcontractorPortalPage() {
         description="Approved subcontractors can review assigned work, submit updates, upload completion photos, and manage availability."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-8 px-6">
           <div className="grid gap-5 md:grid-cols-4">
             <DashboardCard label="Status" value={subcontractor.status} />
             <DashboardCard label="Availability" value={subcontractor.availability} />

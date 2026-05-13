@@ -18,7 +18,7 @@ export default function InspectionPage() {
         secondaryCta={{ href: "/services", label: "View Services" }}
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-5xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <h2 className="text-3xl font-black text-navy">How It Helps</h2>
             <p className="mt-4 leading-7 text-charcoal/72">
@@ -38,7 +38,7 @@ export default function InspectionPage() {
       </section>
 
       <section className="bg-stonewash py-14">
-        <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-5 px-6 md:flex-row md:items-center md:justify-between">
           <p className="max-w-2xl leading-7 text-charcoal/75">
             Virtual inspections are visual property condition walkthroughs for
             maintenance and operational support. Grubel Property Services does

@@ -34,7 +34,7 @@ export default function TurnoverPrepPage() {
         primaryCta={{ href: "/request-service", label: "Request Turnover Support" }}
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <h2 className="text-3xl font-black text-navy">
               Turnover Services Include
@@ -53,7 +53,7 @@ export default function TurnoverPrepPage() {
         </div>
       </section>
       <section className="bg-stonewash py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-2">
           <h2 className="text-3xl font-black text-navy">Designed For</h2>
           <div className="flex flex-wrap gap-x-6 gap-y-3 text-base font-bold text-charcoal">
             {designedFor.map((item) => (

@@ -20,7 +20,7 @@ export default function HandyManPage() {
         primaryCta={{ href: "/request-service", label: "Request Service" }}
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-3 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-4 px-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((item) => (
             <div className="rounded-lg border border-slate-200 bg-stonewash p-5 font-bold text-charcoal" key={item}>
               {item}
