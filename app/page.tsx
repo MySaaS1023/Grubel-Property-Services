@@ -83,41 +83,57 @@ function HeroWorkflowCollage() {
     <div className="mx-auto w-full max-w-xl lg:mx-0 lg:justify-self-end">
       <div className="grid gap-3 sm:grid-cols-2 md:hidden">
         <WorkflowPanel
-          icon="phone"
           label="Consultation"
+          src="/hero/consultation.jpg"
         />
         <WorkflowPanel
-          icon="clipboard"
           label="Property Check"
+          src="/hero/property-check.jpg"
         />
         <WorkflowPanel
-          icon="wrench"
           label="Maintenance"
+          src="/hero/maintenance.jpg"
         />
         <WorkflowPanel
-          icon="home"
           label="Preservation"
+          src="/hero/property-preservation.jpg"
         />
       </div>
 
       <div className="relative hidden min-h-[510px] md:block">
         <div className="absolute left-10 right-4 top-14 h-72 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-2xl shadow-black/35 rotate-[-1.5deg]">
-          <GeneratedVisual icon="home" />
+          <img
+            alt="Property preservation room prepared for occupancy"
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/hero/property-preservation.jpg"
+          />
           <ImageLabel className="left-4 top-4" label="Preservation" />
         </div>
 
         <div className="absolute left-0 top-0 h-40 w-64 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/30 rotate-[-4deg]">
-          <GeneratedVisual icon="phone" />
+          <img
+            alt="Phone photo used for a property consultation"
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/hero/consultation.jpg"
+          />
           <ImageLabel className="left-3 top-3" label="Consultation" />
         </div>
 
         <div className="absolute bottom-16 right-0 h-48 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[3deg]">
-          <GeneratedVisual icon="wrench" />
+          <img
+            alt="Maintenance work inside a property"
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/hero/maintenance.jpg"
+          />
           <ImageLabel className="left-3 top-3" label="Maintenance" />
         </div>
 
         <div className="absolute bottom-0 left-6 h-44 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[-2deg]">
-          <GeneratedVisual icon="clipboard" />
+          <img
+            alt="Exterior property condition check"
+            className="absolute inset-0 h-full w-full object-cover"
+            src="/hero/property-check.jpg"
+          />
           <ImageLabel className="left-3 top-3" label="Property Check" />
         </div>
       </div>
@@ -126,72 +142,16 @@ function HeroWorkflowCollage() {
 }
 
 function WorkflowPanel({
-  icon,
   label,
+  src,
 }: {
-  icon: VisualIcon;
   label: string;
+  src: string;
 }) {
   return (
     <div className="relative min-h-36 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-lg shadow-black/25">
-      <GeneratedVisual icon={icon} />
+      <img alt={`${label} service visual`} className="absolute inset-0 h-full w-full object-cover" src={src} />
       <ImageLabel className="left-3 top-3" label={label} />
-    </div>
-  );
-}
-
-type VisualIcon = "phone" | "home" | "wrench" | "clipboard";
-
-function GeneratedVisual({ icon }: { icon: VisualIcon }) {
-  return (
-    <div className="absolute inset-0 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_24%,rgba(197,138,75,0.24),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%),linear-gradient(90deg,rgba(255,255,255,0.055)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.055)_1px,transparent_1px)] bg-[size:auto,28px_28px,28px_28px]" />
-      <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-accent/20" />
-      <div className="absolute -bottom-12 left-8 h-32 w-32 rounded-full border border-white/10" />
-      <div className="absolute bottom-5 right-5 text-white/16">
-        {icon === "phone" ? <PhoneMark /> : null}
-        {icon === "home" ? <HomeMark /> : null}
-        {icon === "wrench" ? <WrenchMark /> : null}
-        {icon === "clipboard" ? <ClipboardMark /> : null}
-      </div>
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-navy/75 to-transparent" />
-    </div>
-  );
-}
-
-function PhoneMark() {
-  return (
-    <div className="h-24 w-16 rounded-[1.25rem] border-4 border-current p-2">
-      <div className="h-full rounded-xl border border-current" />
-    </div>
-  );
-}
-
-function HomeMark() {
-  return (
-    <div className="relative h-24 w-28">
-      <div className="absolute left-3 top-9 h-14 w-20 border-4 border-current" />
-      <div className="absolute left-0 top-7 h-16 w-16 rotate-45 border-l-4 border-t-4 border-current" />
-      <div className="absolute bottom-0 left-10 h-8 w-5 border-2 border-current" />
-    </div>
-  );
-}
-
-function WrenchMark() {
-  return (
-    <div className="relative h-24 w-24 rotate-[-35deg]">
-      <div className="absolute left-9 top-2 h-16 w-6 rounded-full border-4 border-current" />
-      <div className="absolute bottom-1 left-7 h-10 w-10 rounded-full border-4 border-current" />
-    </div>
-  );
-}
-
-function ClipboardMark() {
-  return (
-    <div className="h-24 w-20 rounded-lg border-4 border-current p-4">
-      <div className="mb-3 h-1.5 w-10 rounded bg-current" />
-      <div className="mb-3 h-1.5 w-8 rounded bg-current" />
-      <div className="h-6 w-8 rotate-[-12deg] border-b-4 border-l-4 border-current" />
     </div>
   );
 }
