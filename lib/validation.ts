@@ -13,7 +13,13 @@ type ValidationResult =
   | { success: true; data: ServiceRequestInput }
   | { success: false; error: string };
 
-const allowedServices = new Set(["Inspection", "Repair", "Turnover Prep", "Other"]);
+const allowedServices = new Set([
+  "Inspection",
+  "Virtual Inspection",
+  "Repair",
+  "Turnover Prep",
+  "Other",
+]);
 
 export function validateServiceRequest(input: unknown): ValidationResult {
   if (!input || typeof input !== "object") {

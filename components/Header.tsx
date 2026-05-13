@@ -55,6 +55,12 @@ export function Header() {
           >
             Payment
           </Link>
+          <Link
+            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
+            href="/faq"
+          >
+            FAQ
+          </Link>
         </nav>
 
         <Button className="shrink-0 px-3 text-xs sm:px-5 sm:text-sm" href="/contact">
@@ -87,6 +93,9 @@ export function Header() {
         </Link>
         <Link className="shrink-0 hover:text-accentDark" href="/payment">
           Payment
+        </Link>
+        <Link className="shrink-0 hover:text-accentDark" href="/faq">
+          FAQ
         </Link>
       </nav>
     </header>

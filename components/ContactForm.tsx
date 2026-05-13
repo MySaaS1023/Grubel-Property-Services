@@ -17,13 +17,11 @@ export function ContactForm() {
     setMessage("");
 
     const formData = new FormData(event.currentTarget);
-    const payload = Object.fromEntries(formData.entries());
 
     try {
       const response = await fetch("/api/service-request", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: formData,
       });
       const data = await response.json();
 
@@ -80,6 +78,26 @@ export function ContactForm() {
           required
         />
       </label>
+      <div className="grid gap-2 text-sm font-bold text-navy">
+        Photo Upload
+        <p className="text-sm font-normal leading-6 text-charcoal/65">
+          Upload photos of the property, repairs, damage, or project area if
+          available.
+        </p>
+        <label className="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-stonewash px-4 py-6 text-center text-sm font-semibold text-charcoal transition hover:border-accent hover:bg-white">
+          <span>Choose photos or documents</span>
+          <span className="mt-1 text-xs font-normal text-charcoal/60">
+            JPG, PNG, JPEG, or PDF
+          </span>
+          <input
+            accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+            className="sr-only"
+            multiple
+            name="photos"
+            type="file"
+          />
+        </label>
+      </div>
       {message ? (
         <p
           className={`rounded-md px-4 py-3 text-sm font-semibold ${

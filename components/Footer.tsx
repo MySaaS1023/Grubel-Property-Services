@@ -26,6 +26,16 @@ export function Footer() {
         </div>
         <div>
           <div className="text-sm font-bold uppercase tracking-[0.16em] text-white/60">
+            Resources
+          </div>
+          <div className="mt-4 grid gap-2 text-sm text-white/80">
+            <Link href="/faq">FAQ</Link>
+            <Link href="/payment">Customer Portal</Link>
+            <Link href="/contact">Request Service</Link>
+          </div>
+        </div>
+        <div>
+          <div className="text-sm font-bold uppercase tracking-[0.16em] text-white/60">
             Legal
           </div>
           <div className="mt-4 grid gap-2 text-sm text-white/80">

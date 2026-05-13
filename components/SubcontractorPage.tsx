@@ -20,7 +20,7 @@ type SubcontractorPageProps = {
 const noticeItems = [
   "Approval required before performing work",
   "No unauthorized subcontracting",
-  "Independent contractor relationship only",
+  "Approved subcontractors operate as independent contractors and are responsible for maintaining any required licensing, insurance, and compliance related to their services.",
   "Work must meet company standards",
   "Additional documentation may be required",
   "Insurance may be required depending on project scope",
