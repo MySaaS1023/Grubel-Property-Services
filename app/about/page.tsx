@@ -1,17 +1,27 @@
 import { Button } from "@/components/Button";
-import { PageHero } from "@/components/PageHero";
 
 export default function AboutPage() {
   return (
     <>
-      <PageHero
-        eyebrow="About Grubel Property Services"
-        title="About Grubel Property Services"
-        description="Construction-minded property service support for maintenance, repair, turnover preparation, and project coordination."
-      />
+      <section className="bg-stonewash">
+        <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
+          <div className="max-w-3xl">
+            <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
+              About Grubel Property Services
+            </p>
+            <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
+              About Grubel Property Services
+            </h1>
+            <p className="mt-5 text-lg leading-8 text-charcoal/75">
+              Construction-minded property service support for maintenance,
+              repair, turnover preparation, and project coordination.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[0.8fr_1.2fr]">
           <h2 className="text-3xl font-black text-navy">Founder Story</h2>
           <div className="space-y-4 leading-7 text-charcoal/75">
             <p>
@@ -33,7 +43,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-stonewash py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[0.8fr_1.2fr]">
           <h2 className="text-3xl font-black text-navy">Who We Are</h2>
           <div className="space-y-4 leading-7 text-charcoal/75">
             <p>
@@ -53,7 +63,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[0.8fr_1.2fr]">
           <h2 className="text-3xl font-black text-navy">
             Mission Statement & Goals
           </h2>
@@ -74,7 +84,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-navy">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-4 py-12 sm:px-6 md:flex-row md:items-center lg:px-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-12 md:flex-row md:items-center">
           <div>
             <h2 className="max-w-3xl text-3xl font-black leading-tight text-white">
               Need reliable property support?

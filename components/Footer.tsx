@@ -3,8 +3,8 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="border-t border-slate-200 bg-navy text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-10">
-        <div>
+      <div className="mx-auto grid max-w-5xl gap-8 px-6 py-10 md:grid-cols-2 lg:grid-cols-[1.35fr_0.85fr_0.85fr_1fr]">
+        <div className="lg:pr-4">
           <div className="text-lg font-black">Grubel Property Services</div>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
             Construction-minded property maintenance, repair, turnover prep, and
