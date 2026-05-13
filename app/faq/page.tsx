@@ -5,7 +5,7 @@ const sections = [
       {
         question: "What services do you provide?",
         answer:
-          "Grubel Property Services provides virtual inspections, repair coordination, maintenance support, turnover preparation, and property service support for residential and commercial properties.",
+          "Grubel Property Services provides Property Maintenance & Repair and Property Preservation services for residential, rental, and commercial properties.",
       },
       {
         question: "Do you handle commercial properties?",
@@ -15,47 +15,32 @@ const sections = [
       {
         question: "Why choose Grubel Property Services?",
         answer:
-          "Grubel Property Services brings a construction-minded, hands-on approach to property maintenance, repair coordination, turnover prep, and operational support. The focus is clear communication, practical next steps, reliable service, and helping properties stay in better condition.",
+          "Grubel Property Services brings a construction-minded, hands-on approach to maintenance, repair coordination, preservation support, and operational property care. The focus is clear communication, practical next steps, reliable service, and helping properties stay in better condition.",
       },
       {
         question: "Who does Grubel Property Services help?",
         answer:
-          "We help Homeowners, Landlords, Property managers, Rental owners, investors, and commercial property owners with maintenance, property checks, repair coordination, turnover prep, and project support.",
+          "We help Homeowners, Landlords, Property managers, Rental owners, investors, and commercial property owners with maintenance, repair coordination, property preservation, occupancy readiness, and project support.",
       },
       {
         question: "How does the customer flow work?",
         answer:
-          "Start with Services, request a quote through the Request Service form, receive a quote number, then use the Customer Portal for payment and project tracking.",
+          "Customers can request the service that fits their property, Grubel Property Services reviews the project based on its own needs, and approved quotes can be tracked through the Customer Portal.",
       },
     ],
   },
   {
-    title: "Virtual Inspection Questions",
+    title: "Property Maintenance & Repair Questions",
     faqs: [
       {
-        question: "Do you provide licensed home inspections?",
+        question: "What is Property Maintenance & Repair?",
         answer:
-          "No. Our virtual inspections are visual condition walkthroughs intended for maintenance and operational support purposes only.",
+          "Property Maintenance & Repair includes hands-on maintenance, repairs, repair coordination, punch-list work, property upkeep, and practical project support for residential, rental, and commercial spaces.",
       },
       {
-        question: "Who benefits from a virtual inspection?",
+        question: "What types of repair needs can I request?",
         answer:
-          "Virtual inspections can help out-of-state owners, landlords, property managers, rental property owners, and investors understand visible maintenance or turnover concerns.",
-      },
-      {
-        question: "What can I upload for review?",
-        answer:
-          "You can upload photos or documents with the request form. Clear images of the property, repair area, damage, or turnover concerns are helpful.",
-      },
-    ],
-  },
-  {
-    title: "Repair Questions",
-    faqs: [
-      {
-        question: "What types of repairs do you handle?",
-        answer:
-          "We assist with maintenance services, repair coordination, turnover repairs, property upkeep, and general repair support depending on project scope.",
+          "Customers can request drywall repairs, paint touch-ups, fixture replacement, door adjustments, caulking, sealing, punch-list repairs, maintenance support, repair coordination, and related property upkeep.",
       },
       {
         question: "Do some projects require licensed contractors?",
@@ -65,12 +50,27 @@ const sections = [
     ],
   },
   {
+    title: "Property Preservation Questions",
+    faqs: [
+      {
+        question: "What is Property Preservation?",
+        answer:
+          "Property Preservation focuses on vacancy upkeep, move-in and move-out readiness, turnover coordination, trash-out coordination, final walkthrough support, property condition upkeep, vendor coordination, and occupancy-readiness support.",
+      },
+      {
+        question: "Can preservation services be requested independently?",
+        answer:
+          "Yes. Services can be requested independently, and each project is reviewed based on its own property needs, access, timing, and scope.",
+      },
+    ],
+  },
+  {
     title: "Payment Questions",
     faqs: [
       {
         question: "How do quotes work?",
         answer:
-          "Customers submit a service request and Grubel Property Services reviews the project details before issuing a quote number.",
+          "Customers submit a service request and Grubel Property Services reviews the project details before issuing a quote number when applicable.",
       },
       {
         question: "How do I make a payment?",
@@ -90,12 +90,17 @@ const sections = [
       {
         question: "Can I request a preferred date?",
         answer:
-          "Yes. The Request Service form includes a preferred inspection date field. Scheduling depends on availability, project scope, access, and confirmation.",
+          "Yes. Scheduling depends on availability, project scope, property access, materials, vendors, and confirmation.",
       },
       {
         question: "What happens after I submit a request?",
         answer:
           "Grubel Property Services reviews the details, photos, and project description, then follows up with next steps or a quote number.",
+      },
+      {
+        question: "Are virtual reviews still available?",
+        answer:
+          "Virtual reviews may be used as part of intake, consultation, or project review. They are not presented as a standalone paid inspection service.",
       },
     ],
   },
@@ -130,7 +135,8 @@ export default function FAQPage() {
             </h1>
             <p className="mt-5 text-lg leading-8 text-charcoal/75">
               Answers to common questions about Grubel Property Services,
-              scheduling, payments, repairs, inspections, and subcontractor work.
+              scheduling, payments, maintenance, preservation, and subcontractor
+              work.
             </p>
           </div>
         </div>

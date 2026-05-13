@@ -44,10 +44,10 @@ export default function RepairPage() {
   return (
     <>
       <PageHero
-        eyebrow="Repair"
-        title="Property Repair & Maintenance Services"
-        description="Hands-on repair, maintenance, and property improvement support for residential and commercial properties."
-        primaryCta={{ href: "/request-service", label: "Request Repair Service" }}
+        eyebrow="Maintenance & Repair"
+        title="Property Maintenance & Repair"
+        description="Construction-minded maintenance, repair, and property support services designed to keep residential, rental, and commercial properties functional, maintained, and operational."
+        primaryCta={{ href: "/request-service", label: "Request Maintenance & Repair" }}
       />
       <ServiceList title="Maintenance Services" items={maintenanceServices} />
       <ServiceList title="Repair Services" items={repairServices} muted />
@@ -63,7 +63,7 @@ export default function RepairPage() {
           </div>
         </div>
       </section>
-      <CTASection title="Request Repair Service" />
+      <CTASection title="Request Property Maintenance & Repair" />
     </>
   );
 }

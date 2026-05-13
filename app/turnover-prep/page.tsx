@@ -2,18 +2,17 @@ import { CTASection } from "@/components/CTASection";
 import { PageHero } from "@/components/PageHero";
 
 const turnoverServices = [
-  "Move-out condition walkthroughs",
-  "Punch-list creation",
+  "Vacancy checks",
+  "Move-in / move-out readiness",
   "Trash-out coordination",
-  "Minor repair coordination",
-  "Cleaning coordination",
-  "Paint touch-up coordination",
-  "Fixture replacement",
-  "Readiness checks",
-  "Maintenance recommendations",
-  "Vendor coordination",
+  "Turnover preparation",
+  "Final walkthrough support",
+  "Property condition upkeep",
   "Lock/change coordination support",
-  "Final property readiness walkthrough",
+  "Vendor coordination",
+  "Preservation documentation",
+  "Occupancy readiness support",
+  "Ongoing property care",
 ];
 
 const designedFor = [
@@ -28,19 +27,20 @@ export default function TurnoverPrepPage() {
   return (
     <>
       <PageHero
-        eyebrow="Turnover Prep"
-        title="Turnover Preparation Services"
-        description="Property turnover support designed to help prepare units, homes, and commercial spaces for the next occupant."
-        primaryCta={{ href: "/request-service", label: "Request Turnover Support" }}
+        eyebrow="Property Preservation"
+        title="Property Preservation"
+        description="Property preservation and occupancy-readiness services focused on vacancy upkeep, turnover coordination, ongoing property care, and overall property condition support."
+        primaryCta={{ href: "/request-service", label: "Request Property Preservation" }}
       />
       <section className="bg-white py-16">
         <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <h2 className="text-3xl font-black text-navy">
-              Turnover Services Include
+              Preservation Services Include
             </h2>
             <p className="mt-4 leading-7 text-charcoal/72">
-              Practical coordination and readiness support between occupants.
+              Practical support for vacancy upkeep, property condition, and
+              occupancy readiness.
             </p>
           </div>
           <ul className="columns-1 gap-8 space-y-3 sm:columns-2">
@@ -64,7 +64,7 @@ export default function TurnoverPrepPage() {
           </div>
         </div>
       </section>
-      <CTASection title="Request Turnover Support" />
+      <CTASection title="Request Property Preservation" />
     </>
   );
 }

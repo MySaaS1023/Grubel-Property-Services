@@ -4,20 +4,15 @@ import { ServiceCard } from "@/components/ServiceCard";
 
 const services = [
   {
-    title: "Virtual Inspection",
+    title: "Property Maintenance & Repair",
     description:
-      "Virtual property inspections and visible condition walkthroughs to help catch small issues early.",
-    href: "/inspection",
-  },
-  {
-    title: "Repair",
-    description:
-      "Maintenance and minor repair support to keep your property in good condition.",
+      "Hands-on maintenance, repairs, and property support for residential, rental, and commercial spaces.",
     href: "/repair",
   },
   {
-    title: "Turnover Prep",
-    description: "Property readiness support between tenants or occupants.",
+    title: "Property Preservation",
+    description:
+      "Vacancy, turnover, and occupancy-readiness support to help keep properties protected and ready.",
     href: "/turnover-prep",
   },
 ];
@@ -33,7 +28,7 @@ export default function Home() {
               Grubel Property Services
             </p>
             <h1 className="mt-5 text-4xl font-black leading-[1.08] text-white sm:text-6xl sm:leading-[1.06]">
-              Property Inspection, Maintenance & Repair You Can Count On
+              Property Maintenance, Repair & Preservation You Can Count On
             </h1>
             <p className="mt-4 text-lg leading-8 text-white/84">
               Grubel Property Services helps homeowners, landlords, and property
@@ -83,7 +78,7 @@ function HeroWorkflowCollage() {
       <div className="grid gap-3 sm:grid-cols-2 md:hidden">
         <WorkflowPanel
           icon="phone"
-          label="Virtual Inspection"
+          label="Consultation"
         />
         <WorkflowPanel
           icon="clipboard"
@@ -91,28 +86,28 @@ function HeroWorkflowCollage() {
         />
         <WorkflowPanel
           icon="wrench"
-          label="Repairs"
+          label="Maintenance"
         />
         <WorkflowPanel
           icon="home"
-          label="Turnover Prep"
+          label="Preservation"
         />
       </div>
 
       <div className="relative hidden min-h-[510px] md:block">
         <div className="absolute left-10 right-4 top-14 h-72 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-2xl shadow-black/35 rotate-[-1.5deg]">
           <GeneratedVisual icon="home" />
-          <ImageLabel className="left-4 top-4" label="Turnover Prep" />
+          <ImageLabel className="left-4 top-4" label="Preservation" />
         </div>
 
         <div className="absolute left-0 top-0 h-40 w-64 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/30 rotate-[-4deg]">
           <GeneratedVisual icon="phone" />
-          <ImageLabel className="left-3 top-3" label="Virtual Inspection" />
+          <ImageLabel className="left-3 top-3" label="Consultation" />
         </div>
 
         <div className="absolute bottom-16 right-0 h-48 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[3deg]">
           <GeneratedVisual icon="wrench" />
-          <ImageLabel className="left-3 top-3" label="Repairs" />
+          <ImageLabel className="left-3 top-3" label="Maintenance" />
         </div>
 
         <div className="absolute bottom-0 left-6 h-44 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[-2deg]">

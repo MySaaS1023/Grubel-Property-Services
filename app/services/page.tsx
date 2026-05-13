@@ -2,22 +2,38 @@ import Link from "next/link";
 
 const services = [
   {
-    title: "Virtual Inspection",
-    href: "/inspection",
+    title: "Property Maintenance & Repair",
     description:
-      "Visual property condition walkthroughs for owners who need practical maintenance awareness before approving next steps.",
+      "Construction-minded maintenance, repair, and property support services designed to keep residential, rental, and commercial properties functional, maintained, and operational.",
+    examples: [
+      "Drywall patching and repairs",
+      "Paint touch-ups",
+      "Fixture replacement",
+      "Door adjustments",
+      "Caulking and sealing",
+      "Punch-list repairs",
+      "Property upkeep",
+      "Repair coordination",
+      "Maintenance support",
+      "Project support",
+    ],
   },
   {
-    title: "Repair",
-    href: "/repair",
+    title: "Property Preservation",
     description:
-      "Maintenance and repair support for punch-list items, property upkeep, and repair coordination.",
-  },
-  {
-    title: "Turnover Prep",
-    href: "/turnover-prep",
-    description:
-      "Readiness support between occupants, including turnover observations, repair coordination, and final preparation.",
+      "Property preservation and occupancy-readiness services focused on vacancy upkeep, turnover coordination, ongoing property care, and overall property condition support.",
+    examples: [
+      "Vacancy checks",
+      "Move-in / move-out readiness",
+      "Trash-out coordination",
+      "Turnover preparation",
+      "Final walkthrough support",
+      "Property condition upkeep",
+      "Lock/change coordination support",
+      "Vendor coordination",
+      "Preservation documentation",
+      "Occupancy readiness support",
+    ],
   },
 ];
 
@@ -51,6 +67,13 @@ export default function ServicesPage() {
                 <p className="mt-3 leading-7 text-charcoal/72">
                   {service.description}
                 </p>
+                <ul className="mt-4 grid gap-2 text-sm font-semibold leading-6 text-charcoal/72 sm:grid-cols-2">
+                  {service.examples.map((example) => (
+                    <li className="border-l-4 border-accent pl-3" key={example}>
+                      {example}
+                    </li>
+                  ))}
+                </ul>
                 <Link
                   className="mt-4 inline-flex text-sm font-bold text-accentDark transition hover:text-navy"
                   href="/request-service"
