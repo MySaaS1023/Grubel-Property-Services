@@ -56,9 +56,17 @@ export function Header() {
           </Link>
         </nav>
 
-        <Button className="shrink-0 px-3 text-xs sm:px-5 sm:text-sm" href="/request-service">
-          Request Service
-        </Button>
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          <a
+            className="whitespace-nowrap text-[11px] font-black uppercase tracking-[0.12em] text-charcoal/65 transition hover:text-accentDark sm:text-xs"
+            href="tel:4804207398"
+          >
+            Call Us: (480) 420-7398
+          </a>
+          <Button className="px-3 text-xs sm:px-5 sm:text-sm" href="/request-service">
+            Request Service
+          </Button>
+        </div>
       </div>
 
       <nav

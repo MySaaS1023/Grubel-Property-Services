@@ -48,7 +48,7 @@ export default function Home() {
               managers keep properties maintained, repaired, and move-in ready.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button href="/request-service">Request Service</Button>
+              <Button href="/contact">Contact Us</Button>
               <Button
                 className="border-white/25 bg-white text-navy hover:border-white hover:text-accentDark"
                 href="/services"
