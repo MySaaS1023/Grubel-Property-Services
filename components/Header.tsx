@@ -44,15 +44,15 @@ export function Header() {
           </Link>
           <Link
             className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
-            href="/customer-portal"
-          >
-            Portal Login
-          </Link>
-          <Link
-            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
             href="/contact"
           >
             Contact
+          </Link>
+          <Link
+            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
+            href="/customer-portal"
+          >
+            Portal Login
           </Link>
         </nav>
 
@@ -77,11 +77,11 @@ export function Header() {
         <Link className="shrink-0 hover:text-accentDark" href="/payment">
           Payment
         </Link>
-        <Link className="shrink-0 hover:text-accentDark" href="/customer-portal">
-          Portal Login
-        </Link>
         <Link className="shrink-0 hover:text-accentDark" href="/contact">
           Contact
+        </Link>
+        <Link className="shrink-0 hover:text-accentDark" href="/customer-portal">
+          Portal Login
         </Link>
       </nav>
     </header>
