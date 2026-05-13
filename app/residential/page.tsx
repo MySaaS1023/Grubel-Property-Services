@@ -8,7 +8,7 @@ export default function ResidentialPage() {
         eyebrow="Residential"
         title="Residential Property Services"
         description="Maintenance, repair, turnover, and readiness support for homes, rentals, and residential investment properties."
-        primaryCta={{ href: "/contact", label: "Request Service" }}
+        primaryCta={{ href: "/request-service", label: "Request Service" }}
       />
       <section className="bg-white py-16">
         <div className="mx-auto max-w-4xl px-4 leading-7 text-charcoal/75 sm:px-6 lg:px-8">

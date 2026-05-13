@@ -11,7 +11,7 @@ export function CTASection({
   title,
   description,
   buttonLabel = "Request Service",
-  buttonHref = "/contact",
+  buttonHref = "/request-service",
 }: CTASectionProps) {
   return (
     <section className="bg-navy">

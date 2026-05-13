@@ -47,7 +47,7 @@ export default function RepairPage() {
         eyebrow="Repair"
         title="Property Repair & Maintenance Services"
         description="Hands-on repair, maintenance, and property improvement support for residential and commercial properties."
-        primaryCta={{ href: "/contact", label: "Request Repair Service" }}
+        primaryCta={{ href: "/request-service", label: "Request Repair Service" }}
       />
       <ServiceList title="Maintenance Services" items={maintenanceServices} />
       <ServiceList title="Repair Services" items={repairServices} muted />
@@ -81,16 +81,13 @@ function ServiceList({
     <section className={`${muted ? "bg-stonewash" : "bg-white"} py-16`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-black text-navy">{title}</h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-6 columns-1 gap-8 space-y-3 sm:columns-2 lg:columns-3">
           {items.map((item) => (
-            <div
-              className="rounded-lg border border-slate-200 bg-white p-5 font-bold text-charcoal shadow-sm"
-              key={item}
-            >
+            <li className="break-inside-avoid border-l-4 border-accent bg-white/70 py-2 pl-4 font-bold text-charcoal" key={item}>
               {item}
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

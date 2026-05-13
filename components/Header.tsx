@@ -23,7 +23,7 @@ export function Header() {
           />
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-5 lg:flex xl:gap-7" aria-label="Main navigation">
           <div className="group relative">
             <Link
               className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
@@ -51,19 +51,31 @@ export function Header() {
           </Link>
           <Link
             className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
+            href="/faq"
+          >
+            FAQ
+          </Link>
+          <Link
+            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
             href="/payment"
           >
             Payment
           </Link>
           <Link
             className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
-            href="/faq"
+            href="/customer-portal"
           >
-            FAQ
+            Portal Login
+          </Link>
+          <Link
+            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
+            href="/contact"
+          >
+            Contact
           </Link>
         </nav>
 
-        <Button className="shrink-0 px-3 text-xs sm:px-5 sm:text-sm" href="/contact">
+        <Button className="shrink-0 px-3 text-xs sm:px-5 sm:text-sm" href="/request-service">
           Request Service
         </Button>
       </div>
@@ -91,11 +103,17 @@ export function Header() {
         <Link className="shrink-0 hover:text-accentDark" href="/about">
           About
         </Link>
+        <Link className="shrink-0 hover:text-accentDark" href="/faq">
+          FAQ
+        </Link>
         <Link className="shrink-0 hover:text-accentDark" href="/payment">
           Payment
         </Link>
-        <Link className="shrink-0 hover:text-accentDark" href="/faq">
-          FAQ
+        <Link className="shrink-0 hover:text-accentDark" href="/customer-portal">
+          Portal Login
+        </Link>
+        <Link className="shrink-0 hover:text-accentDark" href="/contact">
+          Contact
         </Link>
       </nav>
     </header>

@@ -2,11 +2,17 @@ export type ServiceRequestInput = {
   fullName: string;
   email: string;
   phone: string;
+  subject: string;
+  message: string;
   propertyAddress?: string;
   city?: string;
-  serviceNeeded: string;
+  serviceNeeded?: string;
   preferredDate?: string;
-  message: string;
+  propertyType?: string;
+  occupancyStatus?: string;
+  projectDescription?: string;
+  preferredContactMethod?: string;
+  additionalNotes?: string;
 };
 
 type ValidationResult =
@@ -30,6 +36,7 @@ export function validateServiceRequest(input: unknown): ValidationResult {
   const fullName = toCleanString(body.fullName);
   const email = toCleanString(body.email);
   const phone = toCleanString(body.phone);
+  const subject = toCleanString(body.subject);
   const serviceNeeded = toCleanString(body.serviceNeeded);
   const message = toCleanString(body.message);
 
@@ -45,8 +52,12 @@ export function validateServiceRequest(input: unknown): ValidationResult {
     return { success: false, error: "Phone is required." };
   }
 
-  if (!serviceNeeded || !allowedServices.has(serviceNeeded)) {
-    return { success: false, error: "Service needed is required." };
+  if (!subject) {
+    return { success: false, error: "Subject is required." };
+  }
+
+  if (serviceNeeded && !allowedServices.has(serviceNeeded)) {
+    return { success: false, error: "Service needed is invalid." };
   }
 
   if (!message) {
@@ -59,10 +70,16 @@ export function validateServiceRequest(input: unknown): ValidationResult {
       fullName,
       email,
       phone,
+      subject,
       propertyAddress: toCleanString(body.propertyAddress),
       city: toCleanString(body.city),
       serviceNeeded,
       preferredDate: toCleanString(body.preferredDate),
+      propertyType: toCleanString(body.propertyType),
+      occupancyStatus: toCleanString(body.occupancyStatus),
+      projectDescription: toCleanString(body.projectDescription),
+      preferredContactMethod: toCleanString(body.preferredContactMethod),
+      additionalNotes: toCleanString(body.additionalNotes),
       message,
     },
   };

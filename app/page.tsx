@@ -49,7 +49,7 @@ export default function Home() {
               managers keep properties maintained, repaired, and move-in ready.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button href="/contact">Request Service</Button>
+              <Button href="/request-service">Request Service</Button>
               <Button
                 className="border-white/25 bg-white text-navy hover:border-white hover:text-accentDark"
                 href="/services"
@@ -100,37 +100,31 @@ export default function Home() {
               communicated clearly, and addressed with practical property care.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid gap-3 text-base font-bold leading-7 text-charcoal">
             {whyChoose.map((item) => (
-              <div
-                className="rounded-lg border border-slate-200 bg-white p-5 font-bold text-navy"
-                key={item}
-              >
+              <li className="border-l-4 border-accent bg-white/70 py-2 pl-4" key={item}>
                 {item}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-black text-navy">Who We Help</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-lg font-black text-charcoal">
             {audiences.map((audience) => (
-              <div
-                className="rounded-lg border border-slate-200 p-6 text-lg font-black text-charcoal"
-                key={audience}
-              >
+              <span key={audience}>
                 {audience}
-              </div>
+              </span>
             ))}
           </div>
         </div>
       </section>
 
       <CTASection
-        buttonHref="/contact"
+        buttonHref="/request-service"
         buttonLabel="Request Service"
         description="Request service today and tell us what your property needs."
         title="Ready to keep your property in shape?"

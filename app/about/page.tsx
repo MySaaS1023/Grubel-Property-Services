@@ -79,7 +79,7 @@ export default function AboutPage() {
           <h2 className="max-w-3xl text-3xl font-black leading-tight text-white">
             Work With Grubel Property Services
           </h2>
-          <Button className="shrink-0" href="/contact">
+          <Button className="shrink-0" href="/request-service">
             Request Service
           </Button>
         </div>

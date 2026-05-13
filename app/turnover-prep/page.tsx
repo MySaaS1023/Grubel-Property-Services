@@ -31,7 +31,7 @@ export default function TurnoverPrepPage() {
         eyebrow="Turnover Prep"
         title="Turnover Preparation Services"
         description="Property turnover support designed to help prepare units, homes, and commercial spaces for the next occupant."
-        primaryCta={{ href: "/contact", label: "Request Turnover Support" }}
+        primaryCta={{ href: "/request-service", label: "Request Turnover Support" }}
       />
       <section className="bg-white py-16">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
@@ -43,26 +43,23 @@ export default function TurnoverPrepPage() {
               Practical coordination and readiness support between occupants.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <ul className="columns-1 gap-8 space-y-3 sm:columns-2">
             {turnoverServices.map((item) => (
-              <div
-                className="rounded-lg border border-slate-200 bg-stonewash p-5 font-bold text-charcoal"
-                key={item}
-              >
+              <li className="break-inside-avoid border-l-4 border-accent py-2 pl-4 font-bold text-charcoal" key={item}>
                 {item}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
       <section className="bg-stonewash py-16">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
           <h2 className="text-3xl font-black text-navy">Designed For</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex flex-wrap gap-x-6 gap-y-3 text-base font-bold text-charcoal">
             {designedFor.map((item) => (
-              <div className="rounded-lg border border-slate-200 bg-white p-5 font-bold text-charcoal" key={item}>
+              <span key={item}>
                 {item}
-              </div>
+              </span>
             ))}
           </div>
         </div>

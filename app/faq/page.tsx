@@ -2,7 +2,7 @@ import { PageHero } from "@/components/PageHero";
 
 const sections = [
   {
-    title: "General Services",
+    title: "General Questions",
     faqs: [
       {
         question: "What services do you provide?",
@@ -10,19 +10,39 @@ const sections = [
           "Grubel Property Services provides virtual inspections, repair coordination, maintenance support, turnover preparation, and property service support for residential and commercial properties.",
       },
       {
+        question: "Do you handle commercial properties?",
+        answer:
+          "Yes. We work with residential and commercial property owners, managers, landlords, and investors.",
+      },
+      {
+        question: "How does the customer flow work?",
+        answer:
+          "Start with Services, request a quote through the Request Service form, receive a quote number, then use the Customer Portal for payment and project tracking.",
+      },
+    ],
+  },
+  {
+    title: "Virtual Inspection Questions",
+    faqs: [
+      {
         question: "Do you provide licensed home inspections?",
         answer:
           "No. Our virtual inspections are visual condition walkthroughs intended for maintenance and operational support purposes only.",
       },
       {
-        question: "Do you handle commercial properties?",
+        question: "Who benefits from a virtual inspection?",
         answer:
-          "Yes. We work with residential and commercial property owners, managers, landlords, and investors.",
+          "Virtual inspections can help out-of-state owners, landlords, property managers, rental property owners, and investors understand visible maintenance or turnover concerns.",
+      },
+      {
+        question: "What can I upload for review?",
+        answer:
+          "You can upload photos or documents with the request form. Clear images of the property, repair area, damage, or turnover concerns are helpful.",
       },
     ],
   },
   {
-    title: "Repairs & Maintenance",
+    title: "Repair Questions",
     faqs: [
       {
         question: "What types of repairs do you handle?",
@@ -37,7 +57,7 @@ const sections = [
     ],
   },
   {
-    title: "Payments & Quotes",
+    title: "Payment Questions",
     faqs: [
       {
         question: "How do quotes work?",
@@ -57,7 +77,22 @@ const sections = [
     ],
   },
   {
-    title: "Subcontractors",
+    title: "Scheduling Questions",
+    faqs: [
+      {
+        question: "Can I request a preferred date?",
+        answer:
+          "Yes. The Request Service form includes a preferred inspection date field. Scheduling depends on availability, project scope, access, and confirmation.",
+      },
+      {
+        question: "What happens after I submit a request?",
+        answer:
+          "Grubel Property Services reviews the details, photos, and project description, then follows up with next steps or a quote number.",
+      },
+    ],
+  },
+  {
+    title: "Subcontractor Questions",
     faqs: [
       {
         question: "How do I apply to work with Grubel Property Services?",
@@ -82,25 +117,27 @@ export default function FAQPage() {
         description="Answers to common questions about Grubel Property Services, scheduling, payments, repairs, inspections, and subcontractor work."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:px-8">
-          {sections.map((section) => (
-            <div key={section.title}>
-              <h2 className="text-3xl font-black text-navy">{section.title}</h2>
-              <div className="mt-6 grid gap-4">
-                {section.faqs.map((faq) => (
-                  <article
-                    className="rounded-lg border border-slate-200 bg-stonewash p-6 shadow-sm"
-                    key={faq.question}
-                  >
-                    <h3 className="text-lg font-black text-navy">
-                      {faq.question}
-                    </h3>
-                    <p className="mt-3 leading-7 text-charcoal/75">{faq.answer}</p>
-                  </article>
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-10">
+            {sections.map((section) => (
+              <section key={section.title}>
+                <h2 className="text-2xl font-black text-navy">{section.title}</h2>
+                <div className="mt-4 divide-y divide-slate-200 border-y border-slate-200">
+                  {section.faqs.map((faq) => (
+                    <details className="group py-4" key={faq.question}>
+                      <summary className="cursor-pointer list-none text-base font-black text-charcoal transition hover:text-accentDark">
+                        <span className="inline-flex w-full items-center justify-between gap-4">
+                          {faq.question}
+                          <span className="text-accentDark group-open:rotate-45">+</span>
+                        </span>
+                      </summary>
+                      <p className="mt-3 leading-7 text-charcoal/72">{faq.answer}</p>
+                    </details>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
       </section>
     </>

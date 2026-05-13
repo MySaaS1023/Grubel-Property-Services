@@ -3,9 +3,20 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/Button";
 
+const services = ["Virtual Inspection", "Repair", "Turnover Prep"];
+const propertyTypes = [
+  "Single-family home",
+  "Condo / townhome",
+  "Multi-unit rental",
+  "Commercial property",
+  "Other",
+];
+const occupancyOptions = ["Occupied", "Vacant", "Unknown"];
+const contactMethods = ["Phone", "Email", "Text"];
+
 type FormState = "idle" | "submitting" | "success" | "error";
 
-export function ContactForm() {
+export function RequestServiceForm() {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
 
@@ -15,6 +26,8 @@ export function ContactForm() {
     setMessage("");
 
     const formData = new FormData(event.currentTarget);
+    formData.set("subject", "Service Request");
+    formData.set("message", String(formData.get("projectDescription") ?? ""));
 
     try {
       const response = await fetch("/api/service-request", {
@@ -32,7 +45,7 @@ export function ContactForm() {
       event.currentTarget.reset();
       setState("success");
       setMessage(
-        "Thanks. Your message was received and Grubel Property Services will follow up soon.",
+        "Thanks. Your request was received and Grubel Property Services will review it.",
       );
     } catch {
       setState("error");
@@ -46,21 +59,31 @@ export function ContactForm() {
         <Field label="Full Name" name="fullName" required />
         <Field label="Email" name="email" required type="email" />
         <Field label="Phone" name="phone" required type="tel" />
-        <Field label="Subject" name="subject" required />
+        <SelectField label="Service Needed" name="serviceNeeded" options={services} required />
+        <Field label="Property Address" name="propertyAddress" required />
+        <SelectField label="Property Type" name="propertyType" options={propertyTypes} required />
+        <SelectField label="Occupied or Vacant" name="occupancyStatus" options={occupancyOptions} required />
+        <Field label="Preferred Inspection Date" name="preferredDate" type="date" />
+        <SelectField
+          label="Preferred Contact Method"
+          name="preferredContactMethod"
+          options={contactMethods}
+          required
+        />
       </div>
       <label className="grid gap-2 text-sm font-bold text-navy">
-        Message
+        Project Description
         <textarea
           className="min-h-36 rounded-md border border-slate-300 px-3 py-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
-          name="message"
+          name="projectDescription"
           required
         />
       </label>
       <div className="grid gap-2 text-sm font-bold text-navy">
-        Upload Photos or Documents
+        Upload Photos
         <p className="text-sm font-normal leading-6 text-charcoal/65">
-          Upload photos, project images, property concerns, or related documents
-          if available.
+          Upload photos of the property, repair area, damage, or related
+          documents if available.
         </p>
         <label className="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-stonewash px-4 py-6 text-center text-sm font-semibold text-charcoal transition hover:border-accent hover:bg-white">
           <span>Choose photos or documents</span>
@@ -76,19 +99,24 @@ export function ContactForm() {
           />
         </label>
       </div>
+      <label className="grid gap-2 text-sm font-bold text-navy">
+        Additional Notes
+        <textarea
+          className="min-h-28 rounded-md border border-slate-300 px-3 py-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          name="additionalNotes"
+        />
+      </label>
       {message ? (
         <p
           className={`rounded-md px-4 py-3 text-sm font-semibold ${
-            state === "success"
-              ? "bg-green-50 text-green-800"
-              : "bg-red-50 text-red-800"
+            state === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
           }`}
         >
           {message}
         </p>
       ) : null}
       <Button disabled={state === "submitting"} type="submit">
-        {state === "submitting" ? "Sending..." : "Send Message"}
+        {state === "submitting" ? "Submitting..." : "Submit Request"}
       </Button>
     </form>
   );
@@ -114,6 +142,39 @@ function Field({
         required={required}
         type={type}
       />
+    </label>
+  );
+}
+
+function SelectField({
+  label,
+  name,
+  options,
+  required = false,
+}: {
+  label: string;
+  name: string;
+  options: string[];
+  required?: boolean;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-bold text-navy">
+      {label}
+      <select
+        className="min-h-11 rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+        defaultValue=""
+        name={name}
+        required={required}
+      >
+        <option disabled value="">
+          Select an option
+        </option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }

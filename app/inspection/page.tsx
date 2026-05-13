@@ -1,24 +1,10 @@
-import { CTASection } from "@/components/CTASection";
+import { Button } from "@/components/Button";
 import { PageHero } from "@/components/PageHero";
 
-const includes = [
-  "Video walkthrough review",
-  "Property condition observations",
-  "Exterior visible-condition review",
-  "Interior visible-condition review",
-  "Maintenance concern identification",
-  "Tenant turnover readiness observations",
-  "Repair recommendations",
-  "Photo/video submission review",
-  "Property readiness feedback",
-];
-
-const audiences = [
-  "Out-of-state owners",
-  "Landlords",
-  "Property managers",
-  "Rental property owners",
-  "Investors",
+const benefits = [
+  "Review visible property concerns before scheduling work",
+  "Share photos or video for practical feedback",
+  "Identify maintenance, turnover, and repair next steps",
 ];
 
 export default function InspectionPage() {
@@ -28,63 +14,41 @@ export default function InspectionPage() {
         eyebrow="Virtual Inspection"
         title="Virtual Inspection"
         description="Virtual property inspections and visible condition walkthroughs designed to help property owners identify maintenance concerns, turnover needs, and repair opportunities before they become larger issues."
-        primaryCta={{ href: "/contact", label: "Request Virtual Inspection" }}
-        secondaryCta={{ href: "/services", label: "View All Services" }}
+        primaryCta={{ href: "/request-service", label: "Request Virtual Inspection" }}
+        secondaryCta={{ href: "/services", label: "View Services" }}
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+        <div className="mx-auto grid max-w-5xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
           <div>
-            <h2 className="text-3xl font-black text-navy">
-              What a Virtual Inspection Includes
-            </h2>
+            <h2 className="text-3xl font-black text-navy">How It Helps</h2>
             <p className="mt-4 leading-7 text-charcoal/72">
-              A practical review for maintenance planning, repair awareness, and
-              property readiness decisions.
+              A virtual inspection gives owners a practical view of visible
+              property condition and helps organize maintenance or repair next
+              steps without turning the page into a formal inspection report.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {includes.map((item) => (
-              <div
-                className="rounded-lg border border-slate-200 bg-stonewash p-5 font-bold text-charcoal"
-                key={item}
-              >
-                {item}
-              </div>
+          <div className="space-y-4">
+            {benefits.map((benefit) => (
+              <p className="border-l-4 border-accent pl-4 font-bold leading-7 text-charcoal" key={benefit}>
+                {benefit}
+              </p>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-stonewash py-16">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <div>
-            <h2 className="text-3xl font-black text-navy">Who This Helps</h2>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {audiences.map((item) => (
-              <div className="rounded-lg border border-slate-200 bg-white p-5 font-bold text-charcoal" key={item}>
-                {item}
-              </div>
-            ))}
-          </div>
+      <section className="bg-stonewash py-14">
+        <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+          <p className="max-w-2xl leading-7 text-charcoal/75">
+            Virtual inspections are visual property condition walkthroughs for
+            maintenance and operational support. Grubel Property Services does
+            not provide licensed home inspections or engineering reports.
+          </p>
+          <Button className="shrink-0" href="/request-service">
+            Request Virtual Inspection
+          </Button>
         </div>
       </section>
-
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg border border-accent/30 bg-accent/10 p-6">
-            <h2 className="text-2xl font-black text-navy">Important Notice</h2>
-            <p className="mt-3 leading-7 text-charcoal/75">
-              Grubel Property Services does NOT provide licensed home
-              inspections or engineering reports. Virtual inspections are visual
-              property condition walkthroughs intended for maintenance and
-              operational support purposes only.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <CTASection title="Request Virtual Inspection" />
     </>
   );
 }

@@ -1,25 +1,25 @@
-import { CTASection } from "@/components/CTASection";
+import Link from "next/link";
+import { Button } from "@/components/Button";
 import { PageHero } from "@/components/PageHero";
-import { ServiceCard } from "@/components/ServiceCard";
 
 const services = [
   {
     title: "Virtual Inspection",
     href: "/inspection",
     description:
-      "Virtual property inspections, visible condition walkthroughs, and maintenance check notes for owners who want a practical view of property condition.",
+      "Visual property condition walkthroughs for owners who need practical maintenance awareness before approving next steps.",
   },
   {
     title: "Repair",
     href: "/repair",
     description:
-      "Minor repair and upkeep support for everyday property needs, punch-list items, and hands-on maintenance tasks.",
+      "Maintenance and repair support for punch-list items, property upkeep, and repair coordination.",
   },
   {
     title: "Turnover Prep",
     href: "/turnover-prep",
     description:
-      "Rental and home readiness support between occupants, including basic fixes, touch-ups, and move-in preparation.",
+      "Readiness support between occupants, including turnover observations, repair coordination, and final preparation.",
   },
 ];
 
@@ -27,22 +27,33 @@ export default function ServicesPage() {
   return (
     <>
       <PageHero
-        eyebrow="Grubel Property Services"
-        title="Practical property service for checks, upkeep, and readiness."
-        description="Grubel Property Services keeps the scope clear: virtual inspections, preventative property checks, minor repairs, maintenance support, and turnover prep."
-        primaryCta={{ href: "/contact", label: "Request Service" }}
+        eyebrow="Services"
+        title="Property services built around practical next steps."
+        description="Grubel Property Services keeps the process simple: review the property need, request a quote, receive a quote number, then track payment and project status through the customer portal."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 md:grid-cols-3 lg:px-8">
-          {services.map((service) => (
-            <ServiceCard key={service.title} {...service} />
-          ))}
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white shadow-sm">
+            {services.map((service) => (
+              <article className="p-6" key={service.title}>
+                <h2 className="text-2xl font-black text-navy">{service.title}</h2>
+                <p className="mt-3 leading-7 text-charcoal/72">
+                  {service.description}
+                </p>
+                <Link
+                  className="mt-4 inline-flex text-sm font-bold text-accentDark transition hover:text-navy"
+                  href={service.href}
+                >
+                  Learn More
+                </Link>
+              </article>
+            ))}
+          </div>
+          <div className="mt-8">
+            <Button href="/request-service">Get Quote</Button>
+          </div>
         </div>
       </section>
-      <CTASection
-        title="Need help choosing the right service?"
-        description="Send the property details and Grubel Property Services can point the request toward the right next step."
-      />
     </>
   );
 }

@@ -17,7 +17,7 @@ export default function HandyManPage() {
         eyebrow="Work With Us"
         title="Handy Man Services"
         description="Hands-on maintenance and minor repair support for property owners who need practical work completed with clear communication."
-        primaryCta={{ href: "/contact", label: "Request Service" }}
+        primaryCta={{ href: "/request-service", label: "Request Service" }}
       />
       <section className="bg-white py-16">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-3 lg:px-8">
