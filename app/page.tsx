@@ -105,7 +105,7 @@ function HeroWorkflowCollage() {
       </div>
 
       <div className="relative hidden min-h-[510px] md:block">
-        <div className="absolute left-10 right-4 top-14 h-72 overflow-hidden rounded-lg border border-white/18 shadow-2xl shadow-black/35 rotate-[-1.5deg]">
+        <div className="absolute left-10 right-4 top-14 h-72 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-2xl shadow-black/35 rotate-[-1.5deg]">
           <Image
             alt="Vacant room prepared for turnover"
             className="object-cover"
@@ -117,7 +117,7 @@ function HeroWorkflowCollage() {
           <ImageLabel className="left-4 top-4" label="Turnover Prep" />
         </div>
 
-        <div className="absolute left-0 top-0 h-40 w-64 overflow-hidden rounded-lg border border-white/20 shadow-xl shadow-black/30 rotate-[-4deg]">
+        <div className="absolute left-0 top-0 h-40 w-64 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/30 rotate-[-4deg]">
           <Image
             alt="Phone photo used for a virtual property inspection"
             className="object-cover"
@@ -129,7 +129,7 @@ function HeroWorkflowCollage() {
           <ImageLabel className="left-3 top-3" label="Virtual Inspection" />
         </div>
 
-        <div className="absolute bottom-16 right-0 h-48 w-72 overflow-hidden rounded-lg border border-white/20 shadow-xl shadow-black/35 rotate-[3deg]">
+        <div className="absolute bottom-16 right-0 h-48 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[3deg]">
           <Image
             alt="Repair and maintenance walkthrough inside a property"
             className="object-cover"
@@ -140,7 +140,7 @@ function HeroWorkflowCollage() {
           <ImageLabel className="left-3 top-3" label="Repairs" />
         </div>
 
-        <div className="absolute bottom-0 left-6 h-44 w-72 overflow-hidden rounded-lg border border-white/20 shadow-xl shadow-black/35 rotate-[-2deg]">
+        <div className="absolute bottom-0 left-6 h-44 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[-2deg]">
           <Image
             alt="Exterior property condition inspection"
             className="object-cover"
@@ -165,7 +165,7 @@ function WorkflowImage({
   src: string;
 }) {
   return (
-    <div className="relative min-h-36 overflow-hidden rounded-lg border border-white/18 shadow-lg shadow-black/25">
+    <div className="relative min-h-36 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-lg shadow-black/25">
       <Image alt={alt} className="object-cover" fill sizes="50vw" src={src} />
       <ImageLabel className="left-3 top-3" label={label} />
     </div>
