@@ -3,6 +3,8 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/Button";
 
+type PaymentStatus = "unpaid" | "deposit_paid" | "paid";
+
 type Quote = {
   quoteNumber: string;
   customerName: string;
@@ -10,15 +12,18 @@ type Quote = {
   propertyAddress: string;
   amount: number;
   displayAmount: string;
-  paymentStatus: "paid" | "unpaid";
+  paymentStatus: PaymentStatus;
   serviceStatus:
     | "Quote Sent"
     | "Awaiting Payment"
-    | "Payment Received"
+    | "Deposit Paid"
     | "Scheduled"
     | "In Progress"
     | "Completed"
     | "Canceled";
+  scheduledDate: string;
+  assignedTeam: string;
+  nextStep: string;
   notes: string;
 };
 
@@ -58,7 +63,7 @@ export function QuoteLookup() {
     }
   }
 
-  async function handlePayNow() {
+  async function handleProceedToPayment() {
     if (!quote) {
       return;
     }
@@ -91,6 +96,8 @@ export function QuoteLookup() {
     }
   }
 
+  const hasPayment = quote?.paymentStatus === "paid" || quote?.paymentStatus === "deposit_paid";
+
   return (
     <div className="grid gap-8">
       <form
@@ -114,69 +121,97 @@ export function QuoteLookup() {
           </p>
         ) : null}
         <Button className="mt-5 w-full sm:w-auto" disabled={loading} type="submit">
-          {loading ? "Looking Up..." : "Look Up Quote"}
+          {loading ? "Loading Project..." : "View Project"}
         </Button>
       </form>
 
-      {quote ? (
+      {quote && !hasPayment ? (
         <article className="rounded-lg border border-slate-200 bg-stonewash p-6 shadow-sm">
           <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-black uppercase tracking-[0.18em] text-accentDark">
-                Quote Details
+                Quote Ready
               </p>
               <h2 className="mt-2 text-2xl font-black text-navy">
                 {quote.quoteNumber}
               </h2>
             </div>
-            <div className="text-2xl font-black text-charcoal">
-              {quote.displayAmount}
+            <div className="text-left sm:text-right">
+              <div className="text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
+                Balance Due
+              </div>
+              <div className="mt-1 text-2xl font-black text-charcoal">
+                {quote.displayAmount}
+              </div>
             </div>
           </div>
 
           <dl className="mt-6 grid gap-4 md:grid-cols-2">
-            <QuoteField label="Customer Name" value={quote.customerName} />
-            <QuoteField label="Service Type" value={quote.serviceType} />
-            <QuoteField label="Property Address" value={quote.propertyAddress} />
-            <QuoteField label="Quote Amount" value={quote.displayAmount} />
-            <QuoteField label="Payment Status" value={quote.paymentStatus} />
-            <QuoteField label="Service Status" value={quote.serviceStatus} />
+            <PortalField label="Service Type" value={quote.serviceType} />
+            <PortalField label="Property Address" value={quote.propertyAddress} />
+            <PortalField label="Quote Amount" value={quote.displayAmount} />
+            <PortalField label="Payment Status" value={formatStatus(quote.paymentStatus)} />
+            <PortalField label="Service Status" value={quote.serviceStatus} />
+            <PortalField label="Next Step" value={quote.nextStep} />
+          </dl>
+
+          {paymentError ? (
+            <p className="mt-5 rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
+              {paymentError}
+            </p>
+          ) : null}
+          <Button className="mt-5" disabled={paying} onClick={handleProceedToPayment}>
+            {paying ? "Opening Payment..." : "Proceed to Payment"}
+          </Button>
+        </article>
+      ) : null}
+
+      {quote && hasPayment ? (
+        <article className="rounded-lg border border-slate-200 bg-stonewash p-6 shadow-sm">
+          <div className="border-b border-slate-200 pb-5">
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-accentDark">
+              Project Dashboard
+            </p>
+            <h2 className="mt-2 text-2xl font-black text-navy">
+              {quote.quoteNumber}
+            </h2>
+          </div>
+
+          <dl className="mt-6 grid gap-4 md:grid-cols-2">
+            <PortalField label="Quote Number" value={quote.quoteNumber} />
+            <PortalField label="Service Type" value={quote.serviceType} />
+            <PortalField label="Property Address" value={quote.propertyAddress} />
+            <PortalField label="Payment Status" value={formatStatus(quote.paymentStatus)} />
+            <PortalField label="Service Status" value={quote.serviceStatus} />
+            <PortalField label="Scheduled Date" value={quote.scheduledDate} />
+            <PortalField label="Assigned Team" value={quote.assignedTeam} />
+            <PortalField label="Next Step" value={quote.nextStep} />
           </dl>
 
           <div className="mt-6 rounded-md bg-white p-4">
-            <div className="text-sm font-black text-navy">Notes / Next Step</div>
+            <div className="text-sm font-black text-navy">Notes</div>
             <p className="mt-2 text-sm leading-6 text-charcoal/72">{quote.notes}</p>
           </div>
-
-          {quote.paymentStatus === "paid" ? (
-            <p className="mt-5 rounded-md bg-green-50 p-4 text-sm font-bold text-green-800">
-              Payment received. Your service status is listed below.
-            </p>
-          ) : (
-            <div className="mt-5">
-              {paymentError ? (
-                <p className="mb-4 rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
-                  {paymentError}
-                </p>
-              ) : null}
-              <Button disabled={paying} onClick={handlePayNow}>
-                {paying ? "Opening Payment..." : "Pay Now"}
-              </Button>
-            </div>
-          )}
         </article>
       ) : null}
     </div>
   );
 }
 
-function QuoteField({ label, value }: { label: string; value: string }) {
+function PortalField({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md bg-white p-4">
       <dt className="text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
         {label}
       </dt>
-      <dd className="mt-2 text-sm font-bold text-charcoal">{value}</dd>
+      <dd className="mt-2 text-sm font-bold leading-6 text-charcoal">{value}</dd>
     </div>
   );
+}
+
+function formatStatus(status: PaymentStatus) {
+  return status
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }

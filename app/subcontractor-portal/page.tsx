@@ -37,7 +37,7 @@ export default function SubcontractorPortalPage() {
               documentation, and availability for review.
             </p>
             <div className="mt-6">
-              <SubcontractorApplicationForm />
+              <SubcontractorApplicationForm applicationType="general" />
             </div>
           </div>
         </div>
