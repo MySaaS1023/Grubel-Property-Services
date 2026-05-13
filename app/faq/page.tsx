@@ -1,5 +1,3 @@
-import { PageHero } from "@/components/PageHero";
-
 const sections = [
   {
     title: "General Questions",
@@ -121,13 +119,22 @@ const sections = [
 export default function FAQPage() {
   return (
     <>
-      <PageHero
-        eyebrow="FAQ"
-        title="Frequently Asked Questions"
-        description="Answers to common questions about Grubel Property Services, scheduling, payments, repairs, inspections, and subcontractor work."
-      />
+      <section className="bg-stonewash">
+        <div className="mx-auto max-w-4xl px-6 py-16 lg:py-20">
+          <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
+            FAQ
+          </p>
+          <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
+            Frequently Asked Questions
+          </h1>
+          <p className="mt-5 text-lg leading-8 text-charcoal/75">
+            Answers to common questions about Grubel Property Services,
+            scheduling, payments, repairs, inspections, and subcontractor work.
+          </p>
+        </div>
+      </section>
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-6">
           <div className="grid gap-10">
             {sections.map((section) => (
               <section key={section.title}>
