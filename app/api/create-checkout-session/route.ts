@@ -1,21 +1,6 @@
 import { NextResponse } from "next/server";
 import { getStripeClient } from "@/lib/stripe";
 
-const deposits = {
-  inspection: {
-    name: "Inspection Deposit",
-    amount: 7500,
-  },
-  repair: {
-    name: "Repair Deposit",
-    amount: 10000,
-  },
-  "turnover-prep": {
-    name: "Turnover Prep Deposit",
-    amount: 15000,
-  },
-} as const;
-
 export async function POST(request: Request) {
   const stripe = getStripeClient();
 
@@ -34,14 +19,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const type =
-    body && typeof body === "object" && "type" in body
-      ? String((body as Record<string, unknown>).type)
+  const payload = body as Record<string, unknown>;
+  const quoteNumber =
+    body && typeof body === "object" && "quoteNumber" in body
+      ? String(payload.quoteNumber).trim().toUpperCase()
       : "";
-  const deposit = deposits[type as keyof typeof deposits];
+  const serviceType =
+    body && typeof body === "object" && "serviceType" in body
+      ? String(payload.serviceType).trim()
+      : "";
+  const amount =
+    body && typeof body === "object" && "amount" in body
+      ? Number(payload.amount)
+      : 0;
 
-  if (!deposit) {
-    return NextResponse.json({ error: "Invalid payment type." }, { status: 400 });
+  if (!quoteNumber || !serviceType || !Number.isInteger(amount) || amount <= 0) {
+    return NextResponse.json(
+      { error: "Valid quote number, service type, and amount are required." },
+      { status: 400 },
+    );
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -54,14 +50,19 @@ export async function POST(request: Request) {
         price_data: {
           currency: "usd",
           product_data: {
-            name: deposit.name,
+            name: `${serviceType} Deposit`,
+            description: `Quote ${quoteNumber}`,
           },
-          unit_amount: deposit.amount,
+          unit_amount: amount,
         },
       },
     ],
-    success_url: `${siteUrl}/success`,
-    cancel_url: `${siteUrl}/cancel`,
+    metadata: {
+      quoteNumber,
+      serviceType,
+    },
+    success_url: `${siteUrl}/success?quote=${encodeURIComponent(quoteNumber)}`,
+    cancel_url: `${siteUrl}/payment`,
   });
 
   return NextResponse.json({ url: session.url });

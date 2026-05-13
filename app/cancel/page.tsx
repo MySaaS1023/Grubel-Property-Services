@@ -5,13 +5,15 @@ export default function CancelPage() {
   return (
     <>
       <PageHero
-        eyebrow="Request Service"
-        title="Ready when you are."
-        description="You can send Grubel Property Services the property details whenever you are ready."
+        eyebrow="Payment"
+        title="Payment Not Completed"
+        description="Your payment was canceled. You can return to the payment page and try again."
       />
       <section className="bg-white py-12">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 sm:flex-row sm:px-6 lg:px-8">
-          <Button href="/contact" variant="outline">Request Service</Button>
+          <Button href="/payment" variant="outline">
+            Return to Payment
+          </Button>
         </div>
       </section>
     </>

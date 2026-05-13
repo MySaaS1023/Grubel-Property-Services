@@ -5,13 +5,13 @@ export default function SuccessPage() {
   return (
     <>
       <PageHero
-        eyebrow="Request Received"
-        title="Thank you. Grubel Property Services will follow up soon."
-        description="Grubel Property Services has received your request. Please keep an eye on your email or phone for follow-up details."
+        eyebrow="Payment"
+        title="Payment Received"
+        description="Thank you. Your payment has been received. Grubel Property Services will contact you with next steps."
       />
       <section className="bg-white py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Button href="/contact">Request More Service</Button>
+          <Button href="/payment">View Quote Status</Button>
         </div>
       </section>
     </>
