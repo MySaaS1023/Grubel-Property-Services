@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@/components/Button";
-import { PageHero } from "@/components/PageHero";
 
 const services = [
   {
@@ -26,13 +25,23 @@ const services = [
 export default function ServicesPage() {
   return (
     <>
-      <PageHero
-        eyebrow="Services"
-        title="Property services built around practical next steps."
-        description="Grubel Property Services keeps the process simple: review the property need, request a quote, receive a quote number, then track payment and project status through the customer portal."
-      />
+      <section className="bg-stonewash">
+        <div className="mx-auto max-w-4xl px-6 py-16 lg:py-20">
+          <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
+            SERVICES
+          </p>
+          <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
+            Property services built around practical next steps.
+          </h1>
+          <p className="mt-5 text-lg leading-8 text-charcoal/75">
+            Grubel Property Services keeps the process simple: review the
+            property need, request a quote, receive a quote number, then track
+            payment and project status through the customer portal.
+          </p>
+        </div>
+      </section>
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl px-6">
           <div className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white shadow-sm">
             {services.map((service) => (
               <article className="p-6" key={service.title}>
