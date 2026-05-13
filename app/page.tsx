@@ -1,3 +1,5 @@
+import { existsSync } from "fs";
+import { join } from "path";
 import { Button } from "@/components/Button";
 import { CTASection } from "@/components/CTASection";
 import { ServiceCard } from "@/components/ServiceCard";
@@ -22,6 +24,18 @@ const services = [
     href: "/request-service",
   },
 ];
+
+const heroImages = {
+  consultation: getHeroImage("/hero/consultation.jpg"),
+  maintenance: getHeroImage("/hero/maintenance.jpg"),
+  preservation: getHeroImage("/hero/property-preservation.jpg"),
+  propertyCheck: getHeroImage("/hero/property-check.jpg"),
+};
+
+function getHeroImage(src: string) {
+  const publicPath = join(process.cwd(), "public", ...src.split("/").filter(Boolean));
+  return existsSync(publicPath) ? src : null;
+}
 
 export default function Home() {
   return (
@@ -84,56 +98,40 @@ function HeroWorkflowCollage() {
       <div className="grid gap-3 sm:grid-cols-2 md:hidden">
         <WorkflowPanel
           label="Consultation"
-          src="/hero/consultation.jpg"
+          src={heroImages.consultation}
         />
         <WorkflowPanel
           label="Property Check"
-          src="/hero/property-check.jpg"
+          src={heroImages.propertyCheck}
         />
         <WorkflowPanel
           label="Maintenance"
-          src="/hero/maintenance.jpg"
+          src={heroImages.maintenance}
         />
         <WorkflowPanel
           label="Preservation"
-          src="/hero/property-preservation.jpg"
+          src={heroImages.preservation}
         />
       </div>
 
       <div className="relative hidden min-h-[510px] md:block">
         <div className="absolute left-10 right-4 top-14 h-72 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-2xl shadow-black/35 rotate-[-1.5deg]">
-          <img
-            alt="Property preservation room prepared for occupancy"
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/hero/property-preservation.jpg"
-          />
+          <PanelVisual src={heroImages.preservation} />
           <ImageLabel className="left-4 top-4" label="Preservation" />
         </div>
 
         <div className="absolute left-0 top-0 h-40 w-64 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/30 rotate-[-4deg]">
-          <img
-            alt="Phone photo used for a property consultation"
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/hero/consultation.jpg"
-          />
+          <PanelVisual src={heroImages.consultation} />
           <ImageLabel className="left-3 top-3" label="Consultation" />
         </div>
 
         <div className="absolute bottom-16 right-0 h-48 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[3deg]">
-          <img
-            alt="Maintenance work inside a property"
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/hero/maintenance.jpg"
-          />
+          <PanelVisual src={heroImages.maintenance} />
           <ImageLabel className="left-3 top-3" label="Maintenance" />
         </div>
 
         <div className="absolute bottom-0 left-6 h-44 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[-2deg]">
-          <img
-            alt="Exterior property condition check"
-            className="absolute inset-0 h-full w-full object-cover"
-            src="/hero/property-check.jpg"
-          />
+          <PanelVisual src={heroImages.propertyCheck} />
           <ImageLabel className="left-3 top-3" label="Property Check" />
         </div>
       </div>
@@ -146,12 +144,32 @@ function WorkflowPanel({
   src,
 }: {
   label: string;
-  src: string;
+  src: string | null;
 }) {
   return (
     <div className="relative min-h-36 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-lg shadow-black/25">
-      <img alt={`${label} service visual`} className="absolute inset-0 h-full w-full object-cover" src={src} />
+      <PanelVisual src={src} />
       <ImageLabel className="left-3 top-3" label={label} />
+    </div>
+  );
+}
+
+function PanelVisual({ src }: { src: string | null }) {
+  if (src) {
+    return (
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `linear-gradient(180deg, rgba(8, 32, 58, 0.05), rgba(8, 32, 58, 0.24)), url("${src}")` }}
+      />
+    );
+  }
+
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_24%,rgba(197,138,75,0.24),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.08),transparent_35%),linear-gradient(90deg,rgba(255,255,255,0.055)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.055)_1px,transparent_1px)] bg-[size:auto,28px_28px,28px_28px]" />
+      <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full border border-accent/20" />
+      <div className="absolute -bottom-12 left-8 h-32 w-32 rounded-full border border-white/10" />
+      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-navy/75 to-transparent" />
     </div>
   );
 }
