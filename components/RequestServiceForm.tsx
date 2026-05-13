@@ -3,7 +3,13 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/Button";
 
-const services = ["Virtual Inspection", "Repair", "Turnover Prep", "Other"];
+const services = [
+  "Maintenance & Repair",
+  "Property Preservation",
+  "Builds & Remodels",
+  "General Property Questions",
+  "Other",
+];
 const propertyTypes = ["Residential", "Commercial", "Rental", "Other"];
 const occupancyOptions = ["Occupied", "Vacant", "Unknown"];
 const timeWindows = ["Morning", "Afternoon", "Evening", "Flexible"];
