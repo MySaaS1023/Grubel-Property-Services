@@ -6,8 +6,8 @@ export default function PaymentPage() {
     <>
       <PageHero
         eyebrow="PAYMENT"
-        title="Make a Payment"
-        description="Enter your quote number to view your balance and complete payment."
+        title="Quote, Payment & Project Status"
+        description="Enter your quote number to view your balance, make a payment, or check your project status."
       />
       <section className="bg-white py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">

@@ -48,12 +48,6 @@ export function Header() {
           >
             Contact
           </Link>
-          <Link
-            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
-            href="/customer-portal"
-          >
-            Portal Login
-          </Link>
         </nav>
 
         <Button className="shrink-0 px-3 text-xs sm:px-5 sm:text-sm" href="/request-service">
@@ -79,9 +73,6 @@ export function Header() {
         </Link>
         <Link className="shrink-0 hover:text-accentDark" href="/contact">
           Contact
-        </Link>
-        <Link className="shrink-0 hover:text-accentDark" href="/customer-portal">
-          Portal Login
         </Link>
       </nav>
     </header>
