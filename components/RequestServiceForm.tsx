@@ -7,7 +7,7 @@ const services = ["Virtual Inspection", "Repair", "Turnover Prep", "Other"];
 const propertyTypes = ["Residential", "Commercial", "Rental", "Other"];
 const occupancyOptions = ["Occupied", "Vacant", "Unknown"];
 const timeWindows = ["Morning", "Afternoon", "Evening", "Flexible"];
-const contactMethods = ["Phone", "Email", "Text"];
+const contactMethods = ["Phone", "Video Call"];
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
