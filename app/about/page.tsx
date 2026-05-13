@@ -7,10 +7,10 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
           <div className="max-w-3xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
-              About Grubel Property Services
+              ABOUT
             </p>
             <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
-              About Grubel Property Services
+              Grubel Property Services
             </h1>
             <p className="mt-5 text-lg leading-8 text-charcoal/75">
               Construction-minded property service support for maintenance,
@@ -84,17 +84,17 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-navy">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-12 md:flex-row md:items-center">
-          <div>
+        <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-3xl">
             <h2 className="max-w-3xl text-3xl font-black leading-tight text-white">
               Need reliable property support?
             </h2>
-            <p className="mt-3 max-w-2xl leading-7 text-white/78">
+            <p className="mt-3 max-w-2xl leading-7 text-white/85">
               Contact Grubel Property Services to discuss your property, repair,
               inspection, or turnover needs.
             </p>
           </div>
-          <Button className="shrink-0" href="/contact">
+          <Button className="shrink-0 md:self-center" href="/contact">
             Contact Us
           </Button>
         </div>
