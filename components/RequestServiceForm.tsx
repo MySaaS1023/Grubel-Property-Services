@@ -3,15 +3,10 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/Button";
 
-const services = ["Virtual Inspection", "Repair", "Turnover Prep"];
-const propertyTypes = [
-  "Single-family home",
-  "Condo / townhome",
-  "Multi-unit rental",
-  "Commercial property",
-  "Other",
-];
+const services = ["Virtual Inspection", "Repair", "Turnover Prep", "Other"];
+const propertyTypes = ["Residential", "Commercial", "Rental", "Other"];
 const occupancyOptions = ["Occupied", "Vacant", "Unknown"];
+const timeWindows = ["Morning", "Afternoon", "Evening", "Flexible"];
 const contactMethods = ["Phone", "Email", "Text"];
 
 type FormState = "idle" | "submitting" | "success" | "error";
@@ -45,7 +40,7 @@ export function RequestServiceForm() {
       event.currentTarget.reset();
       setState("success");
       setMessage(
-        "Thanks. Your request was received and Grubel Property Services will review it.",
+        "Thank you. We received your request. Grubel Property Services will review the details and follow up with next steps or a quote number.",
       );
     } catch {
       setState("error");
@@ -63,7 +58,12 @@ export function RequestServiceForm() {
         <Field label="Property Address" name="propertyAddress" required />
         <SelectField label="Property Type" name="propertyType" options={propertyTypes} required />
         <SelectField label="Occupied or Vacant" name="occupancyStatus" options={occupancyOptions} required />
-        <Field label="Preferred Inspection Date" name="preferredDate" type="date" />
+        <Field label="Preferred Date" name="preferredDate" type="date" />
+        <SelectField
+          label="Preferred Time Window"
+          name="preferredTimeWindow"
+          options={timeWindows}
+        />
         <SelectField
           label="Preferred Contact Method"
           name="preferredContactMethod"
@@ -80,7 +80,7 @@ export function RequestServiceForm() {
         />
       </label>
       <div className="grid gap-2 text-sm font-bold text-navy">
-        Upload Photos
+        Upload Photos or Documents
         <p className="text-sm font-normal leading-6 text-charcoal/65">
           Upload photos of the property, repair area, damage, or related
           documents if available.
@@ -99,6 +99,10 @@ export function RequestServiceForm() {
           />
         </label>
       </div>
+      <p className="text-sm leading-6 text-charcoal/65">
+        For virtual inspections, choose a preferred date and time window for a
+        walkthrough or review.
+      </p>
       <label className="grid gap-2 text-sm font-bold text-navy">
         Additional Notes
         <textarea

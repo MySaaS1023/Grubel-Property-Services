@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "@/components/Button";
 
 const services = [
   {
@@ -51,15 +50,12 @@ export default function ServicesPage() {
                 </p>
                 <Link
                   className="mt-4 inline-flex text-sm font-bold text-accentDark transition hover:text-navy"
-                  href={service.href}
+                  href="/request-service"
                 >
-                  Learn More
+                  Get Quote
                 </Link>
               </article>
             ))}
-          </div>
-          <div className="mt-8">
-            <Button href="/request-service">Get Quote</Button>
           </div>
         </div>
       </section>

@@ -32,6 +32,12 @@ export function Header() {
           </Link>
           <Link
             className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
+            href="/services"
+          >
+            Services
+          </Link>
+          <Link
+            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
             href="/faq"
           >
             FAQ
@@ -64,6 +70,9 @@ export function Header() {
         </Link>
         <Link className="shrink-0 hover:text-accentDark" href="/about">
           About
+        </Link>
+        <Link className="shrink-0 hover:text-accentDark" href="/services">
+          Services
         </Link>
         <Link className="shrink-0 hover:text-accentDark" href="/faq">
           FAQ
