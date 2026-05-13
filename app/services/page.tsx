@@ -25,7 +25,8 @@ export default function ServicesPage() {
   return (
     <>
       <section className="bg-stonewash">
-        <div className="mx-auto max-w-4xl px-6 py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl px-6 pb-10 pt-16 lg:pb-12 lg:pt-20">
+          <div className="max-w-4xl">
           <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
             SERVICES
           </p>
@@ -37,10 +38,12 @@ export default function ServicesPage() {
             property need, request a quote, receive a quote number, then track
             payment and project status through the customer portal.
           </p>
+          </div>
         </div>
       </section>
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-4xl px-6">
+      <section className="bg-white pb-16 pt-8">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="max-w-4xl">
           <div className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white shadow-sm">
             {services.map((service) => (
               <article className="p-6" key={service.title}>
@@ -56,6 +59,7 @@ export default function ServicesPage() {
                 </Link>
               </article>
             ))}
+          </div>
           </div>
         </div>
       </section>

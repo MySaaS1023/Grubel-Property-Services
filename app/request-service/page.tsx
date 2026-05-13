@@ -4,7 +4,7 @@ export default function RequestServicePage() {
   return (
     <>
       <section className="bg-stonewash">
-        <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
+        <div className="mx-auto max-w-6xl px-6 pb-10 pt-16 lg:pb-12 lg:pt-20">
           <div className="max-w-3xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               GET QUOTE
@@ -19,9 +19,11 @@ export default function RequestServicePage() {
           </div>
         </div>
       </section>
-      <section className="bg-stonewash py-16">
-        <div className="mx-auto max-w-4xl px-6">
+      <section className="bg-stonewash pb-16 pt-6">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="max-w-4xl">
           <RequestServiceForm />
+          </div>
         </div>
       </section>
     </>

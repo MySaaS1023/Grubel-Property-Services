@@ -34,16 +34,7 @@ export default function ContactPage() {
 
       <section className="bg-white py-16">
         <div className="mx-auto max-w-4xl px-6">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-black text-navy">Send Us a Message</h2>
-            <p className="mt-4 leading-7 text-charcoal/72">
-              Send questions, project updates, feedback, property concerns, or
-              support requests. The Grubel Property Services team will follow up.
-            </p>
-          </div>
-          <div className="mt-6">
-            <ContactForm />
-          </div>
+          <ContactForm />
         </div>
       </section>
     </>
