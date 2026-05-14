@@ -14,13 +14,13 @@ import {
 const serviceRequests = [
   {
     name: "New Homeowner Request",
-    service: "Repair",
+    service: "Maintenance & Repair",
     property: "101 Palm Ln, Phoenix, AZ",
     status: "Needs Review",
   },
   {
-    name: "Rental Turnover Request",
-    service: "Turnover Prep",
+    name: "Rental Preservation Request",
+    service: "Property Preservation",
     property: "220 Adobe St, Tempe, AZ",
     status: "Scope Pending",
   },
@@ -30,7 +30,7 @@ const notifications = [
   "Quote GPS-1001 is awaiting payment",
   "Insurance renewal pending for Approved Repair Partner",
   "New handyman application received",
-  "Turnover Prep Team uploaded progress photo",
+  "Property Preservation Team uploaded progress photo",
 ];
 
 const adminActions = [

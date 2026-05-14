@@ -6,20 +6,20 @@ const services = [
   {
     title: "Maintenance & Repair",
     description:
-      "Hands-on maintenance, repair, and property support services designed to keep residential and commercial properties functional and operational.",
-    href: "/request-service",
+      "Hands-on maintenance, repair, and property support services designed to keep residential, rental, and commercial properties functional and operational.",
+    href: "/repair",
   },
   {
     title: "Property Preservation",
     description:
       "Property preservation and occupancy-readiness services focused on vacancy upkeep, turnover support, and overall property condition.",
-    href: "/request-service",
+    href: "/turnover-prep",
   },
   {
     title: "Builds & Remodels",
     description:
       "Construction-minded improvement and remodeling services for residential, rental, and commercial properties.",
-    href: "/request-service",
+    href: "/builds-remodels",
   },
 ];
 
@@ -90,19 +90,19 @@ function HeroWorkflowCollage() {
     <div className="mx-auto w-full max-w-xl lg:mx-0 lg:justify-self-end">
       <div className="grid gap-3 sm:grid-cols-2 md:hidden">
         <WorkflowPanel
-          label="Consultation"
+          label="Maintenance & Repair"
           visual={heroVisuals.consultation}
         />
         <WorkflowPanel
-          label="Property Check"
+          label="Property Preservation"
           visual={heroVisuals.propertyCheck}
         />
         <WorkflowPanel
-          label="Maintenance"
+          label="Builds & Remodels"
           visual={heroVisuals.maintenance}
         />
         <WorkflowPanel
-          label="Preservation"
+          label="Property Preservation"
           visual={heroVisuals.preservation}
         />
       </div>
@@ -110,22 +110,22 @@ function HeroWorkflowCollage() {
       <div className="relative hidden min-h-[510px] md:block">
         <div className="absolute left-10 right-4 top-14 h-72 overflow-hidden rounded-lg border border-white/18 bg-gradient-to-br from-navy via-charcoal to-navy shadow-2xl shadow-black/35 rotate-[-1.5deg]">
           <PanelVisual visual={heroVisuals.preservation} />
-          <ImageLabel className="left-4 top-4" label="Preservation" />
+          <ImageLabel className="left-4 top-4" label="Property Preservation" />
         </div>
 
         <div className="absolute left-0 top-0 h-40 w-64 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/30 rotate-[-4deg]">
           <PanelVisual visual={heroVisuals.consultation} />
-          <ImageLabel className="left-3 top-3" label="Consultation" />
+          <ImageLabel className="left-3 top-3" label="Maintenance & Repair" />
         </div>
 
         <div className="absolute bottom-16 right-0 h-48 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[3deg]">
           <PanelVisual visual={heroVisuals.maintenance} />
-          <ImageLabel className="left-3 top-3" label="Maintenance" />
+          <ImageLabel className="left-3 top-3" label="Builds & Remodels" />
         </div>
 
         <div className="absolute bottom-0 left-6 h-44 w-72 overflow-hidden rounded-lg border border-white/20 bg-gradient-to-br from-navy via-charcoal to-navy shadow-xl shadow-black/35 rotate-[-2deg]">
           <PanelVisual visual={heroVisuals.propertyCheck} />
-          <ImageLabel className="left-3 top-3" label="Property Check" />
+          <ImageLabel className="left-3 top-3" label="Property Preservation" />
         </div>
       </div>
     </div>
@@ -223,7 +223,7 @@ function createMockPhoto(kind: MockPhotoKind) {
     `,
   };
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520"><defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe9ec"/><stop offset="1" stop-color="#9fb2b6"/></linearGradient></defs>${scenes[kind]}<rect width="800" height="520" fill="url(#grain)" opacity=".08"/><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2"/></filter><rect width="800" height="520" filter="url(#noise)" opacity=".08"/></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520"><defs><linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dfe9ec"/><stop offset="1" stop-color="#9fb2b6"/></linearGradient><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2"/></filter></defs>${scenes[kind]}<rect width="800" height="520" filter="url(#noise)" opacity=".08"/></svg>`;
 
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }

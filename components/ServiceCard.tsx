@@ -4,9 +4,15 @@ type ServiceCardProps = {
   title: string;
   description: string;
   href: string;
+  linkLabel?: string;
 };
 
-export function ServiceCard({ title, description, href }: ServiceCardProps) {
+export function ServiceCard({
+  title,
+  description,
+  href,
+  linkLabel = "Learn More",
+}: ServiceCardProps) {
   return (
     <Link
       className="group block rounded-lg border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-accent/50 hover:shadow-soft"
@@ -16,7 +22,7 @@ export function ServiceCard({ title, description, href }: ServiceCardProps) {
       <h3 className="mt-6 text-xl font-black text-navy">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-charcoal/72">{description}</p>
       <span className="mt-5 inline-flex text-sm font-bold text-accentDark transition group-hover:text-navy">
-        Request Service
+        {linkLabel}
       </span>
     </Link>
   );
