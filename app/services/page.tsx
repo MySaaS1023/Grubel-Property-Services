@@ -5,7 +5,7 @@ const services = [
   {
     title: "Maintenance & Repair",
     description:
-      "Construction-minded maintenance, repair, and property support services designed to keep residential, rental, and commercial properties functional, maintained, and operational.",
+      "Maintenance, repair, and property support for punch-list items, upkeep, service issues, and repair coordination.",
     examples: [
       "Drywall patching and repairs",
       "Paint touch-ups",
@@ -23,7 +23,7 @@ const services = [
   {
     title: "Property Preservation",
     description:
-      "Property preservation and occupancy-readiness services focused on vacancy upkeep, turnover coordination, ongoing property care, and overall property condition support.",
+      "Property preservation support for vacancy upkeep, turnover readiness, occupancy preparation, and overall property condition.",
     examples: [
       "Vacancy checks",
       "Move-in / move-out readiness",
@@ -41,7 +41,7 @@ const services = [
   {
     title: "Builds & Remodels",
     description:
-      "Construction-minded improvement and remodeling services for residential, rental, and commercial properties.",
+      "Construction-minded improvement, renovation, and remodeling support for residential, rental, and commercial properties.",
     examples: [
       "Kitchen updates",
       "Bathroom remodels",

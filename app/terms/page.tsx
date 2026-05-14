@@ -14,9 +14,10 @@ export default function TermsPage() {
           <h2>Service Scope</h2>
           <p>
             Grubel Property Services provides property maintenance, visible
-            condition walkthroughs, minor repairs, turnover prep, project
-            support, and contractor coordination. All work is subject to
-            property-specific review, scheduling, access, and written scope.
+              condition walkthroughs, minor repairs, property preservation,
+              project support, and contractor coordination. All work is subject
+              to property-specific review, scheduling, access, and written
+              scope.
           </p>
           <h2>Scope-of-Work Clarification</h2>
           <p>
@@ -25,9 +26,9 @@ export default function TermsPage() {
             may require a revised scope, additional approval, specialty trade
             referral, or separate quote.
           </p>
-          <h2>Visual Inspection Limitations</h2>
+          <h2>Visual Review Limitations</h2>
           <p>
-            Virtual inspections and property checks are visual condition
+            Virtual reviews and property checks are visual condition
             walkthroughs for maintenance and operational support. They are not
             licensed home inspections, engineering reports, code compliance
             reviews, or guarantees of hidden conditions.

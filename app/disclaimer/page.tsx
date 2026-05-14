@@ -24,11 +24,11 @@ export default function DisclaimerPage() {
           <div>
             <h2 className="text-2xl font-black text-navy">Service Limitations</h2>
             <p className="mt-3 leading-7">
-              Virtual inspections and property checks are visible condition
-              walkthroughs intended for maintenance and operational support.
-              Grubel Property Services does not provide licensed home
-              inspections, engineering reports, structural evaluations, or
-              specialty trade certifications.
+                Virtual reviews and property checks are visible condition
+                walkthroughs intended for maintenance and operational support.
+                Grubel Property Services does not provide licensed home
+                inspection services, engineering reports, structural
+                evaluations, or specialty trade certifications.
             </p>
           </div>
 
