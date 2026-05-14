@@ -15,7 +15,7 @@ export function CTASection({
 }: CTASectionProps) {
   return (
     <section className="bg-navy">
-      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-6 py-12 md:flex-row md:items-center">
+      <div className="site-container flex flex-col items-start justify-between gap-6 py-12 md:flex-row md:items-center">
         <div>
           <h2 className="max-w-3xl text-3xl font-black leading-tight text-white">
             {title}

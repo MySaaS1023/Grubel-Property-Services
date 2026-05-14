@@ -36,7 +36,7 @@ export function SubcontractorPage({
     <>
       <PageHero eyebrow="Work With Us" title={title} description={description} />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="site-container grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <h2 className="text-3xl font-black text-navy">Important Notice</h2>
             <div className="mt-6 grid gap-4">

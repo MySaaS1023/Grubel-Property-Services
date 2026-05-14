@@ -39,7 +39,7 @@ export default function AdminPage() {
         description="MVP operations dashboard for requests, customers, quotes, projects, appointments, payments, uploads, subcontractors, and job assignments."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6">
+        <div className="site-container grid gap-8">
           <p className="rounded-md bg-accent/10 p-4 text-sm font-semibold leading-6 text-charcoal">
             Admin authentication will be added before production operations.
             Future roles: Admin, Customer, and Subcontractor.

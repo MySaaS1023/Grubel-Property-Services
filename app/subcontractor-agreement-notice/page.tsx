@@ -9,7 +9,7 @@ export default function SubcontractorAgreementNoticePage() {
         description="Important notice for applicants and approved subcontractors before accepting work."
       />
       <section className="bg-white py-14">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="site-container">
         <div className="max-w-3xl space-y-4 leading-7 text-charcoal/75 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
           <h2>Approval Required</h2>
           <p>

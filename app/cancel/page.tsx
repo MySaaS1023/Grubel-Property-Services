@@ -10,7 +10,7 @@ export default function CancelPage() {
         description="Your payment was canceled. You can return to the payment page and try again."
       />
       <section className="bg-white py-12">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 sm:flex-row">
+        <div className="site-container flex flex-col gap-3 sm:flex-row">
           <Button href="/payment" variant="outline">
             Return to Payment
           </Button>

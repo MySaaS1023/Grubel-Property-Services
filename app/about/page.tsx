@@ -4,7 +4,7 @@ export default function AboutPage() {
   return (
     <>
       <section className="bg-stonewash">
-        <div className="mx-auto max-w-6xl px-6 py-16 lg:py-20">
+        <div className="site-container py-16 lg:py-20">
           <div className="max-w-3xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               ABOUT
@@ -21,7 +21,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="site-container grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <h2 className="text-3xl font-black text-navy">Founder Story</h2>
           <div className="space-y-4 leading-7 text-charcoal/75">
             <p>
@@ -43,7 +43,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-stonewash py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="site-container grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <h2 className="text-3xl font-black text-navy">Who We Are</h2>
           <div className="space-y-4 leading-7 text-charcoal/75">
             <p>
@@ -63,7 +63,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="site-container grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <h2 className="text-3xl font-black text-navy">
             Mission Statement & Goals
           </h2>
@@ -84,7 +84,7 @@ export default function AboutPage() {
       </section>
 
       <section className="bg-navy">
-        <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between">
+        <div className="site-container flex flex-col items-start gap-6 py-12 md:flex-row md:items-center md:justify-between">
           <div className="max-w-3xl">
             <h2 className="max-w-3xl text-3xl font-black leading-tight text-white">
               Need reliable property support?

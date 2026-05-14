@@ -63,7 +63,7 @@ function ServiceList({
 }) {
   return (
     <section className={`${muted ? "bg-stonewash" : "bg-white"} py-16`}>
-      <div className="mx-auto max-w-6xl px-6">
+      <div className="site-container">
         <h2 className="text-3xl font-black text-navy">{title}</h2>
         <ul className="mt-6 columns-1 gap-8 space-y-3 sm:columns-2 lg:columns-3">
           {items.map((item) => (

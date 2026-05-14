@@ -13,7 +13,7 @@ export default function AdminSubcontractorsPage() {
         description="Review applications, approved partners, missing documents, job assignments, and uploaded files."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6">
+        <div className="site-container grid gap-8">
           <section className="grid gap-8 lg:grid-cols-2">
             <Panel title="New Applications">
               {applications.map((application) => (

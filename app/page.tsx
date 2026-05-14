@@ -35,7 +35,7 @@ export default function Home() {
     <>
       <section className="relative overflow-hidden bg-navy">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(197,138,75,0.18),transparent_38%),linear-gradient(90deg,rgba(255,255,255,0.045)_1px,transparent_1px),linear-gradient(0deg,rgba(255,255,255,0.045)_1px,transparent_1px)] bg-[size:auto,64px_64px,64px_64px]" />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-[1.05fr_0.85fr] lg:py-20">
+        <div className="site-container relative grid items-center gap-12 py-16 lg:grid-cols-[1.05fr_0.85fr] lg:py-20">
           <div className="max-w-2xl">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-accent">
               Grubel Property Services
@@ -63,7 +63,7 @@ export default function Home() {
       </section>
 
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="site-container">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-black text-navy">Our Core Services</h2>
           </div>

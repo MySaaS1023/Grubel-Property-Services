@@ -10,7 +10,7 @@ export default function SuccessPage() {
         description="Thank you. Your payment has been received. Grubel Property Services will contact you with next steps."
       />
       <section className="bg-white py-12">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="site-container">
           <Button href="/payment">View Quote Status</Button>
         </div>
       </section>

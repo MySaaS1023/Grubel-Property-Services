@@ -3,7 +3,7 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="border-t border-slate-200 bg-navy text-white">
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 md:grid-cols-2 lg:grid-cols-[1.45fr_0.8fr_0.8fr_0.95fr]">
+      <div className="site-container grid gap-8 py-10 md:grid-cols-2 lg:grid-cols-[1.45fr_0.8fr_0.8fr_0.95fr]">
         <div className="lg:pr-4">
           <div className="text-lg font-black">Grubel Property Services</div>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
@@ -49,8 +49,10 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-white/10 px-4 py-5 text-center text-xs text-white/60">
-        Copyright {new Date().getFullYear()} Grubel Property Services. grubelps.com
+      <div className="border-t border-white/10 py-5 text-center text-xs text-white/60">
+        <div className="site-container">
+          Copyright {new Date().getFullYear()} Grubel Property Services. grubelps.com
+        </div>
       </div>
     </footer>
   );

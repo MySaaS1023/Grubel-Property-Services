@@ -10,7 +10,7 @@ export default function AdminProjectsPage() {
         description="View active projects, status, payment state, assigned teams, scheduling, notes, and uploaded files."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-6 px-6">
+        <div className="site-container grid gap-6">
           {projects.map((project) => {
             const projectUploads = uploads.filter((upload) =>
               project.uploadedFileIds.includes(upload.id),

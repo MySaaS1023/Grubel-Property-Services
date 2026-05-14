@@ -9,7 +9,7 @@ export default function TermsPage() {
         description="These terms outline website, service request, scheduling, payment, access, and scope expectations for Grubel Property Services."
       />
       <section className="bg-white py-14">
-        <div className="mx-auto max-w-6xl px-6">
+        <div className="site-container">
         <div className="max-w-3xl space-y-4 leading-7 text-charcoal/75 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
           <h2>Service Scope</h2>
           <p>

@@ -11,7 +11,7 @@ export default function ResidentialPage() {
         primaryCta={{ href: "/request-service", label: "Request Service" }}
       />
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6 leading-7 text-charcoal/75">
+        <div className="site-container leading-7 text-charcoal/75">
           <p className="max-w-4xl">
             Grubel Property Services helps residential property owners handle
             maintenance concerns, coordinate repair needs, prepare properties

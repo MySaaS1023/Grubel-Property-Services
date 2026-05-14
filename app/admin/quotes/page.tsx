@@ -27,7 +27,7 @@ export default function AdminQuotesPage() {
         description="Create MVP quote records for customers. This form uses mock/local state now and is structured for a future Supabase insert."
       />
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="site-container grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-5 rounded-md bg-accent/10 p-4 text-sm font-semibold text-charcoal">
               Next quote number preview: {nextQuoteNumber}. Future database

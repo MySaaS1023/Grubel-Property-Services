@@ -11,7 +11,7 @@ export default function CommercialPage() {
         primaryCta={{ href: "/request-service", label: "Request Service" }}
       />
       <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6 leading-7 text-charcoal/75">
+        <div className="site-container leading-7 text-charcoal/75">
           <p className="max-w-4xl">
             Commercial support may include maintenance walkthroughs, repair
             documentation, vendor coordination, safety concern communication, and

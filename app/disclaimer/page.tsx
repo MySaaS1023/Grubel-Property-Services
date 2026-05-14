@@ -10,7 +10,7 @@ export default function DisclaimerPage() {
       />
 
       <section className="bg-white py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 px-6 text-charcoal/76">
+        <div className="site-container grid gap-8 text-charcoal/76">
           <div>
             <h2 className="text-2xl font-black text-navy">General Information</h2>
             <p className="mt-3 leading-7">
