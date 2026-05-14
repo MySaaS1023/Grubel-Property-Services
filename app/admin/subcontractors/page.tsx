@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import { applications, jobAssignments, subcontractors, uploads } from "@/lib/mock-data";
 
@@ -6,7 +7,7 @@ const actions = ["Approve", "Deny", "Request More Info", "Assign Job"];
 
 export default function AdminSubcontractorsPage() {
   return (
-    <>
+    <AdminGuard>
       <PageHero
         eyebrow="Admin Subcontractors"
         title="Subcontractor Management"
@@ -80,7 +81,7 @@ export default function AdminSubcontractorsPage() {
           </section>
         </div>
       </section>
-    </>
+    </AdminGuard>
   );
 }
 

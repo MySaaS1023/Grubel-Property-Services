@@ -50,7 +50,7 @@ export function Header() {
           </Link>
           <Link
             className="whitespace-nowrap text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
-            href="/payment"
+            href="/customer-login"
           >
             Customer Portal
           </Link>
@@ -88,7 +88,7 @@ export function Header() {
         <Link className="shrink-0 hover:text-accentDark" href="/contact">
           Contact
         </Link>
-        <Link className="shrink-0 whitespace-nowrap hover:text-accentDark" href="/payment">
+        <Link className="shrink-0 whitespace-nowrap hover:text-accentDark" href="/customer-login">
           Customer Portal
         </Link>
       </nav>

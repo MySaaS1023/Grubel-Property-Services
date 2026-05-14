@@ -1,9 +1,10 @@
+import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import { projects, uploads } from "@/lib/mock-data";
 
 export default function AdminProjectsPage() {
   return (
-    <>
+    <AdminGuard>
       <PageHero
         eyebrow="Admin Projects"
         title="Project Management"
@@ -50,7 +51,7 @@ export default function AdminProjectsPage() {
           })}
         </div>
       </section>
-    </>
+    </AdminGuard>
   );
 }
 

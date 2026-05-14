@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button";
+import { SubcontractorGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import { jobAssignments, subcontractors } from "@/lib/operations-data";
 
@@ -27,7 +28,7 @@ const pendingApprovals = [
 
 export default function SubcontractorPortalPage() {
   return (
-    <>
+    <SubcontractorGuard>
       <PageHero
         eyebrow="Subcontractor Portal"
         title="Subcontractor Portal"
@@ -167,7 +168,7 @@ export default function SubcontractorPortalPage() {
           </p>
         </div>
       </section>
-    </>
+    </SubcontractorGuard>
   );
 }
 

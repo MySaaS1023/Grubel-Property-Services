@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import {
   applications,
@@ -32,7 +33,7 @@ const adminLinks = [
 
 export default function AdminPage() {
   return (
-    <>
+    <AdminGuard>
       <PageHero
         eyebrow="Internal Operations"
         title="Admin Dashboard"
@@ -189,7 +190,7 @@ export default function AdminPage() {
           </section>
         </div>
       </section>
-    </>
+    </AdminGuard>
   );
 }
 

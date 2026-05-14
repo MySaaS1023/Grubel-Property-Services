@@ -1,0 +1,30 @@
+import { Suspense } from "react";
+import { AdminLoginForm } from "@/components/AdminLoginForm";
+
+export default function AdminLoginPage() {
+  return (
+    <>
+      <section className="bg-stonewash">
+        <div className="site-container py-16 lg:py-20">
+          <div className="max-w-3xl">
+            <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
+              ADMIN
+            </p>
+            <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
+              Admin Login
+            </h1>
+          </div>
+        </div>
+      </section>
+      <section className="bg-white py-16">
+        <div className="site-container">
+          <div className="max-w-xl">
+            <Suspense>
+              <AdminLoginForm />
+            </Suspense>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

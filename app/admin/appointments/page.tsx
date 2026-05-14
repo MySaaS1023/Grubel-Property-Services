@@ -1,9 +1,10 @@
+import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import { appointments } from "@/lib/mock-data";
 
 export default function AdminAppointmentsPage() {
   return (
-    <>
+    <AdminGuard>
       <PageHero
         eyebrow="Admin Appointments"
         title="Appointments"
@@ -27,7 +28,7 @@ export default function AdminAppointmentsPage() {
           </div>
         </div>
       </section>
-    </>
+    </AdminGuard>
   );
 }
 

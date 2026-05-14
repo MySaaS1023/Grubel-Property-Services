@@ -1,3 +1,4 @@
+import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import { quotes, subcontractors } from "@/lib/mock-data";
 
@@ -20,7 +21,7 @@ const paymentStatuses = ["Unpaid", "Deposit Paid", "Paid"];
 
 export default function AdminQuotesPage() {
   return (
-    <>
+    <AdminGuard>
       <PageHero
         eyebrow="Admin Quotes"
         title="Quote Generation"
@@ -90,7 +91,7 @@ export default function AdminQuotesPage() {
           </div>
         </div>
       </section>
-    </>
+    </AdminGuard>
   );
 }
 

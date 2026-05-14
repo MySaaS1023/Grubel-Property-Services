@@ -1,16 +1,6 @@
-import { CustomerPortalDashboard } from "@/components/CustomerPortalDashboard";
+import { CustomerLoginForm } from "@/components/CustomerLoginForm";
 
-type CustomerPortalPageProps = {
-  searchParams: Promise<{
-    quote?: string;
-  }>;
-};
-
-export default async function CustomerPortalPage({
-  searchParams,
-}: CustomerPortalPageProps) {
-  const { quote = "" } = await searchParams;
-
+export default function CustomerLoginPage() {
   return (
     <>
       <section className="bg-stonewash">
@@ -20,19 +10,19 @@ export default async function CustomerPortalPage({
               CUSTOMER PORTAL
             </p>
             <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
-              Customer Dashboard
+              Customer Portal
             </h1>
             <p className="mt-5 text-lg leading-8 text-charcoal/75">
-              View your quote, payment details, project updates, uploaded files,
-              and next steps.
+              Access your quote, payment details, project updates, and service
+              status.
             </p>
           </div>
         </div>
       </section>
       <section className="bg-white py-16">
         <div className="site-container">
-          <div className="max-w-5xl">
-            <CustomerPortalDashboard quoteNumber={quote} />
+          <div className="max-w-xl">
+            <CustomerLoginForm />
           </div>
         </div>
       </section>

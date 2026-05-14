@@ -1,9 +1,10 @@
+import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import { crmLogs } from "@/lib/mock-data";
 
 export default function AdminCRMPage() {
   return (
-    <>
+    <AdminGuard>
       <PageHero
         eyebrow="Admin CRM"
         title="CRM & Activity Log"
@@ -26,7 +27,7 @@ export default function AdminCRMPage() {
           </div>
         </div>
       </section>
-    </>
+    </AdminGuard>
   );
 }
 

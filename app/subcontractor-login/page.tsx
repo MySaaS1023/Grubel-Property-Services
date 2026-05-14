@@ -1,38 +1,31 @@
-import { CustomerPortalDashboard } from "@/components/CustomerPortalDashboard";
+import { Suspense } from "react";
+import { SubcontractorLoginForm } from "@/components/SubcontractorLoginForm";
 
-type CustomerPortalPageProps = {
-  searchParams: Promise<{
-    quote?: string;
-  }>;
-};
-
-export default async function CustomerPortalPage({
-  searchParams,
-}: CustomerPortalPageProps) {
-  const { quote = "" } = await searchParams;
-
+export default function SubcontractorLoginPage() {
   return (
     <>
       <section className="bg-stonewash">
         <div className="site-container py-16 lg:py-20">
           <div className="max-w-3xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
-              CUSTOMER PORTAL
+              SUBCONTRACTOR PORTAL
             </p>
             <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
-              Customer Dashboard
+              Subcontractor Portal
             </h1>
             <p className="mt-5 text-lg leading-8 text-charcoal/75">
-              View your quote, payment details, project updates, uploaded files,
-              and next steps.
+              Approved subcontractors can view assignments, upload documents,
+              and submit project updates.
             </p>
           </div>
         </div>
       </section>
       <section className="bg-white py-16">
         <div className="site-container">
-          <div className="max-w-5xl">
-            <CustomerPortalDashboard quoteNumber={quote} />
+          <div className="max-w-xl">
+            <Suspense>
+              <SubcontractorLoginForm />
+            </Suspense>
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import { PaymentQuoteLookup } from "@/components/PaymentQuoteLookup";
+import { Button } from "@/components/Button";
 
 export default function PaymentPage() {
   return (
@@ -10,19 +10,15 @@ export default function PaymentPage() {
               PAYMENT
             </p>
             <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
-              Quote, Payment & Project Status
+              Customer Portal Access
             </h1>
             <p className="mt-5 text-lg leading-8 text-charcoal/75">
-              Enter your quote number to view your balance, make a payment, or
-              check your project status.
+              To view your quote, make a payment, or check project status,
+              please access the Customer Portal.
             </p>
-          </div>
-        </div>
-      </section>
-      <section className="bg-white py-16">
-        <div className="site-container">
-          <div className="max-w-5xl">
-            <PaymentQuoteLookup />
+            <div className="mt-8">
+              <Button href="/customer-login">Go to Customer Portal</Button>
+            </div>
           </div>
         </div>
       </section>
