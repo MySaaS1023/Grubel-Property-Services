@@ -5,7 +5,7 @@ export default function ContactPage() {
     <>
       <section className="bg-stonewash">
         <div className="site-container py-16 lg:py-20">
-          <div className="max-w-4xl">
+          <div className="mx-auto max-w-4xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               Contact
             </p>
@@ -36,7 +36,7 @@ export default function ContactPage() {
 
       <section className="bg-white py-16">
         <div className="site-container">
-          <div className="max-w-4xl">
+          <div className="mx-auto max-w-4xl">
             <ContactForm />
           </div>
         </div>

@@ -63,7 +63,7 @@ export default function ServicesPage() {
     <>
       <section className="bg-stonewash">
         <div className="site-container pb-10 pt-16 lg:pb-12 lg:pt-20">
-          <div className="max-w-4xl">
+          <div className="mx-auto max-w-4xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               SERVICES
             </p>
@@ -81,7 +81,7 @@ export default function ServicesPage() {
       </section>
       <section className="bg-white pb-16 pt-8">
         <div className="site-container">
-          <div className="max-w-4xl">
+          <div className="mx-auto max-w-4xl">
             <div className="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white shadow-sm">
               {services.map((service) => (
                 <article className="p-6" key={service.title}>

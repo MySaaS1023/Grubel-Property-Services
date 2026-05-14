@@ -141,7 +141,7 @@ export default function FAQPage() {
     <>
       <section className="bg-stonewash">
         <div className="site-container py-16 lg:py-20">
-          <div className="max-w-4xl">
+          <div className="mx-auto max-w-4xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               FAQ
             </p>
@@ -158,7 +158,7 @@ export default function FAQPage() {
       </section>
       <section className="bg-white py-16">
         <div className="site-container">
-          <div className="grid max-w-4xl gap-10">
+          <div className="mx-auto grid max-w-4xl gap-10">
             {sections.map((section) => (
               <section key={section.title}>
                 <h2 className="text-2xl font-black text-navy">{section.title}</h2>
