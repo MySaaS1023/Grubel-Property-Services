@@ -55,7 +55,7 @@ export default function Home() {
             <img
               alt="Grubel Property Services team performing property service work"
               className="h-full w-full object-cover"
-              src="/hero/grubel-property-services-hero.png"
+              src="/hero/hero-services.png"
             />
           </div>
         </div>
