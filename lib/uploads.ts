@@ -1,6 +1,15 @@
 import type { UploadCategory } from "@/types";
+import type { UploadMetadata } from "@/types/uploads";
 
-export type PreparedUpload = {
+export const allowedUploadTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "application/pdf",
+]);
+
+export const maxUploadSize = 8 * 1024 * 1024;
+
+export type PreparedUpload = UploadMetadata & {
   category: UploadCategory;
   fileName: string;
   fileType: string;
@@ -8,22 +17,49 @@ export type PreparedUpload = {
   storagePath: string;
 };
 
+export function validateUploadFile(file: File) {
+  if (!allowedUploadTypes.has(file.type)) {
+    return {
+      success: false as const,
+      error: "Uploads must be JPG, PNG, JPEG, or PDF files.",
+    };
+  }
+
+  if (file.size > maxUploadSize) {
+    return {
+      success: false as const,
+      error: "Each uploaded file must be 8MB or smaller.",
+    };
+  }
+
+  return { success: true as const };
+}
+
 export function prepareUploadRecord({
   category,
   file,
   relatedId,
+  relatedType = "service_request",
+  uploadedBy,
 }: {
   category: UploadCategory;
   file: File;
   relatedId: string;
+  relatedType?: UploadMetadata["relatedType"];
+  uploadedBy?: string;
 }): PreparedUpload {
-  // Future cloud storage integration point: upload to Supabase Storage or
-  // another private object store and replace this path with the stored object key.
+  const safeFileName = file.name.replace(/[^\w.\- ]+/g, "").trim();
+
+  // Future Supabase Storage integration point:
+  // upload the file to a private bucket, then persist this metadata in uploads.
   return {
     category,
-    fileName: file.name,
+    relatedId,
+    relatedType,
+    fileName: safeFileName || "uploaded-file",
     fileType: file.type,
     size: file.size,
-    storagePath: `${category}/${relatedId}/${file.name}`,
+    uploadedBy,
+    storagePath: `${category}/${relatedId}/${Date.now()}-${safeFileName || "uploaded-file"}`,
   };
 }

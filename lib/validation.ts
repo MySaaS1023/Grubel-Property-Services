@@ -8,6 +8,7 @@ export type ServiceRequestInput = {
   city?: string;
   serviceNeeded?: string;
   preferredDate?: string;
+  preferredTimeWindow?: string;
   propertyType?: string;
   occupancyStatus?: string;
   projectDescription?: string;
@@ -20,10 +21,10 @@ type ValidationResult =
   | { success: false; error: string };
 
 const allowedServices = new Set([
-  "Inspection",
-  "Virtual Inspection",
-  "Repair",
-  "Turnover Prep",
+  "Maintenance & Repair",
+  "Property Preservation",
+  "Builds & Remodels",
+  "General Property Questions",
   "Other",
 ]);
 
@@ -75,6 +76,7 @@ export function validateServiceRequest(input: unknown): ValidationResult {
       city: toCleanString(body.city),
       serviceNeeded,
       preferredDate: toCleanString(body.preferredDate),
+      preferredTimeWindow: toCleanString(body.preferredTimeWindow),
       propertyType: toCleanString(body.propertyType),
       occupancyStatus: toCleanString(body.occupancyStatus),
       projectDescription: toCleanString(body.projectDescription),

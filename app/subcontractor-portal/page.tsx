@@ -120,6 +120,40 @@ export default function SubcontractorPortalPage() {
             </div>
           </section>
 
+          <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-black text-navy">Document & Photo Uploads</h2>
+            <p className="mt-2 leading-7 text-charcoal/72">
+              Upload required documents, work photos, completion photos, and
+              supporting notes for review. Files are logged locally for now and
+              prepared for future private storage.
+            </p>
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {[
+                "Upload ID",
+                "Upload Insurance",
+                "Upload License/Certifications",
+                "Upload Work Photos",
+                "Completion Photos",
+              ].map((label) => (
+                <label className="grid gap-2 text-sm font-bold text-navy" key={label}>
+                  {label}
+                  <input
+                    className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+                    multiple={label.includes("Photos")}
+                    type="file"
+                  />
+                </label>
+              ))}
+              <label className="grid gap-2 text-sm font-bold text-navy md:col-span-2">
+                Notes
+                <textarea className="min-h-28 rounded-md border border-slate-300 px-3 py-3 text-sm font-normal text-charcoal" />
+              </label>
+            </div>
+            <Button className="mt-5" type="button">
+              Submit Documents
+            </Button>
+          </section>
+
           <section className="grid gap-8 lg:grid-cols-3">
             <ListCard title="Pending Approvals" items={pendingApprovals} />
             <ListCard title="Company Policies" items={policies} />

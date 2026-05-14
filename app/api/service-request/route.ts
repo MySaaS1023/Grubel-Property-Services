@@ -1,14 +1,7 @@
 import { NextResponse } from "next/server";
 import { queueOperationalEmail } from "@/lib/email";
-import { prepareUploadRecord } from "@/lib/uploads";
+import { prepareUploadRecord, validateUploadFile } from "@/lib/uploads";
 import { validateServiceRequest } from "@/lib/validation";
-
-const allowedFileTypes = new Set([
-  "image/jpeg",
-  "image/png",
-  "application/pdf",
-]);
-const maxFileSize = 8 * 1024 * 1024;
 
 export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
@@ -36,18 +29,9 @@ export async function POST(request: Request) {
     .filter((value): value is File => value instanceof File && value.size > 0);
 
   for (const file of files) {
-    if (!allowedFileTypes.has(file.type)) {
-      return NextResponse.json(
-        { error: "Uploads must be JPG, PNG, JPEG, or PDF files." },
-        { status: 400 },
-      );
-    }
-
-    if (file.size > maxFileSize) {
-      return NextResponse.json(
-        { error: "Each uploaded file must be 8MB or smaller." },
-        { status: 400 },
-      );
+    const fileValidation = validateUploadFile(file);
+    if (!fileValidation.success) {
+      return NextResponse.json({ error: fileValidation.error }, { status: 400 });
     }
   }
 
@@ -56,24 +40,41 @@ export async function POST(request: Request) {
       category: "customer_project_photo",
       file,
       relatedId: validation.data.email,
+      relatedType: "service_request",
+      uploadedBy: validation.data.fullName,
     }),
   );
 
-  // Email delivery can be added here later with Resend or Nodemailer.
+  const serviceRequestPayload = {
+    customer: {
+      fullName: validation.data.fullName,
+      email: validation.data.email,
+      phone: validation.data.phone,
+    },
+    service: {
+      serviceType: validation.data.serviceNeeded,
+      propertyAddress: validation.data.propertyAddress,
+      propertyType: validation.data.propertyType,
+      occupancyStatus: validation.data.occupancyStatus,
+      preferredDate: validation.data.preferredDate,
+      preferredTimeWindow: validation.data.preferredTimeWindow,
+      preferredContactMethod: validation.data.preferredContactMethod,
+    },
+    projectDescription: validation.data.projectDescription || validation.data.message,
+    additionalNotes: validation.data.additionalNotes,
+    uploadedFiles,
+  };
+
+  // Future Supabase insert point: create customer, service_request,
+  // appointment placeholder, upload metadata rows, and CRM log entry here.
   // Future cloud storage point: upload files to private object storage and save
   // the resulting file URLs with the service request record.
-  console.info("New Grubel Property Services request", {
-    ...validation.data,
-    uploadedFiles,
-  });
+  console.info("New Grubel Property Services request", serviceRequestPayload);
 
   await queueOperationalEmail({
     type: "new_service_request",
     subject: "New service request received",
-    data: {
-      ...validation.data,
-      uploadedFiles,
-    },
+    data: serviceRequestPayload,
   });
 
   return NextResponse.json({

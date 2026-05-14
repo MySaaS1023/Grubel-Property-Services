@@ -1,46 +1,33 @@
-import { Button } from "@/components/Button";
-import { PageHero } from "@/components/PageHero";
+import Link from "next/link";
 import type { ReactNode } from "react";
+import { PageHero } from "@/components/PageHero";
 import {
   applications,
+  appointments,
+  customers,
   jobAssignments,
   payments,
   projects,
   quotes,
+  serviceRequests,
   subcontractors,
   uploads,
-} from "@/lib/operations-data";
+} from "@/lib/mock-data";
 
-const serviceRequests = [
-  {
-    name: "New Homeowner Request",
-    service: "Maintenance & Repair",
-    property: "101 Palm Ln, Phoenix, AZ",
-    status: "Needs Review",
-  },
-  {
-    name: "Rental Preservation Request",
-    service: "Property Preservation",
-    property: "220 Adobe St, Tempe, AZ",
-    status: "Scope Pending",
-  },
+const stats = [
+  { label: "New Requests", value: serviceRequests.filter((item) => item.status === "New").length },
+  { label: "Active Quotes", value: quotes.filter((item) => item.quoteStatus !== "Completed").length },
+  { label: "Scheduled Jobs", value: appointments.filter((item) => item.status === "Scheduled").length },
+  { label: "Pending Subcontractors", value: applications.filter((item) => item.status !== "Approved").length },
+  { label: "Completed Projects", value: projects.filter((item) => item.status === "Completed").length },
 ];
 
-const notifications = [
-  "Quote GPS-1001 is awaiting payment",
-  "Insurance renewal pending for Approved Repair Partner",
-  "New handyman application received",
-  "Property Preservation Team uploaded progress photo",
-];
-
-const adminActions = [
-  "Create quote",
-  "Update project status",
-  "Assign subcontractors",
-  "Update payment status",
-  "Add notes",
-  "Upload files",
-  "Approve/deny subcontractors",
+const adminLinks = [
+  { href: "/admin/quotes", label: "Create Quote" },
+  { href: "/admin/projects", label: "Project Management" },
+  { href: "/admin/appointments", label: "Appointments" },
+  { href: "/admin/crm", label: "CRM Logs" },
+  { href: "/admin/subcontractors", label: "Subcontractors" },
 ];
 
 export default function AdminPage() {
@@ -49,49 +36,60 @@ export default function AdminPage() {
       <PageHero
         eyebrow="Internal Operations"
         title="Admin Dashboard"
-        description="A lightweight operations CRM foundation for quotes, projects, payments, subcontractors, uploads, and notifications."
+        description="MVP operations dashboard for requests, customers, quotes, projects, appointments, payments, uploads, subcontractors, and job assignments."
       />
       <section className="bg-white py-16">
         <div className="mx-auto grid max-w-6xl gap-8 px-6">
           <p className="rounded-md bg-accent/10 p-4 text-sm font-semibold leading-6 text-charcoal">
-            Security prep: this route should be protected with authentication,
-            admin role permissions, audit logging, and row-level database
-            policies before production use.
+            Admin authentication will be added before production operations.
+            Future roles: Admin, Customer, and Subcontractor.
           </p>
 
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            <MetricCard label="New Service Requests" value={String(serviceRequests.length)} />
-            <MetricCard label="Active Quotes" value={String(quotes.length)} />
-            <MetricCard label="Customer Projects" value={String(projects.length)} />
-            <MetricCard label="Active Subcontractors" value={String(subcontractors.length)} />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {stats.map((stat) => (
+              <MetricCard key={stat.label} label={stat.label} value={String(stat.value)} />
+            ))}
           </div>
 
-          <section className="grid gap-8 xl:grid-cols-[1.2fr_0.8fr]">
+          <div className="flex flex-wrap gap-3">
+            {adminLinks.map((link) => (
+              <Link
+                className="rounded-md bg-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-accentDark"
+                href={link.href}
+                key={link.href}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          <section className="grid gap-8 xl:grid-cols-2">
             <DashboardPanel title="New Service Requests">
               <DataTable
-                columns={["Name", "Service", "Property", "Status"]}
+                columns={["Customer", "Service", "Property", "Status"]}
                 rows={serviceRequests.map((item) => [
-                  item.name,
-                  item.service,
-                  item.property,
+                  item.customerName,
+                  item.serviceType,
+                  item.propertyAddress,
                   item.status,
                 ])}
               />
             </DashboardPanel>
-
-            <DashboardPanel title="Admin Actions">
-              <div className="grid gap-3">
-                {adminActions.map((action) => (
-                  <Button className="justify-start" key={action} type="button" variant="outline">
-                    {action}
-                  </Button>
-                ))}
-              </div>
+            <DashboardPanel title="Customers">
+              <DataTable
+                columns={["Name", "Email", "Phone", "Property"]}
+                rows={customers.map((customer) => [
+                  customer.fullName,
+                  customer.email,
+                  customer.phone,
+                  customer.propertyAddress ?? customer.billingAddress ?? "Not listed",
+                ])}
+              />
             </DashboardPanel>
           </section>
 
           <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="Active Quotes">
+            <DashboardPanel title="Quotes">
               <DataTable
                 columns={["Quote", "Customer", "Amount", "Status"]}
                 rows={quotes.map((quote) => [
@@ -102,8 +100,7 @@ export default function AdminPage() {
                 ])}
               />
             </DashboardPanel>
-
-            <DashboardPanel title="Customer Projects">
+            <DashboardPanel title="Active Projects">
               <DataTable
                 columns={["Project", "Service", "Schedule", "Status"]}
                 rows={projects.map((project) => [
@@ -117,6 +114,17 @@ export default function AdminPage() {
           </section>
 
           <section className="grid gap-8 xl:grid-cols-2">
+            <DashboardPanel title="Appointments">
+              <DataTable
+                columns={["Customer", "Date", "Window", "Status"]}
+                rows={appointments.map((appointment) => [
+                  appointment.customerName,
+                  appointment.appointmentDate,
+                  appointment.timeWindow,
+                  appointment.status,
+                ])}
+              />
+            </DashboardPanel>
             <DashboardPanel title="Payments">
               <DataTable
                 columns={["Quote", "Amount", "Status", "Method"]}
@@ -128,7 +136,20 @@ export default function AdminPage() {
                 ])}
               />
             </DashboardPanel>
+          </section>
 
+          <section className="grid gap-8 xl:grid-cols-2">
+            <DashboardPanel title="Uploaded Files">
+              <DataTable
+                columns={["File", "Category", "Uploaded By", "Date"]}
+                rows={uploads.map((upload) => [
+                  upload.fileName,
+                  upload.category,
+                  upload.uploadedBy,
+                  upload.createdAt,
+                ])}
+              />
+            </DashboardPanel>
             <DashboardPanel title="Subcontractor Applications">
               <DataTable
                 columns={["Applicant", "Type", "Status", "Submitted"]}
@@ -143,52 +164,27 @@ export default function AdminPage() {
           </section>
 
           <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="Assigned Jobs">
+            <DashboardPanel title="Approved Subcontractors">
               <DataTable
-                columns={["Job", "Property", "Due", "Status"]}
+                columns={["Name", "Skills", "Status", "Availability"]}
+                rows={subcontractors.map((subcontractor) => [
+                  subcontractor.fullName,
+                  subcontractor.tradeSkills.join(", "),
+                  subcontractor.status,
+                  subcontractor.availability,
+                ])}
+              />
+            </DashboardPanel>
+            <DashboardPanel title="Job Assignments">
+              <DataTable
+                columns={["Job", "Subcontractor", "Due", "Status"]}
                 rows={jobAssignments.map((job) => [
                   job.title,
-                  job.propertyAddress,
+                  job.subcontractorName,
                   job.dueDate,
                   job.status,
                 ])}
               />
-            </DashboardPanel>
-
-            <DashboardPanel title="Project Status Tracking">
-              <DataTable
-                columns={["Project", "Team", "Next Step", "Updated"]}
-                rows={projects.map((project) => [
-                  project.quoteNumber,
-                  project.assignedTeam,
-                  project.nextStep,
-                  project.updatedAt,
-                ])}
-              />
-            </DashboardPanel>
-          </section>
-
-          <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="Uploads / Documents">
-              <DataTable
-                columns={["File", "Category", "Uploaded By", "Date"]}
-                rows={uploads.map((upload) => [
-                  upload.fileName,
-                  upload.category,
-                  upload.uploadedBy,
-                  upload.createdAt,
-                ])}
-              />
-            </DashboardPanel>
-
-            <DashboardPanel title="Notifications">
-              <div className="grid gap-3">
-                {notifications.map((notification) => (
-                  <div className="rounded-md bg-stonewash p-4 text-sm font-bold text-charcoal" key={notification}>
-                    {notification}
-                  </div>
-                ))}
-              </div>
             </DashboardPanel>
           </section>
         </div>
@@ -243,10 +239,10 @@ function DataTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr className="border-b border-slate-100 last:border-b-0" key={row.join("-")}>
-              {row.map((cell) => (
-                <td className="py-3 pr-4 font-semibold leading-6 text-charcoal" key={cell}>
+          {rows.map((row, rowIndex) => (
+            <tr className="border-b border-slate-100 last:border-b-0" key={`${row.join("-")}-${rowIndex}`}>
+              {row.map((cell, cellIndex) => (
+                <td className="py-3 pr-4 font-semibold leading-6 text-charcoal" key={`${cell}-${cellIndex}`}>
                   {cell}
                 </td>
               ))}

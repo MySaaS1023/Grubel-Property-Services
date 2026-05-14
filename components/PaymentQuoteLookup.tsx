@@ -32,7 +32,13 @@ type PortalQuote = {
   serviceType: string;
   propertyAddress: string;
   amount: number;
+  depositAmount: number;
+  amountPaid: number;
+  balanceDue: number;
   displayAmount: string;
+  displayDepositAmount: string;
+  displayAmountPaid: string;
+  displayBalanceDue: string;
   paymentStatus: PaymentStatus;
   serviceStatus:
     | "Quote Sent"
@@ -174,6 +180,7 @@ export function PaymentQuoteLookup() {
             <InfoField label="Service Type" value={quote.serviceType} />
             <InfoField label="Property Address" value={quote.propertyAddress} />
             <InfoField label="Quote Amount" value={quote.displayAmount} />
+            <InfoField label="Deposit Amount" value={quote.displayDepositAmount} />
             <InfoField label="Amount Paid" value={payment.amountPaidDisplay} />
             <InfoField label="Balance Due" value={payment.balanceDueDisplay} />
             <InfoField label="Payment Status" value={quote.paymentStatus} />
@@ -252,6 +259,7 @@ export function PaymentQuoteLookup() {
 
           <DashboardSection title="Payment Summary">
             <InfoField label="Quote Amount" value={quote.displayAmount} />
+            <InfoField label="Deposit Amount" value={quote.displayDepositAmount} />
             <InfoField label="Amount Paid" value={payment.amountPaidDisplay} />
             <InfoField label="Balance Due" value={payment.balanceDueDisplay} />
             <InfoField label="Payment Method" value={quote.paymentMethod} />
@@ -328,22 +336,19 @@ function getPaymentSummary(quote: PortalQuote) {
   }
 
   if (quote.paymentStatus === "Deposit Paid") {
-    const amountPaid = Math.round(quote.amount / 2);
-    const balanceDue = quote.amount - amountPaid;
-
     return {
-      amountPaid,
-      amountPaidDisplay: formatCurrency(amountPaid),
-      balanceDue,
-      balanceDueDisplay: formatCurrency(balanceDue),
+      amountPaid: quote.amountPaid,
+      amountPaidDisplay: quote.displayAmountPaid,
+      balanceDue: quote.balanceDue,
+      balanceDueDisplay: quote.displayBalanceDue,
     };
   }
 
   return {
     amountPaid: 0,
     amountPaidDisplay: "$0.00",
-    balanceDue: quote.amount,
-    balanceDueDisplay: quote.displayAmount,
+    balanceDue: quote.balanceDue,
+    balanceDueDisplay: quote.displayBalanceDue,
   };
 }
 
