@@ -98,7 +98,7 @@ export function Header() {
       </div>
 
       <nav
-        className="site-container flex gap-4 overflow-x-auto border-t border-slate-100 py-3 text-sm font-semibold text-charcoal/75 lg:hidden"
+        className="site-container flex flex-wrap items-start gap-x-4 gap-y-3 border-t border-slate-100 py-3 text-sm font-semibold text-charcoal/75 lg:hidden"
         aria-label="Mobile navigation"
       >
         <Link className="shrink-0 hover:text-accentDark" href="/">
@@ -119,15 +119,22 @@ export function Header() {
         <Link className="shrink-0 whitespace-nowrap hover:text-accentDark" href="/customer-login">
           Customer Portal
         </Link>
-        <Link className="shrink-0 whitespace-nowrap hover:text-accentDark" href="/work-with-us/handyman">
-          Handy Man
-        </Link>
-        <Link className="shrink-0 hover:text-accentDark" href="/work-with-us/residential">
-          Residential
-        </Link>
-        <Link className="shrink-0 hover:text-accentDark" href="/work-with-us/commercial">
-          Commercial
-        </Link>
+        <details className="shrink-0">
+          <summary className="cursor-pointer list-none whitespace-nowrap hover:text-accentDark">
+            Work With Us
+          </summary>
+          <div className="mt-2 grid gap-2 rounded-md border border-slate-200 bg-white p-3 shadow-sm">
+            <Link className="whitespace-nowrap hover:text-accentDark" href="/work-with-us/handyman">
+              Handy Man
+            </Link>
+            <Link className="hover:text-accentDark" href="/work-with-us/residential">
+              Residential
+            </Link>
+            <Link className="hover:text-accentDark" href="/work-with-us/commercial">
+              Commercial
+            </Link>
+          </div>
+        </details>
       </nav>
     </header>
   );
