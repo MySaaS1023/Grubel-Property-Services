@@ -53,7 +53,7 @@ export function CustomerLoginForm() {
         <input
           className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
           name="quoteNumber"
-          placeholder="GPS-1001"
+          placeholder="Quote Number"
           required
           type="text"
         />
@@ -63,7 +63,7 @@ export function CustomerLoginForm() {
         <input
           className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
           name="email"
-          placeholder="you@example.com"
+          placeholder="Email Address"
           required
           type="email"
         />

@@ -141,7 +141,7 @@ export function QuoteLookup() {
           <input
             className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             onChange={(event) => setQuoteNumber(event.target.value)}
-            placeholder="GPS-1001"
+            placeholder="Quote Number"
             required
             type="text"
             value={quoteNumber}

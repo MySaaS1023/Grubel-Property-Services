@@ -54,6 +54,34 @@ export function Header() {
           >
             Customer Portal
           </Link>
+          <div className="group relative">
+            <button
+              className="whitespace-nowrap text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
+              type="button"
+            >
+              Work With Us
+            </button>
+            <div className="invisible absolute right-0 top-full z-50 min-w-48 rounded-lg border border-slate-200 bg-white p-2 opacity-0 shadow-soft transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <Link
+                className="block rounded-md px-3 py-2 text-sm font-semibold text-charcoal/80 hover:bg-stonewash hover:text-accentDark"
+                href="/work-with-us/handyman"
+              >
+                Handy Man
+              </Link>
+              <Link
+                className="block rounded-md px-3 py-2 text-sm font-semibold text-charcoal/80 hover:bg-stonewash hover:text-accentDark"
+                href="/work-with-us/residential"
+              >
+                Residential
+              </Link>
+              <Link
+                className="block rounded-md px-3 py-2 text-sm font-semibold text-charcoal/80 hover:bg-stonewash hover:text-accentDark"
+                href="/work-with-us/commercial"
+              >
+                Commercial
+              </Link>
+            </div>
+          </div>
         </nav>
 
         <div className="flex shrink-0 flex-col items-end gap-1">
@@ -90,6 +118,15 @@ export function Header() {
         </Link>
         <Link className="shrink-0 whitespace-nowrap hover:text-accentDark" href="/customer-login">
           Customer Portal
+        </Link>
+        <Link className="shrink-0 whitespace-nowrap hover:text-accentDark" href="/work-with-us/handyman">
+          Handy Man
+        </Link>
+        <Link className="shrink-0 hover:text-accentDark" href="/work-with-us/residential">
+          Residential
+        </Link>
+        <Link className="shrink-0 hover:text-accentDark" href="/work-with-us/commercial">
+          Commercial
         </Link>
       </nav>
     </header>
