@@ -24,10 +24,14 @@ const services = [
 ];
 
 const heroVisuals = {
-  tools: "/hero/contractor-tools.png",
-  exterior: "/hero/property-exterior.png",
-  maintenance: "/hero/maintenance-work.png",
-  remodel: "/hero/interior-remodel.png",
+  tools:
+    "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?auto=format&fit=crop&w=900&q=80",
+  exterior:
+    "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1000&q=80",
+  maintenance:
+    "https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=900&q=80",
+  remodel:
+    "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=80",
 };
 
 export default function Home() {
@@ -126,13 +130,13 @@ function WorkflowPanel({ visual }: { visual: string }) {
 
 function PanelVisual({ visual }: { visual: string }) {
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(180deg, rgba(8, 32, 58, 0.02), rgba(8, 32, 58, 0.16)), url("${visual}")`,
-        }}
+    <div className="absolute inset-0 overflow-hidden rounded-lg">
+      <img
+        alt=""
+        className="h-full w-full object-cover"
+        src={visual}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-navy/5 to-navy/15" />
       <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-navy/70 to-transparent" />
     </div>
   );
