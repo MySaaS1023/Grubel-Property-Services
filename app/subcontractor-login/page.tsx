@@ -6,7 +6,7 @@ export default function SubcontractorLoginPage() {
     <>
       <section className="bg-stonewash">
         <div className="site-container py-16 lg:py-20">
-          <div className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               SUBCONTRACTOR PORTAL
             </p>
@@ -22,7 +22,7 @@ export default function SubcontractorLoginPage() {
       </section>
       <section className="bg-white py-16">
         <div className="site-container">
-          <div className="max-w-xl">
+          <div className="mx-auto max-w-xl">
             <Suspense>
               <SubcontractorLoginForm />
             </Suspense>
