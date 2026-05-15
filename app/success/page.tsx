@@ -11,7 +11,9 @@ export default function SuccessPage() {
       />
       <section className="bg-white py-12">
         <div className="site-container">
-          <Button href="/customer-login">View Quote Status</Button>
+          <div className="mx-auto max-w-4xl">
+            <Button href="/customer-login">View Quote Status</Button>
+          </div>
         </div>
       </section>
     </>

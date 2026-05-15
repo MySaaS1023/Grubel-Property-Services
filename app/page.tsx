@@ -36,7 +36,7 @@ export default function Home() {
             <h1 className="mt-5 text-4xl font-black leading-[1.08] text-white sm:text-6xl sm:leading-[1.06]">
               Property Maintenance, Repair & Preservation You Can Count On
             </h1>
-            <p className="mt-4 text-lg leading-8 text-white/84">
+            <p className="mt-4 text-lg leading-8 text-white/90">
               Grubel Property Services helps homeowners, landlords, and property
               managers keep properties maintained, repaired, and move-in ready.
             </p>

@@ -10,7 +10,7 @@ export default function SubcontractorTermsPage() {
       />
       <section className="bg-white py-14">
         <div className="site-container">
-        <div className="max-w-3xl space-y-4 leading-7 text-charcoal/75 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
+        <div className="mx-auto max-w-4xl space-y-4 leading-7 text-charcoal/75 [&_h2]:pt-4 [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-navy">
           <h2>Independent Contractor Relationship</h2>
           <p>
             Subcontractors are independent contractors and are not employees,

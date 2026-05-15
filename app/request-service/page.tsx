@@ -5,7 +5,7 @@ export default function RequestServicePage() {
     <>
       <section className="bg-stonewash">
         <div className="site-container pb-10 pt-16 lg:pb-12 lg:pt-20">
-          <div className="max-w-3xl">
+          <div className="mx-auto max-w-4xl">
             <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
               Request Service
             </h1>
@@ -19,8 +19,8 @@ export default function RequestServicePage() {
       </section>
       <section className="bg-stonewash pb-16 pt-6">
         <div className="site-container">
-          <div className="max-w-4xl">
-          <RequestServiceForm />
+          <div className="mx-auto max-w-4xl">
+            <RequestServiceForm />
           </div>
         </div>
       </section>

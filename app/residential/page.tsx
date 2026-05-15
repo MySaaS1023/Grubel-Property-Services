@@ -12,7 +12,7 @@ export default function ResidentialPage() {
       />
       <section className="bg-white py-16">
         <div className="site-container leading-7 text-charcoal/75">
-          <p className="max-w-4xl">
+          <p className="mx-auto max-w-4xl">
             Grubel Property Services helps residential property owners handle
             maintenance concerns, coordinate repair needs, prepare properties
             between occupants, and keep homes in better operating condition.

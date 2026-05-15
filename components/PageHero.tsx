@@ -24,7 +24,7 @@ export function PageHero({
   return (
     <section className="bg-stonewash">
       <div className="site-container py-16 lg:py-20">
-        <div className="max-w-3xl">
+        <div className="mx-auto max-w-4xl">
           {eyebrow ? (
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               {eyebrow}

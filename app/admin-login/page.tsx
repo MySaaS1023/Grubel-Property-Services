@@ -6,7 +6,7 @@ export default function AdminLoginPage() {
     <>
       <section className="bg-stonewash">
         <div className="site-container py-16 lg:py-20">
-          <div className="max-w-3xl">
+          <div className="mx-auto max-w-3xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               ADMIN
             </p>

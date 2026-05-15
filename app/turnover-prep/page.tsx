@@ -64,17 +64,19 @@ function ServiceList({
   return (
     <section className={`${muted ? "bg-stonewash" : "bg-white"} py-16`}>
       <div className="site-container">
-        <h2 className="text-3xl font-black text-navy">{title}</h2>
-        <ul className="mt-6 columns-1 gap-8 space-y-3 sm:columns-2 lg:columns-3">
-          {items.map((item) => (
-            <li
-              className="break-inside-avoid border-l-4 border-accent bg-white/70 py-2 pl-4 font-bold text-charcoal"
-              key={item}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
+        <div className="mx-auto max-w-4xl">
+          <h2 className="text-3xl font-black text-navy">{title}</h2>
+          <ul className="mt-6 columns-1 gap-8 space-y-3 sm:columns-2 lg:columns-3">
+            {items.map((item) => (
+              <li
+                className="break-inside-avoid border-l-4 border-accent bg-white/70 py-2 pl-4 font-bold text-charcoal"
+                key={item}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

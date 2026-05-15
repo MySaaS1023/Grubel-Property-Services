@@ -10,10 +10,12 @@ export default function CancelPage() {
         description="Your payment was canceled. You can return to the Customer Portal and try again."
       />
       <section className="bg-white py-12">
-        <div className="site-container flex flex-col gap-3 sm:flex-row">
-          <Button href="/customer-login" variant="outline">
-            Go to Customer Portal
-          </Button>
+        <div className="site-container">
+          <div className="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row">
+            <Button href="/customer-login" variant="outline">
+              Go to Customer Portal
+            </Button>
+          </div>
         </div>
       </section>
     </>
