@@ -1,5 +1,6 @@
 import type { UploadCategory } from "@/types";
 import type { UploadMetadata } from "@/types/uploads";
+import { createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export const allowedUploadTypes = new Set([
   "image/jpeg",
@@ -15,6 +16,7 @@ export type PreparedUpload = UploadMetadata & {
   fileType: string;
   size: number;
   storagePath: string;
+  storageBucket?: string;
 };
 
 export function validateUploadFile(file: File) {
@@ -50,8 +52,6 @@ export function prepareUploadRecord({
 }): PreparedUpload {
   const safeFileName = file.name.replace(/[^\w.\- ]+/g, "").trim();
 
-  // Future Supabase Storage integration point:
-  // upload the file to a private bucket, then persist this metadata in uploads.
   return {
     category,
     relatedId,
@@ -61,5 +61,54 @@ export function prepareUploadRecord({
     size: file.size,
     uploadedBy,
     storagePath: `${category}/${relatedId}/${Date.now()}-${safeFileName || "uploaded-file"}`,
+  };
+}
+
+export function getUploadBucket(relatedType: UploadMetadata["relatedType"]) {
+  if (relatedType === "subcontractor_application" || relatedType === "subcontractor") {
+    return "subcontractor-documents";
+  }
+
+  if (relatedType === "project" || relatedType === "job_assignment") {
+    return "project-files";
+  }
+
+  return "service-uploads";
+}
+
+export async function uploadFileToSupabaseStorage({
+  file,
+  record,
+}: {
+  file: File;
+  record: PreparedUpload;
+}) {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return {
+      ...record,
+      storageBucket: getUploadBucket(record.relatedType),
+      storageConfigured: false,
+    };
+  }
+
+  const storageBucket = getUploadBucket(record.relatedType);
+  const arrayBuffer = await file.arrayBuffer();
+  const { error } = await supabase.storage
+    .from(storageBucket)
+    .upload(record.storagePath, arrayBuffer, {
+      contentType: file.type,
+      upsert: false,
+    });
+
+  if (error) {
+    throw new Error(`Unable to upload ${record.fileName}: ${error.message}`);
+  }
+
+  return {
+    ...record,
+    storageBucket,
+    storageConfigured: true,
   };
 }
