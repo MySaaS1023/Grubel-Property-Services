@@ -78,7 +78,8 @@ export function validateServiceRequest(input: unknown): ValidationResult {
       preferredDate: toCleanString(body.preferredDate),
       preferredTimeWindow: toCleanString(body.preferredTimeWindow),
       propertyType: toCleanString(body.propertyType),
-      occupancyStatus: toCleanString(body.occupancyStatus),
+      occupancyStatus:
+        toCleanString(body.occupancyStatus) || toCleanString(body.occupiedOrVacant),
       projectDescription: toCleanString(body.projectDescription),
       preferredContactMethod: toCleanString(body.preferredContactMethod),
       additionalNotes: toCleanString(body.additionalNotes),

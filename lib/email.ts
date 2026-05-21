@@ -34,7 +34,7 @@ export async function queueOperationalEmail(payload: EmailPayload) {
     return { queued: true, sent: true };
   }
 
-  console.info("Operational email prepared without RESEND_API_KEY", {
+  console.info("email skipped: RESEND_API_KEY is not configured", {
     type: payload.type,
     to,
     subject: payload.subject,
