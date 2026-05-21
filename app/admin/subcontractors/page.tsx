@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import { applications, jobAssignments, subcontractors, uploads } from "@/lib/mock-data";
@@ -15,6 +16,7 @@ export default function AdminSubcontractorsPage() {
       />
       <section className="bg-white py-16">
         <div className="site-container grid gap-8">
+          <AdminDataNotice />
           <section className="grid gap-8 lg:grid-cols-2">
             <Panel title="New Applications">
               {applications.map((application) => (

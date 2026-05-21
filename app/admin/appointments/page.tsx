@@ -1,4 +1,5 @@
 import { AdminGuard } from "@/components/AuthGuards";
+import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { PageHero } from "@/components/PageHero";
 import { appointments } from "@/lib/mock-data";
 
@@ -11,7 +12,8 @@ export default function AdminAppointmentsPage() {
         description="Track requested, scheduled, completed, and canceled appointments from the service request intake flow."
       />
       <section className="bg-white py-16">
-        <div className="site-container">
+        <div className="site-container grid gap-6">
+          <AdminDataNotice />
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <DataTable
               columns={["Customer Name", "Service Type", "Appointment Date", "Time Window", "Contact Method", "Status", "Notes"]}

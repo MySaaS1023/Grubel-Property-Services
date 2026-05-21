@@ -6,7 +6,10 @@ export async function POST(request: Request) {
 
   if (!stripe) {
     return NextResponse.json(
-      { error: "Stripe is not configured." },
+      {
+        error: "Stripe setup needed.",
+        message: "Stripe is not configured. Add STRIPE_SECRET_KEY to enable checkout.",
+      },
       { status: 500 },
     );
   }
@@ -28,9 +31,13 @@ export async function POST(request: Request) {
     body && typeof body === "object" && "serviceType" in body
       ? String(payload.serviceType).trim()
       : "";
+  const customerEmail =
+    body && typeof body === "object" && "customerEmail" in body
+      ? String(payload.customerEmail).trim()
+      : "";
   const amount =
-    body && typeof body === "object" && "amount" in body
-      ? Number(payload.amount)
+    body && typeof body === "object" && ("balanceDue" in body || "amount" in body)
+      ? Number(payload.balanceDue ?? payload.amount)
       : 0;
 
   if (!quoteNumber || !serviceType || !Number.isInteger(amount) || amount <= 0) {
@@ -50,7 +57,7 @@ export async function POST(request: Request) {
         price_data: {
           currency: "usd",
           product_data: {
-            name: `${serviceType} Deposit`,
+            name: `${serviceType} Payment`,
             description: `Quote ${quoteNumber}`,
           },
           unit_amount: amount,
@@ -60,9 +67,11 @@ export async function POST(request: Request) {
     metadata: {
       quoteNumber,
       serviceType,
+      customerEmail,
     },
+    customer_email: customerEmail || undefined,
     success_url: `${siteUrl}/success?quote=${encodeURIComponent(quoteNumber)}`,
-    cancel_url: `${siteUrl}/payment`,
+    cancel_url: `${siteUrl}/customer-login`,
   });
 
   return NextResponse.json({ url: session.url });

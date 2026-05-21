@@ -1,4 +1,5 @@
 import { AdminGuard } from "@/components/AuthGuards";
+import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { PageHero } from "@/components/PageHero";
 import { projects, uploads } from "@/lib/mock-data";
 
@@ -12,6 +13,7 @@ export default function AdminProjectsPage() {
       />
       <section className="bg-white py-16">
         <div className="site-container grid gap-6">
+          <AdminDataNotice />
           {projects.map((project) => {
             const projectUploads = uploads.filter((upload) =>
               project.uploadedFileIds.includes(upload.id),

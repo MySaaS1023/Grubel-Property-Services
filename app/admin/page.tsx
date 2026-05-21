@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
 import {
@@ -45,6 +46,7 @@ export default function AdminPage() {
             Admin authentication will be added before production operations.
             Future roles: Admin, Customer, and Subcontractor.
           </p>
+          <AdminDataNotice />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {stats.map((stat) => (

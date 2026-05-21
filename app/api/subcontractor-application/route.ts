@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { queueOperationalEmail } from "@/lib/email";
-import { prepareUploadRecord, validateUploadFile } from "@/lib/uploads";
+import { createServiceSupabaseClient } from "@/lib/supabase/server";
+import {
+  prepareUploadRecord,
+  uploadFileToSupabaseStorage,
+  validateUploadFile,
+} from "@/lib/uploads";
 
 const applicationTypes = new Set(["handyman", "residential", "commercial"]);
 
@@ -43,12 +48,14 @@ export async function POST(request: Request) {
   }
 
   const fullName = String(formData.get("fullName"));
-  const relatedId = `${applicationType}-${String(formData.get("email"))}`;
-  const uploadedFiles = fileEntries.map(([fieldName, file]) =>
+  const fallbackRelatedId = `${applicationType}-${String(formData.get("email"))}`;
+  let applicationId = fallbackRelatedId;
+  let supabaseConfigured = false;
+  let uploadedFiles = fileEntries.map(([fieldName, file]) =>
     prepareUploadRecord({
       category: mapUploadCategory(fieldName),
       file,
-      relatedId,
+      relatedId: fallbackRelatedId,
       relatedType: "subcontractor_application",
       uploadedBy: fullName,
     }),
@@ -93,9 +100,92 @@ export async function POST(request: Request) {
     rawSubmission: submission,
   };
 
-  // Future Supabase insert point: store subcontractor application, upload
-  // metadata, document status, and CRM log in one operation.
-  console.info("New subcontractor application", payload);
+  const supabase = createServiceSupabaseClient();
+
+  if (supabase) {
+    supabaseConfigured = true;
+
+    const { data: application, error: applicationError } = await supabase
+      .from("subcontractor_applications")
+      .insert({
+        application_type: applicationType,
+        applicant_name: fullName,
+        company_name: payload.applicant.companyName || null,
+        email: payload.applicant.email,
+        phone: payload.applicant.phone,
+        experience: payload.experience || null,
+        services_offered: payload.servicesOffered || null,
+        service_areas: payload.serviceAreas || null,
+        crew_size: payload.crewSize || null,
+        licensing_insurance_info: payload.licensingInsuranceInfo || null,
+        notes: payload.notes || null,
+        raw_submission: submission,
+        status: "New",
+      })
+      .select("id")
+      .single();
+
+    if (applicationError) {
+      return NextResponse.json(
+        {
+          error: `Unable to save subcontractor application: ${applicationError.message}`,
+        },
+        { status: 500 },
+      );
+    }
+
+    applicationId = application.id;
+    uploadedFiles = await Promise.all(
+      fileEntries.map(async ([fieldName, file]) => {
+        const prepared = prepareUploadRecord({
+          category: mapUploadCategory(fieldName),
+          file,
+          relatedId: applicationId,
+          relatedType: "subcontractor_application",
+          uploadedBy: fullName,
+        });
+
+        return uploadFileToSupabaseStorage({ file, record: prepared });
+      }),
+    );
+
+    if (uploadedFiles.length) {
+      const { error: uploadError } = await supabase.from("uploads").insert(
+        uploadedFiles.map((file) => ({
+          related_id: applicationId,
+          related_type: file.relatedType,
+          category: file.category,
+          file_name: file.fileName,
+          file_type: file.fileType,
+          size: file.size,
+          uploaded_by: file.uploadedBy,
+          storage_bucket: file.storageBucket ?? null,
+          storage_path: file.storagePath,
+        })),
+      );
+
+      if (uploadError) {
+        return NextResponse.json(
+          { error: `Unable to save upload metadata: ${uploadError.message}` },
+          { status: 500 },
+        );
+      }
+    }
+
+    await supabase.from("crm_logs").insert({
+      type: "Subcontractor Action",
+      actor: fullName,
+      related_quote_or_project: applicationId,
+      status: "New",
+      notes: `New ${applicationType} subcontractor application received.`,
+    });
+  } else {
+    console.info("Supabase not configured. Subcontractor application logged only.", {
+      ...payload,
+      devMessage:
+        "Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to persist applications.",
+    });
+  }
 
   await queueOperationalEmail({
     type: "subcontractor_application_received",
@@ -106,6 +196,8 @@ export async function POST(request: Request) {
   return NextResponse.json({
     success: true,
     message: "Subcontractor application received.",
+    applicationId,
+    supabaseConfigured,
     uploadedFiles,
   });
 }

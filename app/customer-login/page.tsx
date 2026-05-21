@@ -4,8 +4,8 @@ export default function CustomerLoginPage() {
   return (
     <>
       <section className="bg-stonewash">
-        <div className="site-container py-16 lg:py-20">
-          <div className="mx-auto max-w-xl">
+        <div className="mx-auto w-full max-w-[1200px] px-6 py-16 md:px-8 md:py-20 lg:px-10">
+          <div className="mx-auto max-w-2xl">
             <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
               CUSTOMER PORTAL
             </p>
@@ -20,8 +20,8 @@ export default function CustomerLoginPage() {
         </div>
       </section>
       <section className="bg-white py-16">
-        <div className="site-container">
-          <div className="mx-auto max-w-xl">
+        <div className="mx-auto w-full max-w-[1200px] px-6 md:px-8 lg:px-10">
+          <div className="mx-auto w-full max-w-xl">
             <CustomerLoginForm />
           </div>
         </div>

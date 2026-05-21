@@ -1,4 +1,5 @@
 import { AdminGuard } from "@/components/AuthGuards";
+import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { PageHero } from "@/components/PageHero";
 import { crmLogs } from "@/lib/mock-data";
 
@@ -11,7 +12,8 @@ export default function AdminCRMPage() {
         description="Operational log for requests, consultations, appointments, quotes, projects, customer communication, payments, uploads, and subcontractor actions."
       />
       <section className="bg-white py-16">
-        <div className="site-container">
+        <div className="site-container grid gap-6">
+          <AdminDataNotice />
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <DataTable
               columns={["Date", "Type", "Customer/Sub", "Related Quote/Project", "Status", "Notes"]}
