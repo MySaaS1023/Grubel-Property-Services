@@ -206,6 +206,11 @@ export async function POST(request: Request) {
     message: "Service request received.",
     serviceRequestId,
     supabaseConfigured,
-    uploadedFiles,
+    uploadedFiles: uploadedFiles.map((file) => ({
+      fileName: file.fileName,
+      fileType: file.fileType,
+      size: file.size,
+      category: file.category,
+    })),
   });
 }

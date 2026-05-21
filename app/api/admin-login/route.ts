@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { setAuthCookie } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -11,14 +12,20 @@ export async function POST(request: Request) {
       ? String((body as Record<string, unknown>).password)
       : "";
 
-  const adminEmail = (process.env.ADMIN_EMAIL ?? "admin@grubelps.com").toLowerCase();
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123";
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
-  // Future auth replacement: Supabase Auth or NextAuth with Admin role checks,
-  // secure cookies, MFA, audit logging, and protected server routes.
+  if (!adminEmail || !adminPassword) {
+    return NextResponse.json(
+      { error: "Admin credentials are not configured." },
+      { status: 503 },
+    );
+  }
+
   if (email !== adminEmail || password !== adminPassword) {
     return NextResponse.json({ error: "Invalid admin login." }, { status: 401 });
   }
 
-  return NextResponse.json({ success: true });
+  const response = NextResponse.json({ success: true });
+  return setAuthCookie(response, "admin", { email });
 }

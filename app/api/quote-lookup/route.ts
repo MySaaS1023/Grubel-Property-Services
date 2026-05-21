@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getSessionCookieName, verifySessionToken } from "@/lib/auth";
 import { getPortalRecord } from "@/lib/operations-data";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 
@@ -20,6 +22,23 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Quote number is required." }, { status: 400 });
   }
 
+  const cookieStore = await cookies();
+  const customerSession = await verifySessionToken(
+    cookieStore.get(getSessionCookieName("customer"))?.value,
+    "customer",
+  );
+
+  if (
+    !customerSession?.email ||
+    !customerSession.quoteNumber ||
+    customerSession.quoteNumber !== quoteNumber
+  ) {
+    return NextResponse.json(
+      { error: "Customer portal authentication is required." },
+      { status: 401 },
+    );
+  }
+
   const supabase = createServiceSupabaseClient();
 
   if (supabase) {
@@ -27,6 +46,7 @@ export async function POST(request: Request) {
       .from("quotes")
       .select("*")
       .eq("quote_number", quoteNumber)
+      .eq("customer_email", customerSession.email.toLowerCase())
       .maybeSingle();
 
     if (quoteError) {
@@ -94,7 +114,6 @@ export async function POST(request: Request) {
           size: upload.size,
           uploadedBy: upload.uploaded_by ?? "Grubel Property Services",
           createdAt: upload.created_at,
-          storagePath: upload.storage_path,
         })),
         messages: [],
         invoiceHistory: payment
@@ -128,7 +147,11 @@ export async function POST(request: Request) {
 
   const portalRecord = getPortalRecord(quoteNumber);
 
-  if (!portalRecord) {
+  if (
+    !portalRecord ||
+    portalRecord.quote.customerEmail.toLowerCase() !==
+      customerSession.email.toLowerCase()
+  ) {
     return NextResponse.json({ error: "Quote not found." }, { status: 404 });
   }
 

@@ -8,7 +8,7 @@ export const allowedUploadTypes = new Set([
   "application/pdf",
 ]);
 
-export const maxUploadSize = 8 * 1024 * 1024;
+export const maxUploadSize = 10 * 1024 * 1024;
 
 export type PreparedUpload = UploadMetadata & {
   category: UploadCategory;
@@ -30,7 +30,7 @@ export function validateUploadFile(file: File) {
   if (file.size > maxUploadSize) {
     return {
       success: false as const,
-      error: "Each uploaded file must be 8MB or smaller.",
+      error: "Each uploaded file must be 10MB or smaller.",
     };
   }
 

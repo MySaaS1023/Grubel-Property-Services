@@ -33,7 +33,6 @@ export function AdminLoginForm() {
         return;
       }
 
-      sessionStorage.setItem("gps_admin_logged_in", "true");
       router.push(searchParams.get("next") ?? "/admin");
     } catch {
       setError("Unable to log in. Please try again.");

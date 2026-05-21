@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { setAuthCookie } from "@/lib/auth";
 import { subcontractors } from "@/lib/mock-data";
 
 export async function POST(request: Request) {
@@ -12,22 +13,34 @@ export async function POST(request: Request) {
       ? String((body as Record<string, unknown>).accessCode).trim()
       : "";
 
-  const subcontractor = subcontractors.find(
-    (item) => item.email.toLowerCase() === email,
-  );
+  const allowedEmail = process.env.SUBCONTRACTOR_TEST_EMAIL?.toLowerCase();
+  const allowedCode = process.env.SUBCONTRACTOR_TEST_CODE;
 
-  // MVP demo access code. Future auth should use Supabase Auth with
-  // subcontractor role permissions and invite-based onboarding.
-  if (!subcontractor || accessCode !== "sub123") {
+  if (!allowedEmail || !allowedCode) {
+    return NextResponse.json(
+      { error: "Subcontractor access is not configured." },
+      { status: 503 },
+    );
+  }
+
+  if (email !== allowedEmail || accessCode !== allowedCode) {
     return NextResponse.json(
       { error: "We could not validate that subcontractor access." },
       { status: 401 },
     );
   }
 
-  return NextResponse.json({
+  const subcontractor = subcontractors.find(
+    (item) => item.email.toLowerCase() === email,
+  );
+  const response = NextResponse.json({
     success: true,
-    email: subcontractor.email,
-    subcontractorId: subcontractor.id,
+    email,
+    subcontractorId: subcontractor?.id,
+  });
+
+  return setAuthCookie(response, "subcontractor", {
+    email,
+    subcontractorId: subcontractor?.id,
   });
 }
