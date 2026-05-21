@@ -1,9 +1,4 @@
 import { NextResponse } from "next/server";
-import {
-  authenticateWithSupabasePassword,
-  getProfileByUserId,
-  setAuthCookie,
-} from "@/lib/auth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -16,31 +11,14 @@ export async function POST(request: Request) {
       ? String((body as Record<string, unknown>).password)
       : "";
 
-  const { user, error } = await authenticateWithSupabasePassword({
-    email,
-    password,
-  });
+  const adminEmail = (process.env.ADMIN_EMAIL ?? "admin@grubelps.com").toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "admin123";
 
-  if (error || !user) {
-    return NextResponse.json(
-      { error: error ?? "Invalid admin login." },
-      { status: 401 },
-    );
+  // Future auth replacement: Supabase Auth or NextAuth with Admin role checks,
+  // secure cookies, MFA, audit logging, and protected server routes.
+  if (email !== adminEmail || password !== adminPassword) {
+    return NextResponse.json({ error: "Invalid admin login." }, { status: 401 });
   }
 
-  const profile = await getProfileByUserId(user.id);
-
-  if (!profile || profile.role !== "admin") {
-    const response = NextResponse.json(
-      { error: "You do not have admin access." },
-      { status: 403 },
-    );
-    return response;
-  }
-
-  const response = NextResponse.json({ success: true });
-  return setAuthCookie(response, "admin", {
-    userId: user.id,
-    email: profile.email,
-  });
+  return NextResponse.json({ success: true });
 }

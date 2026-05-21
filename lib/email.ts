@@ -12,47 +12,29 @@ type EmailType =
 type EmailPayload = {
   type: EmailType;
   to?: string;
-  from?: string;
   subject: string;
-  text?: string;
   data: Record<string, unknown>;
 };
 
 export async function queueOperationalEmail(payload: EmailPayload) {
   const businessEmail = process.env.BUSINESS_EMAIL ?? "info@grubelps.com";
   const resendApiKey = process.env.RESEND_API_KEY;
-  const fromEmail =
-    payload.from ??
-    process.env.FROM_EMAIL ??
-    "Grubel Property Services <onboarding@resend.dev>";
   const to = payload.to ?? businessEmail;
-
-  console.info("Resend email configuration", {
-    resendApiKeyExists: Boolean(resendApiKey),
-    businessEmail,
-    fromEmail,
-  });
 
   if (resendApiKey) {
     const resend = new Resend(resendApiKey);
 
-    const result = await resend.emails.send({
-      from: fromEmail,
+    await resend.emails.send({
+      from: `Grubel Property Services <${businessEmail}>`,
       to,
       subject: payload.subject,
-      text: payload.text ?? formatEmailText(payload),
+      text: formatEmailText(payload),
     });
 
-    if (result.error) {
-      console.error("Resend email failed", result.error);
-      return { queued: true, sent: false, error: result.error };
-    }
-
-    console.info("Resend email sent", { id: result.data?.id });
-    return { queued: true, sent: true, id: result.data?.id };
+    return { queued: true, sent: true };
   }
 
-  console.info("email skipped: RESEND_API_KEY is not configured", {
+  console.info("Operational email prepared without RESEND_API_KEY", {
     type: payload.type,
     to,
     subject: payload.subject,

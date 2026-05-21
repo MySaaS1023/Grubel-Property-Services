@@ -1,6 +1,5 @@
 import { Button } from "@/components/Button";
 import { SubcontractorGuard } from "@/components/AuthGuards";
-import { LogoutButton } from "@/components/LogoutButton";
 import { PageHero } from "@/components/PageHero";
 import { jobAssignments, subcontractors } from "@/lib/operations-data";
 
@@ -37,9 +36,6 @@ export default function SubcontractorPortalPage() {
       />
       <section className="bg-white py-16">
         <div className="site-container grid gap-8">
-          <div>
-            <LogoutButton role="subcontractor" />
-          </div>
           <div className="grid gap-5 md:grid-cols-4">
             <DashboardCard label="Status" value={subcontractor.status} />
             <DashboardCard label="Availability" value={subcontractor.availability} />

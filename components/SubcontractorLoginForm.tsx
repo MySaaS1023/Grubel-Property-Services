@@ -33,6 +33,8 @@ export function SubcontractorLoginForm() {
         return;
       }
 
+      sessionStorage.setItem("gps_subcontractor_logged_in", "true");
+      sessionStorage.setItem("gps_subcontractor_email", data.email);
       router.push(searchParams.get("next") ?? "/subcontractor-portal");
     } catch {
       setError("Unable to access the portal. Please try again.");

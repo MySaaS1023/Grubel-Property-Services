@@ -34,6 +34,7 @@ export function CustomerLoginForm() {
         return;
       }
 
+      sessionStorage.setItem("gps_customer_quote", data.quoteNumber);
       router.push(`/customer-portal?quote=${encodeURIComponent(data.quoteNumber)}`);
     } catch {
       setError("Unable to access the portal. Please try again.");

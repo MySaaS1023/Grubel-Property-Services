@@ -1,0 +1,16 @@
+
+> grubel-property-services@0.1.0 dev
+> next dev -p 3000
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.163:3000
+✓ Ready in 1267ms
+
+ GET / 200 in 1162ms (next.js: 331ms, application-code: 831ms)
+ GET /customer-login 200 in 1642ms (next.js: 1266ms, application-code: 375ms)
+ GET /payment 200 in 165ms (next.js: 54ms, application-code: 111ms)
+ GET /admin-login 200 in 983ms (next.js: 801ms, application-code: 182ms)
+ GET /subcontractor-login 200 in 1033ms (next.js: 911ms, application-code: 122ms)
+ GET /admin 200 in 416ms (next.js: 79ms, application-code: 337ms)
+ GET /subcontractor-portal 200 in 299ms (next.js: 48ms, application-code: 251ms)

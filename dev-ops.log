@@ -1,0 +1,10 @@
+
+> grubel-property-services@0.1.0 dev
+> next dev -p 3000
+
+▲ Next.js 16.2.4 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.163:3000
+✓ Ready in 1415ms
+
+ GET /admin 200 in 1770ms (next.js: 633ms, application-code: 1137ms)

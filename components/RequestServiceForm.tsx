@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Button } from "@/components/Button";
 
 const services = [
@@ -14,46 +14,19 @@ const propertyTypes = ["Residential", "Commercial", "Rental", "Other"];
 const occupancyOptions = ["Occupied", "Vacant", "Unknown"];
 const timeWindows = ["Morning", "Afternoon", "Evening", "Flexible"];
 const contactMethods = ["Phone", "Video Call"];
-const acceptedFileTypes = new Set(["image/jpeg", "image/png", "application/pdf"]);
-const maxFileSize = 10 * 1024 * 1024;
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
 export function RequestServiceForm() {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [fileError, setFileError] = useState("");
-
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(event.currentTarget.files ?? []);
-    setFileError("");
-    setSelectedFiles([]);
-
-    for (const file of files) {
-      if (!acceptedFileTypes.has(file.type)) {
-        setFileError("Uploads must be JPG, JPEG, PNG, or PDF files.");
-        event.currentTarget.value = "";
-        return;
-      }
-
-      if (file.size > maxFileSize) {
-        setFileError("Each uploaded file must be 10MB or smaller.");
-        event.currentTarget.value = "";
-        return;
-      }
-    }
-
-    setSelectedFiles(files);
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
     setState("submitting");
     setMessage("");
 
-    const formData = new FormData(form);
+    const formData = new FormData(event.currentTarget);
     formData.set("subject", "Service Request");
     formData.set("message", String(formData.get("projectDescription") ?? ""));
 
@@ -62,40 +35,22 @@ export function RequestServiceForm() {
         method: "POST",
         body: formData,
       });
-      const data = await response.json().catch(() => null);
-      console.log("Request service submit response", {
-        status: response.status,
-        ok: response.ok,
-        data,
-      });
-      const successIndicator =
-        data?.success === true ||
-        data?.emailSent === true ||
-        data?.requestSaved === true;
-      const success = response.ok || successIndicator;
+      const data = await response.json();
 
-      if (!success) {
+      if (!response.ok) {
         setState("error");
-        setMessage(
-          data?.error
-            ? `We could not submit your request. ${data.error}`
-            : "We could not submit your request. Please check required fields and try again.",
-        );
+        setMessage(data.error ?? "Please check the form and try again.");
         return;
       }
 
-      form.reset();
-      setSelectedFiles([]);
-      setFileError("");
+      event.currentTarget.reset();
       setState("success");
       setMessage(
-        "Your request was submitted successfully. Our team will review your information and follow up soon.",
+        "Thank you. We received your request. Grubel Property Services will review the details and follow up with next steps or a quote number.",
       );
     } catch {
       setState("error");
-      setMessage(
-        "We could not submit your request. Please check required fields and try again.",
-      );
+      setMessage("Something went wrong. Please try again in a moment.");
     }
   }
 
@@ -146,27 +101,9 @@ export function RequestServiceForm() {
             className="sr-only"
             multiple
             name="photos"
-            onChange={handleFileChange}
             type="file"
           />
         </label>
-        {selectedFiles.length ? (
-          <div className="rounded-md bg-white p-3 text-sm font-semibold text-charcoal/75">
-            <p>
-              {selectedFiles.length} file{selectedFiles.length === 1 ? "" : "s"} selected
-            </p>
-            <ul className="mt-2 grid gap-1 text-xs font-normal text-charcoal/70">
-              {selectedFiles.map((file) => (
-                <li key={`${file.name}-${file.size}`}>{file.name}</li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
-        {fileError ? (
-          <p className="rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
-            {fileError}
-          </p>
-        ) : null}
       </div>
       <p className="text-sm leading-6 text-charcoal/65">
         For virtual inspections, choose a preferred date and time window for a
