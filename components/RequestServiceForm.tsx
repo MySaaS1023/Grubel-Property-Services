@@ -49,10 +49,11 @@ export function RequestServiceForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setState("submitting");
     setMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     formData.set("subject", "Service Request");
     formData.set("message", String(formData.get("projectDescription") ?? ""));
 
@@ -62,14 +63,18 @@ export function RequestServiceForm() {
         body: formData,
       });
       const data = await response.json().catch(() => null);
-      console.log("Request service response", {
-        ok: response.ok,
+      console.log("Request service submit response", {
         status: response.status,
+        ok: response.ok,
         data,
       });
-      const success = response.ok || data?.success === true;
+      const successIndicator =
+        data?.success === true ||
+        data?.emailSent === true ||
+        data?.requestSaved === true;
+      const success = response.ok || successIndicator;
 
-      if (!success || data?.success === false) {
+      if (!success) {
         setState("error");
         setMessage(
           data?.error
@@ -79,7 +84,7 @@ export function RequestServiceForm() {
         return;
       }
 
-      event.currentTarget.reset();
+      form.reset();
       setSelectedFiles([]);
       setFileError("");
       setState("success");
