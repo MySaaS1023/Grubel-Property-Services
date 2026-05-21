@@ -83,6 +83,7 @@ export async function POST(request: Request) {
     additionalNotes: validation.data.additionalNotes,
     uploadedFiles,
   };
+  const uploadedFileNames = uploadedFiles.map((file) => file.fileName);
 
   if (supabase) {
     supabaseConfigured = true;
@@ -281,10 +282,33 @@ export async function POST(request: Request) {
   try {
     const emailResult = await queueOperationalEmail({
       type: "new_service_request",
-      subject: "New service request received",
+      to: process.env.BUSINESS_EMAIL ?? "info@grubelps.com",
+      from:
+        process.env.FROM_EMAIL ??
+        "Grubel Property Services <onboarding@resend.dev>",
+      subject: "New Service Request - Grubel Property Services",
+      text: formatServiceRequestEmail({
+        fullName: validation.data.fullName,
+        email: validation.data.email,
+        phone: validation.data.phone,
+        serviceNeeded: validation.data.serviceNeeded,
+        propertyAddress: validation.data.propertyAddress,
+        propertyType: validation.data.propertyType,
+        occupancyStatus: validation.data.occupancyStatus,
+        preferredDate: validation.data.preferredDate,
+        preferredTimeWindow: validation.data.preferredTimeWindow,
+        preferredContactMethod: validation.data.preferredContactMethod,
+        projectDescription:
+          validation.data.projectDescription || validation.data.message,
+        additionalNotes: validation.data.additionalNotes,
+        uploadedFileNames,
+      }),
       data: serviceRequestPayload,
     });
     console.info("Service request email result", emailResult);
+    if (!emailResult.sent) {
+      postSaveWarnings.push("email_failed");
+    }
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown email notification error.";
@@ -305,4 +329,58 @@ export async function POST(request: Request) {
       category: file.category,
     })),
   });
+}
+
+function formatServiceRequestEmail({
+  fullName,
+  email,
+  phone,
+  serviceNeeded,
+  propertyAddress,
+  propertyType,
+  occupancyStatus,
+  preferredDate,
+  preferredTimeWindow,
+  preferredContactMethod,
+  projectDescription,
+  additionalNotes,
+  uploadedFileNames,
+}: {
+  fullName: string;
+  email: string;
+  phone: string;
+  serviceNeeded?: string;
+  propertyAddress?: string;
+  propertyType?: string;
+  occupancyStatus?: string;
+  preferredDate?: string;
+  preferredTimeWindow?: string;
+  preferredContactMethod?: string;
+  projectDescription?: string;
+  additionalNotes?: string;
+  uploadedFileNames: string[];
+}) {
+  return [
+    "New Service Request - Grubel Property Services",
+    "",
+    `Full Name: ${fullName}`,
+    `Email: ${email}`,
+    `Phone: ${phone}`,
+    `Service Needed: ${serviceNeeded || "Not provided"}`,
+    `Property Address: ${propertyAddress || "Not provided"}`,
+    `Property Type: ${propertyType || "Not provided"}`,
+    `Occupied/Vacant: ${occupancyStatus || "Not provided"}`,
+    `Preferred Date: ${preferredDate || "Not provided"}`,
+    `Preferred Time Window: ${preferredTimeWindow || "Not provided"}`,
+    `Preferred Contact Method: ${preferredContactMethod || "Not provided"}`,
+    "",
+    "Project Description:",
+    projectDescription || "Not provided",
+    "",
+    "Additional Notes:",
+    additionalNotes || "Not provided",
+    "",
+    "Uploaded Files:",
+    uploadedFileNames.length ? uploadedFileNames.join(", ") : "None",
+  ].join("\n");
 }
