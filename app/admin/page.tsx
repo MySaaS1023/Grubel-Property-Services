@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { AdminGuard } from "@/components/AuthGuards";
+import { LogoutButton } from "@/components/LogoutButton";
 import { PageHero } from "@/components/PageHero";
 import {
   applications,
@@ -46,6 +47,9 @@ export default function AdminPage() {
             Admin authentication will be added before production operations.
             Future roles: Admin, Customer, and Subcontractor.
           </p>
+          <div>
+            <LogoutButton role="admin" />
+          </div>
           <AdminDataNotice />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

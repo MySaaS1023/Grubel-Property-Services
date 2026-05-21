@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import { setAuthCookie } from "@/lib/auth";
-import { subcontractors } from "@/lib/mock-data";
+import {
+  authenticateWithSupabasePassword,
+  getProfileByUserId,
+  setAuthCookie,
+} from "@/lib/auth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -13,34 +16,36 @@ export async function POST(request: Request) {
       ? String((body as Record<string, unknown>).accessCode).trim()
       : "";
 
-  const allowedEmail = process.env.SUBCONTRACTOR_TEST_EMAIL?.toLowerCase();
-  const allowedCode = process.env.SUBCONTRACTOR_TEST_CODE;
+  const { user, error } = await authenticateWithSupabasePassword({
+    email,
+    password: accessCode,
+  });
 
-  if (!allowedEmail || !allowedCode) {
+  if (error || !user) {
     return NextResponse.json(
-      { error: "Subcontractor access is not configured." },
-      { status: 503 },
-    );
-  }
-
-  if (email !== allowedEmail || accessCode !== allowedCode) {
-    return NextResponse.json(
-      { error: "We could not validate that subcontractor access." },
+      { error: error ?? "We could not validate that subcontractor access." },
       { status: 401 },
     );
   }
 
-  const subcontractor = subcontractors.find(
-    (item) => item.email.toLowerCase() === email,
-  );
+  const profile = await getProfileByUserId(user.id);
+
+  if (!profile || profile.role !== "subcontractor") {
+    return NextResponse.json(
+      { error: "You do not have subcontractor access." },
+      { status: 403 },
+    );
+  }
+
   const response = NextResponse.json({
     success: true,
-    email,
-    subcontractorId: subcontractor?.id,
+    email: profile.email,
+    subcontractorId: user.id,
   });
 
   return setAuthCookie(response, "subcontractor", {
-    email,
-    subcontractorId: subcontractor?.id,
+    userId: user.id,
+    email: profile.email,
+    subcontractorId: user.id,
   });
 }

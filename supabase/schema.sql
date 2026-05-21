@@ -4,6 +4,15 @@
 
 create extension if not exists "pgcrypto";
 
+create table if not exists profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  email text not null unique,
+  role text not null check (role in ('admin', 'customer', 'subcontractor')),
+  full_name text
+);
+
 create table if not exists customers (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -195,6 +204,7 @@ create index if not exists idx_subcontractor_applications_email on subcontractor
 -- private file metadata writes should go through server API routes using the
 -- service role key only on the server.
 alter table customers enable row level security;
+alter table profiles enable row level security;
 alter table service_requests enable row level security;
 alter table quotes enable row level security;
 alter table projects enable row level security;
@@ -206,6 +216,8 @@ alter table subcontractor_applications enable row level security;
 alter table job_assignments enable row level security;
 alter table crm_logs enable row level security;
 
+create policy "service role can manage profiles"
+  on profiles for all to service_role using (true) with check (true);
 create policy "service role can manage customers"
   on customers for all to service_role using (true) with check (true);
 create policy "service role can manage service requests"
@@ -246,6 +258,10 @@ create policy "customers can read their own projects"
         and lower(quotes.customer_email) = lower(coalesce(auth.jwt() ->> 'email', ''))
     )
   );
+
+create policy "authenticated users can read their own profile"
+  on profiles for select to authenticated
+  using (id = auth.uid());
 
 create policy "customers can read their own payments"
   on payments for select to authenticated
