@@ -45,10 +45,11 @@ export function SubcontractorApplicationForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setStatus("submitting");
     setMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     formData.set("applicationType", applicationType);
 
     try {
@@ -56,17 +57,31 @@ export function SubcontractorApplicationForm({
         method: "POST",
         body: formData,
       });
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
+      console.log("Subcontractor application response", {
+        status: response.status,
+        ok: response.ok,
+        data,
+      });
+      const success =
+        response.ok ||
+        data?.success === true ||
+        data?.emailSent === true ||
+        data?.applicationSaved === true;
 
-      if (!response.ok) {
+      if (!success) {
         setStatus("error");
-        setMessage(data.error ?? "Please review the application and try again.");
+        setMessage(
+          data?.error ?? "Unable to submit application. Please try again.",
+        );
         return;
       }
 
-      event.currentTarget.reset();
+      form.reset();
       setStatus("success");
-      setMessage("Application received. Grubel Property Services will review your information.");
+      setMessage(
+        "Your application was submitted successfully. Our team will review your information and follow up soon.",
+      );
     } catch {
       setStatus("error");
       setMessage("Unable to submit application. Please try again.");
