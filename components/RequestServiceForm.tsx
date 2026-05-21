@@ -62,6 +62,11 @@ export function RequestServiceForm() {
         body: formData,
       });
       const data = await response.json().catch(() => null);
+      console.log("Request service response", {
+        ok: response.ok,
+        status: response.status,
+        data,
+      });
       const success = response.ok || data?.success === true;
 
       if (!success || data?.success === false) {

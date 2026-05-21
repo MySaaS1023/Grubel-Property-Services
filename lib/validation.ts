@@ -2,7 +2,7 @@ export type ServiceRequestInput = {
   fullName: string;
   email: string;
   phone: string;
-  subject: string;
+  subject?: string;
   message: string;
   propertyAddress?: string;
   city?: string;
@@ -39,7 +39,7 @@ export function validateServiceRequest(input: unknown): ValidationResult {
   const phone = toCleanString(body.phone);
   const subject = toCleanString(body.subject);
   const serviceNeeded = toCleanString(body.serviceNeeded);
-  const message = toCleanString(body.message);
+  const message = toCleanString(body.message) || toCleanString(body.projectDescription);
 
   if (!fullName) {
     return { success: false, error: "Full name is required." };
@@ -53,8 +53,8 @@ export function validateServiceRequest(input: unknown): ValidationResult {
     return { success: false, error: "Phone is required." };
   }
 
-  if (!subject) {
-    return { success: false, error: "Subject is required." };
+  if (!serviceNeeded) {
+    return { success: false, error: "Service needed is required." };
   }
 
   if (serviceNeeded && !allowedServices.has(serviceNeeded)) {

@@ -9,20 +9,44 @@ import {
 import { validateServiceRequest } from "@/lib/validation";
 
 export async function POST(request: Request) {
+  console.log("[service-request] request received");
   const contentType = request.headers.get("content-type") ?? "";
 
   if (!contentType.includes("multipart/form-data")) {
+    console.error("[service-request] invalid content type", { contentType });
     return NextResponse.json(
       { error: "Service requests must be submitted as form data." },
       { status: 400 },
     );
   }
 
-  const formData = await request.formData();
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unable to parse form data.";
+    console.error("[service-request] formData parse failed", { error: message });
+    return NextResponse.json(
+      { error: "Unable to parse service request form data." },
+      { status: 500 },
+    );
+  }
+
   const fields = Object.fromEntries(
     Array.from(formData.entries()).filter(([, value]) => typeof value === "string"),
   );
-  console.info("Service request fields received", {
+  console.log("[service-request] parsed formData keys", Object.keys(fields));
+  console.log("[service-request] required field values", {
+    fullName: fields.fullName ? "present" : "missing",
+    email: fields.email ? "present" : "missing",
+    phone: fields.phone ? "present" : "missing",
+    serviceNeeded: fields.serviceNeeded,
+    propertyAddress: fields.propertyAddress ? "present" : "missing",
+    projectDescription: fields.projectDescription ? "present" : "missing",
+    message: fields.message ? "present" : "missing",
+  });
+  console.info("[service-request] fields received", {
     fieldNames: Object.keys(fields),
     serviceNeeded: fields.serviceNeeded,
     propertyType: fields.propertyType,
@@ -30,8 +54,12 @@ export async function POST(request: Request) {
   });
 
   const validation = validateServiceRequest(fields);
+  console.log("[service-request] validation result", validation.success);
 
   if (!validation.success) {
+    console.error("[service-request] validation failed", {
+      error: validation.error,
+    });
     return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
@@ -39,11 +67,17 @@ export async function POST(request: Request) {
     .getAll("photos")
     .concat(formData.getAll("documents"))
     .filter((value): value is File => value instanceof File && value.size > 0);
-  console.info("Service request files received", { count: files.length });
+  console.log("[service-request] files count", { count: files.length });
 
   for (const file of files) {
     const fileValidation = validateUploadFile(file);
     if (!fileValidation.success) {
+      console.error("[service-request] file validation failed", {
+        fileName: file.name,
+        fileType: file.type,
+        size: file.size,
+        error: fileValidation.error,
+      });
       return NextResponse.json({ error: fileValidation.error }, { status: 400 });
     }
   }
@@ -104,13 +138,13 @@ export async function POST(request: Request) {
       .single();
 
     if (customerError) {
-      console.error("Service request customer upsert failed", customerError);
+      console.error("[service-request] customer insert result failed", customerError);
       return NextResponse.json(
         { error: `Unable to save customer: ${customerError.message}` },
         { status: 500 },
       );
     }
-    console.info("Service request customer upsert result", {
+    console.log("[service-request] customer insert result", {
       customerId: customer.id,
     });
 
@@ -137,13 +171,13 @@ export async function POST(request: Request) {
       .single();
 
     if (requestError) {
-      console.error("Service request insert failed", requestError);
+      console.error("[service-request] service request insert result failed", requestError);
       return NextResponse.json(
         { error: `Unable to save service request: ${requestError.message}` },
         { status: 500 },
       );
     }
-    console.info("Service request insert result", {
+    console.log("[service-request] service request insert result", {
       serviceRequestId: serviceRequest.id,
     });
 
@@ -163,7 +197,7 @@ export async function POST(request: Request) {
 
         try {
           const uploaded = await uploadFileToSupabaseStorage({ file, record: prepared });
-          console.info("Service request storage upload result", {
+          console.log("[service-request] upload result", {
             fileName: uploaded.fileName,
             storageBucket: uploaded.storageBucket,
             storageConfigured: uploaded.storageConfigured,
@@ -173,7 +207,7 @@ export async function POST(request: Request) {
           const message =
             error instanceof Error ? error.message : "Unknown storage upload error.";
           uploadFailures.push(`${prepared.fileName}: ${message}`);
-          console.error("Service request storage upload failed", {
+          console.error("[service-request] upload result failed", {
             fileName: prepared.fileName,
             error: message,
           });
@@ -205,7 +239,7 @@ export async function POST(request: Request) {
 
         if (uploadError) {
           postSaveWarnings.push("Upload metadata could not be saved.");
-          console.error("Service request upload metadata insert failed", uploadError);
+          console.error("[service-request] upload metadata insert failed", uploadError);
           await supabase.from("crm_logs").insert({
             type: "Uploaded File",
             actor: validation.data.fullName,
@@ -214,7 +248,7 @@ export async function POST(request: Request) {
             notes: uploadError.message,
           });
         } else {
-          console.info("Service request upload metadata insert result", {
+          console.log("[service-request] upload metadata insert result", {
             count: uploadedFiles.length,
           });
         }
@@ -223,7 +257,7 @@ export async function POST(request: Request) {
       const message =
         error instanceof Error ? error.message : "Unknown upload metadata error.";
       postSaveWarnings.push("Upload metadata could not be saved.");
-      console.error("Service request upload metadata insert threw", { error: message });
+      console.error("[service-request] upload metadata insert threw", { error: message });
     }
 
     try {
@@ -243,7 +277,7 @@ export async function POST(request: Request) {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Unknown appointment insert error.";
-      console.error("Service request appointment insert failed", { error: message });
+      console.error("[service-request] appointment insert failed", { error: message });
     }
 
     try {
@@ -268,11 +302,11 @@ export async function POST(request: Request) {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Unknown CRM log insert error.";
-      console.error("Service request CRM log insert failed", { error: message });
+      console.error("[service-request] CRM log insert failed", { error: message });
     }
   } else {
     requestSaved = true;
-    console.info("Supabase not configured. Service request logged only.", {
+    console.info("[service-request] Supabase not configured. Request logged only.", {
       ...serviceRequestPayload,
       devMessage:
         "Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to persist submissions.",
@@ -305,7 +339,7 @@ export async function POST(request: Request) {
       }),
       data: serviceRequestPayload,
     });
-    console.info("Service request email result", emailResult);
+    console.log("[service-request] resend result", emailResult);
     if (!emailResult.sent) {
       postSaveWarnings.push("email_failed");
     }
@@ -313,10 +347,10 @@ export async function POST(request: Request) {
     const message =
       error instanceof Error ? error.message : "Unknown email notification error.";
     postSaveWarnings.push("Email notification could not be sent.");
-    console.error("Service request email failed", { error: message });
+    console.error("[service-request] resend result failed", { error: message });
   }
 
-  return NextResponse.json({
+  const responseBody = {
     success: requestSaved,
     message: "Service request received.",
     serviceRequestId,
@@ -328,7 +362,10 @@ export async function POST(request: Request) {
       size: file.size,
       category: file.category,
     })),
-  });
+  };
+  console.log("[service-request] final response returned", responseBody);
+
+  return NextResponse.json(responseBody);
 }
 
 function formatServiceRequestEmail({
