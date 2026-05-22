@@ -1,9 +1,13 @@
 import { AdminGuard } from "@/components/AuthGuards";
 import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { PageHero } from "@/components/PageHero";
-import { crmLogs } from "@/lib/mock-data";
+import { getAdminData, readDate, readText } from "@/lib/admin-data";
 
-export default function AdminCRMPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminCRMPage() {
+  const { crmLogs } = await getAdminData();
+
   return (
     <AdminGuard>
       <PageHero
@@ -18,12 +22,12 @@ export default function AdminCRMPage() {
             <DataTable
               columns={["Date", "Type", "Customer/Sub", "Related Quote/Project", "Status", "Notes"]}
               rows={crmLogs.map((log) => [
-                log.date,
-                log.type,
-                log.actor,
-                log.relatedQuoteOrProject,
-                log.status,
-                log.notes,
+                readDate(log, ["log_date", "created_at"], "Not listed"),
+                readText(log, "type"),
+                readText(log, "actor"),
+                readText(log, "related_quote_or_project"),
+                readText(log, "status"),
+                readText(log, "notes"),
               ])}
             />
           </div>
@@ -34,6 +38,14 @@ export default function AdminCRMPage() {
 }
 
 function DataTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
+  if (rows.length === 0) {
+    return (
+      <p className="rounded-md bg-stonewash p-4 text-sm font-semibold text-charcoal/70">
+        No records yet.
+      </p>
+    );
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[820px] border-collapse text-left text-sm">

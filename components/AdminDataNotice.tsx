@@ -11,8 +11,8 @@ export function AdminDataNotice() {
         <>
           {" "}
           Internal notice: Supabase is not configured, so this dashboard is
-          showing local MVP data. Connect Supabase environment variables before
-          production operations.
+          showing empty operational tables. Connect Supabase environment
+          variables before production operations.
         </>
       ) : null}
     </p>

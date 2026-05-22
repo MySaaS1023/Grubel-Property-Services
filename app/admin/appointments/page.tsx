@@ -1,9 +1,13 @@
 import { AdminGuard } from "@/components/AuthGuards";
 import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { PageHero } from "@/components/PageHero";
-import { appointments } from "@/lib/mock-data";
+import { getAdminData, readDate, readText } from "@/lib/admin-data";
 
-export default function AdminAppointmentsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function AdminAppointmentsPage() {
+  const { appointments } = await getAdminData();
+
   return (
     <AdminGuard>
       <PageHero
@@ -18,13 +22,13 @@ export default function AdminAppointmentsPage() {
             <DataTable
               columns={["Customer Name", "Service Type", "Appointment Date", "Time Window", "Contact Method", "Status", "Notes"]}
               rows={appointments.map((appointment) => [
-                appointment.customerName,
-                appointment.serviceType,
-                appointment.appointmentDate,
-                appointment.timeWindow,
-                appointment.contactMethod,
-                appointment.status,
-                appointment.notes,
+                readText(appointment, "customer_name"),
+                readText(appointment, "service_type"),
+                readDate(appointment, "appointment_date"),
+                readText(appointment, "time_window"),
+                readText(appointment, "contact_method"),
+                readText(appointment, "status"),
+                readText(appointment, "notes"),
               ])}
             />
           </div>
@@ -35,6 +39,14 @@ export default function AdminAppointmentsPage() {
 }
 
 function DataTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
+  if (rows.length === 0) {
+    return (
+      <p className="rounded-md bg-stonewash p-4 text-sm font-semibold text-charcoal/70">
+        No records yet.
+      </p>
+    );
+  }
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[900px] border-collapse text-left text-sm">

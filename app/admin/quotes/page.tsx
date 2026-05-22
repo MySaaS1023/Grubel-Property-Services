@@ -1,9 +1,10 @@
-import { AdminGuard } from "@/components/AuthGuards";
 import { AdminDataNotice } from "@/components/AdminDataNotice";
+import { AdminGuard } from "@/components/AuthGuards";
 import { PageHero } from "@/components/PageHero";
-import { quotes, subcontractors } from "@/lib/mock-data";
+import { getAdminData, readCurrency, readText } from "@/lib/admin-data";
 
-const nextQuoteNumber = `GPS-${1000 + quotes.length + 1}`;
+export const dynamic = "force-dynamic";
+
 const serviceTypes = [
   "Maintenance & Repair",
   "Property Preservation",
@@ -20,13 +21,19 @@ const serviceStatuses = [
 ];
 const paymentStatuses = ["Unpaid", "Deposit Paid", "Paid"];
 
-export default function AdminQuotesPage() {
+export default async function AdminQuotesPage() {
+  const { quotes, subcontractors } = await getAdminData();
+  const nextQuoteNumber = `GPS-${1000 + quotes.length + 1}`;
+  const assignedTeamOptions = subcontractors.map((item) =>
+    readText(item, ["full_name", "business_name", "email"]),
+  );
+
   return (
     <AdminGuard>
       <PageHero
         eyebrow="Admin Quotes"
         title="Quote Generation"
-        description="Create MVP quote records for customers. This form uses mock/local state now and is structured for a future Supabase insert."
+        description="Create quote records for customers and review active quote activity from Supabase."
       />
       <section className="bg-white py-16">
         <div className="site-container grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
@@ -54,7 +61,11 @@ export default function AdminQuotesPage() {
                 <Select
                   label="Assigned Team/Subcontractor"
                   name="assignedTeam"
-                  options={subcontractors.map((item) => item.fullName)}
+                  options={
+                    assignedTeamOptions.length
+                      ? assignedTeamOptions
+                      : ["No approved subcontractors yet"]
+                  }
                 />
               </div>
               <label className="grid gap-2 text-sm font-bold text-navy">
@@ -73,21 +84,32 @@ export default function AdminQuotesPage() {
           <div className="rounded-lg border border-slate-200 bg-stonewash p-6 shadow-sm">
             <h2 className="text-2xl font-black text-navy">Recent Quotes</h2>
             <div className="mt-5 grid gap-4">
+              {quotes.length === 0 ? (
+                <p className="rounded-md bg-white p-4 text-sm font-semibold text-charcoal/70">
+                  No records yet.
+                </p>
+              ) : null}
               {quotes.map((quote) => (
-                <article className="rounded-md bg-white p-4" key={quote.id}>
+                <article
+                  className="rounded-md bg-white p-4"
+                  key={readText(quote, "id")}
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className="font-black text-navy">{quote.quoteNumber}</h3>
+                      <h3 className="font-black text-navy">
+                        {readText(quote, "quote_number")}
+                      </h3>
                       <p className="mt-1 text-sm font-semibold text-charcoal/70">
-                        {quote.customerName}
+                        {readText(quote, ["customer_name", "customer_email"])}
                       </p>
                     </div>
                     <span className="rounded-full bg-navy px-3 py-1 text-xs font-black uppercase tracking-[0.12em] text-white">
-                      {quote.paymentStatus}
+                      {readText(quote, "payment_status")}
                     </span>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-charcoal/72">
-                    {quote.serviceType} · {quote.displayAmount}
+                    {readText(quote, "service_type")} ·{" "}
+                    {readCurrency(quote, "amount")}
                   </p>
                 </article>
               ))}
