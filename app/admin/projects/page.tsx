@@ -42,7 +42,7 @@ export default async function AdminProjectsPage() {
                       {readText(project, "quote_number")}
                     </h2>
                     <p className="mt-2 font-semibold text-charcoal/70">
-                      {readText(project, "customer_name")} ·{" "}
+                      {readText(project, "customer_name")} -{" "}
                       {readText(project, "service_type")}
                     </p>
                   </div>

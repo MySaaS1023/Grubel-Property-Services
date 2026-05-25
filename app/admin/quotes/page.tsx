@@ -23,7 +23,6 @@ const paymentStatuses = ["Unpaid", "Deposit Paid", "Paid"];
 
 export default async function AdminQuotesPage() {
   const { quotes, subcontractors } = await getAdminData();
-  const nextQuoteNumber = `GPS-${1000 + quotes.length + 1}`;
   const assignedTeamOptions = subcontractors.map((item) =>
     readText(item, ["full_name", "business_name", "email"]),
   );
@@ -42,8 +41,8 @@ export default async function AdminQuotesPage() {
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <div className="mb-5 rounded-md bg-accent/10 p-4 text-sm font-semibold text-charcoal">
-              Next quote number preview: {nextQuoteNumber}. Future database
-              flow will reserve this number during quote creation.
+              Quote numbers should be generated and reserved by the database
+              when a quote record is created.
             </div>
             <form className="grid gap-5">
               <div className="grid gap-5 md:grid-cols-2">
@@ -108,7 +107,7 @@ export default async function AdminQuotesPage() {
                     </span>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-charcoal/72">
-                    {readText(quote, "service_type")} ·{" "}
+                    {readText(quote, "service_type")} -{" "}
                     {readCurrency(quote, "amount")}
                   </p>
                 </article>

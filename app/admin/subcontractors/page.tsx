@@ -49,7 +49,7 @@ export default async function AdminSubcontractorsPage() {
                     {readText(application, "applicant_name")}
                   </h3>
                   <p className="mt-2 text-sm font-semibold text-charcoal/70">
-                    {readText(application, "application_type")} ·{" "}
+                    {readText(application, "application_type")} -{" "}
                     {readText(application, "status")}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
@@ -106,7 +106,7 @@ export default async function AdminSubcontractorsPage() {
                   className="rounded-md bg-stonewash p-3 text-sm font-bold leading-6 text-charcoal"
                   key={readText(job, "id")}
                 >
-                  {readText(job, "title")} · {readText(job, "status")}
+                  {readText(job, "title")} - {readText(job, "status")}
                 </div>
               ))}
             </Panel>
@@ -117,7 +117,7 @@ export default async function AdminSubcontractorsPage() {
                   className="rounded-md bg-stonewash p-3 text-sm font-bold leading-6 text-charcoal"
                   key={readText(upload, "id")}
                 >
-                  {readText(upload, "file_name")} · {readText(upload, "uploaded_by")}
+                  {readText(upload, "file_name")} - {readText(upload, "uploaded_by")}
                 </div>
               ))}
             </Panel>
