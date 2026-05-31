@@ -1,46 +1,28 @@
-import { ContactForm } from "@/components/ContactForm";
+import { PageContainer } from "@/components/page-container";
+import { supportEmail } from "@/lib/site-data";
+import { primaryButtonClass } from "@/lib/styles";
 
 export default function ContactPage() {
   return (
-    <>
-      <section className="bg-stonewash">
-        <div className="site-container py-16 lg:py-20">
-          <div className="mx-auto max-w-4xl">
-            <p className="mb-4 text-sm font-black uppercase tracking-[0.2em] text-accentDark">
-              Contact
-            </p>
-            <h1 className="text-4xl font-black leading-tight text-navy sm:text-5xl">
-              Contact Grubel Property Services
-            </h1>
-            <p className="mt-5 text-lg leading-8 text-charcoal/75">
-              Questions, project inquiries, customer support, feedback, or
-              property concerns? Contact our team below.
-            </p>
-            <div className="mt-6 grid gap-2 text-sm font-bold text-charcoal sm:grid-cols-2">
-              <p>
-                Phone:{" "}
-                <a className="text-accentDark hover:text-navy" href="tel:4804207398">
-                  (480) 420-7398
-                </a>
-              </p>
-              <p>
-                Email:{" "}
-                <a className="text-accentDark hover:text-navy" href="mailto:info@grubelps.com">
-                  info@grubelps.com
-                </a>
-              </p>
-            </div>
-          </div>
+    <section className="py-14 sm:py-16">
+      <PageContainer>
+        <div className="glass-card mx-auto max-w-3xl p-8 text-center sm:p-12">
+          <p className="section-kicker">Contact</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-white sm:text-5xl">
+            Need help before you start?
+          </h1>
+          <p className="mt-5 text-lg leading-8 text-[var(--muted)]">
+            Reach out with questions about packages, fit, or your website goals and
+            we&apos;ll point you in the right direction.
+          </p>
+          <a
+            href={`mailto:${supportEmail}`}
+            className={`${primaryButtonClass} force-white-btn mt-8 text-sm shadow-[var(--shadow)]`}
+          >
+            {supportEmail}
+          </a>
         </div>
-      </section>
-
-      <section className="bg-white py-16">
-        <div className="site-container">
-          <div className="mx-auto max-w-4xl">
-            <ContactForm />
-          </div>
-        </div>
-      </section>
-    </>
+      </PageContainer>
+    </section>
   );
 }

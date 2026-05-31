@@ -1,56 +1,42 @@
-import { PageHero } from "@/components/PageHero";
+import { PageContainer } from "@/components/page-container";
+
+const sections = [
+  {
+    title: "General Information",
+    body: "Information on this website is provided for general service information and does not guarantee a fixed scope, timeline, or final feature set until a project is reviewed.",
+  },
+  {
+    title: "Project Fit",
+    body: "Recommendations, integrations, and website functionality depend on your business needs, the package selected, and whether the requested work fits the service offering.",
+  },
+  {
+    title: "No Guarantees",
+    body: "Steady Start aims to provide thoughtful, high-quality website work, but business results may vary based on your offer, operations, and market conditions.",
+  },
+];
 
 export default function DisclaimerPage() {
   return (
-    <>
-      <PageHero
-        eyebrow="Legal"
-        title="Disclaimer"
-        description="Important service limitations and general information for Grubel Property Services."
-      />
-
-      <section className="bg-white py-16">
-        <div className="site-container">
-          <div className="mx-auto grid max-w-4xl gap-8 text-charcoal/76">
-            <div>
-              <h2 className="text-2xl font-black text-navy">
-                General Information
-              </h2>
-              <p className="mt-3 leading-7">
-                Information on this website is provided for general business and
-                service information only. It does not create a guarantee,
-                warranty, or binding scope of work until Grubel Property
-                Services reviews the project details and confirms the requested
-                service.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-black text-navy">
-                Service Limitations
-              </h2>
-              <p className="mt-3 leading-7">
-                Virtual reviews and property checks are visible condition
-                walkthroughs intended for maintenance and operational support.
-                Grubel Property Services does not provide licensed home
-                inspection services, engineering reports, structural
-                evaluations, or specialty trade certifications.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-2xl font-black text-navy">Project Scope</h2>
-              <p className="mt-3 leading-7">
-                Some repair, construction, electrical, plumbing, structural, or
-                specialty work may require licensed contractors or third-party
-                vendors depending on project scope and local requirements.
-                Pricing, scheduling, access requirements, and service
-                availability are confirmed after review.
-              </p>
-            </div>
+    <section className="py-16 sm:py-20">
+      <PageContainer className="max-w-4xl">
+        <div className="glass-card p-8 sm:p-10">
+          <p className="section-kicker">Disclaimer</p>
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-white">
+            Disclaimer
+          </h1>
+          <div className="mt-8 space-y-6">
+            {sections.map((section) => (
+              <div
+                key={section.title}
+                className="glass-card p-6"
+              >
+                <h2 className="text-xl font-semibold text-white">{section.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{section.body}</p>
+              </div>
+            ))}
           </div>
         </div>
-      </section>
-    </>
+      </PageContainer>
+    </section>
   );
 }
