@@ -1,20 +1,17 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .site-container {
+    @apply mx-auto w-full max-w-[1200px] px-6 md:px-8 lg:px-10;
+  }
+}
 
 :root {
-  --background: #0a0a0a;
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-cream: rgba(15, 23, 42, 0.88);
-  --surface-muted: rgba(17, 24, 39, 0.92);
-  --foreground: #f8fafc;
-  --navy: #0f172a;
-  --navy-dark: #050816;
-  --muted: #94a3b8;
-  --line: rgba(255, 255, 255, 0.12);
-  --card: rgba(255, 255, 255, 0.05);
-  --accent: #3b82f6;
-  --accent-strong: #8b5cf6;
-  --accent-soft: rgba(59, 130, 246, 0.12);
-  --shadow: 0 24px 60px rgba(2, 6, 23, 0.45);
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #1f2933;
 }
 
 * {
@@ -27,14 +24,9 @@ html {
 
 body {
   margin: 0;
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at 14% 10%, rgba(59, 130, 246, 0.2), transparent 22%),
-    radial-gradient(circle at 86% 12%, rgba(139, 92, 246, 0.18), transparent 24%),
-    radial-gradient(circle at 50% 100%, rgba(59, 130, 246, 0.08), transparent 30%),
-    linear-gradient(180deg, #0a0a0a 0%, #0f172a 100%);
+  background: var(--background);
   color: var(--foreground);
-  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 a {
@@ -42,149 +34,8 @@ a {
   text-decoration: none;
 }
 
-button,
 input,
 select,
 textarea {
   font: inherit;
-}
-
-.text-balance {
-  text-wrap: balance;
-}
-
-.glass-panel {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 18px 36px rgba(2, 6, 23, 0.28);
-}
-
-.section-kicker {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #bfdbfe;
-}
-
-.force-white-btn,
-.force-white-btn:link,
-.force-white-btn:visited,
-.force-white-btn:hover,
-.force-white-btn:active,
-.force-white-btn span,
-.force-white-btn p,
-.force-white-btn div {
-  color: #ffffff !important;
-}
-
-@keyframes workflowPulse {
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: scale(0.9);
-    box-shadow: 0 0 0 rgba(59, 130, 246, 0);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 18px rgba(59, 130, 246, 0.4);
-  }
-}
-
-@keyframes workflowFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-@keyframes workflowShimmer {
-  0% {
-    transform: translateX(-110%);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(210%);
-    opacity: 0;
-  }
-}
-
-.workflow-step {
-  animation: workflowFloat 4.8s ease-in-out infinite;
-}
-
-.workflow-step-dot {
-  animation: workflowPulse 2.2s ease-in-out infinite;
-}
-
-.workflow-step:nth-child(2),
-.workflow-step:nth-child(2) .workflow-step-dot {
-  animation-delay: 0.35s;
-}
-
-.workflow-step:nth-child(3),
-.workflow-step:nth-child(3) .workflow-step-dot {
-  animation-delay: 0.7s;
-}
-
-.workflow-step:nth-child(4),
-.workflow-step:nth-child(4) .workflow-step-dot {
-  animation-delay: 1.05s;
-}
-
-.workflow-progress::after {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 22%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0), rgba(59, 130, 246, 0.9), rgba(139, 92, 246, 0));
-  animation: workflowShimmer 3.6s linear infinite;
-}
-
-@keyframes workflowStatusSwap {
-  0%,
-  20% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  25%,
-  100% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-}
-
-.workflow-status {
-  animation: workflowStatusSwap 8s ease-in-out infinite;
-}
-
-.workflow-status:nth-child(2) {
-  animation-delay: 2s;
-}
-
-.workflow-status:nth-child(3) {
-  animation-delay: 4s;
-}
-
-.workflow-status:nth-child(4) {
-  animation-delay: 6s;
 }

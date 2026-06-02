@@ -1,72 +1,31 @@
 import type { Metadata } from "next";
-import { ReactNode } from "react";
-import Script from "next/script";
-
 import "./globals.css";
-
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { SiteChatbot } from "@/components/SiteChatbot";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.steadystartco.com"),
-  title: "Steady Start | Custom Websites Built For Business Owners",
+  title: {
+    default: "Grubel Property Services",
+    template: "%s | Grubel Property Services",
+  },
   description:
-    "We design, build, and launch professional websites for businesses that want to skip the DIY overwhelm and get online faster.",
-  icons: {
-    icon: "/favicon.png",
-  },
-  alternates: {
-    canonical: "https://www.steadystartco.com",
-  },
-  openGraph: {
-    title: "Steady Start | Custom Websites Built For Business Owners",
-    description:
-      "We design, build, and launch professional websites for businesses that want to skip the DIY overwhelm and get online faster.",
-    url: "https://www.steadystartco.com",
-    siteName: "Steady Start",
-    type: "website",
-    images: [
-      {
-        url: "https://www.steadystartco.com/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Steady Start custom business websites",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Steady Start | Custom Websites Built For Business Owners",
-    description:
-      "We design, build, and launch professional websites for businesses that want to skip the DIY overwhelm and get online faster.",
-    images: ["https://www.steadystartco.com/og-image.png"],
-  },
+    "Preventative property checks, minor repair support, and turnover prep for homeowners, landlords, and property managers in Arizona.",
+  metadataBase: new URL("https://grubelps.com"),
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <head>
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=GT-K5434SMD"
-          strategy="afterInteractive"
-        />
-        <Script id="google-tag" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'GT-K5434SMD');
-            gtag('config', 'AW-18126099012');
-          `}
-        </Script>
-      </head>
-      <body className="text-[var(--foreground)] antialiased">
-        <div className="relative flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </div>
+      <body className="min-h-screen bg-white text-charcoal antialiased">
+        <Header />
+        <main>{children}</main>
+        <Footer />
+        <SiteChatbot />
       </body>
     </html>
   );

@@ -82,7 +82,14 @@ export async function POST(request: Request) {
     }
   }
 
+  const supabaseUrlExists = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const supabaseServiceRoleKeyExists = Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
   const supabase = createServiceSupabaseClient();
+  console.log("[service-request] Supabase env diagnostics", {
+    nextPublicSupabaseUrlExists: supabaseUrlExists,
+    supabaseServiceRoleKeyExists,
+    serviceClientInitialized: Boolean(supabase),
+  });
   const fallbackRelatedId = validation.data.email;
   let serviceRequestId = fallbackRelatedId;
   let supabaseConfigured = false;
@@ -122,25 +129,52 @@ export async function POST(request: Request) {
   if (supabase) {
     supabaseConfigured = true;
 
-    const { data: customer, error: customerError } = await supabase
-      .from("customers")
-      .upsert(
-        {
-          full_name: validation.data.fullName,
-          email: validation.data.email,
-          phone: validation.data.phone,
-          property_address: validation.data.propertyAddress || null,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: "email" },
-      )
-      .select("id")
-      .single();
-
-    if (customerError) {
-      console.error("[service-request] customer insert result failed", customerError);
+    let customerResult;
+    try {
+      customerResult = await supabase
+        .from("customers")
+        .upsert(
+          {
+            full_name: validation.data.fullName,
+            email: validation.data.email,
+            phone: validation.data.phone,
+            property_address: validation.data.propertyAddress || null,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "email" },
+        )
+        .select("id")
+        .single();
+    } catch (error) {
+      console.error("[service-request] customer insert threw", {
+        error: getSafeErrorMessage(error),
+        nextPublicSupabaseUrlExists: supabaseUrlExists,
+        supabaseServiceRoleKeyExists,
+        serviceClientInitialized: Boolean(supabase),
+      });
       return NextResponse.json(
-        { error: `Unable to save customer: ${customerError.message}` },
+        {
+          error:
+            "We could not save your request because the database connection failed. Please try again shortly.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const { data: customer, error: customerError } = customerResult;
+
+    if (customerError || !customer) {
+      console.error("[service-request] customer insert result failed", {
+        error: customerError,
+        nextPublicSupabaseUrlExists: supabaseUrlExists,
+        supabaseServiceRoleKeyExists,
+        serviceClientInitialized: Boolean(supabase),
+      });
+      return NextResponse.json(
+        {
+          error:
+            "We could not save your customer information. Please check the form and try again.",
+        },
         { status: 500 },
       );
     }
@@ -148,32 +182,59 @@ export async function POST(request: Request) {
       customerId: customer.id,
     });
 
-    const { data: serviceRequest, error: requestError } = await supabase
-      .from("service_requests")
-      .insert({
-        customer_id: customer.id,
-        customer_name: validation.data.fullName,
-        customer_email: validation.data.email,
-        customer_phone: validation.data.phone,
-        service_type: validation.data.serviceNeeded || "Other",
-        property_address: validation.data.propertyAddress || null,
-        property_type: validation.data.propertyType || null,
-        occupancy_status: validation.data.occupancyStatus || null,
-        preferred_date: validation.data.preferredDate || null,
-        preferred_time_window: validation.data.preferredTimeWindow || null,
-        preferred_contact_method: validation.data.preferredContactMethod || null,
-        project_description:
-          validation.data.projectDescription || validation.data.message,
-        additional_notes: validation.data.additionalNotes || null,
-        status: "New",
-      })
-      .select("id")
-      .single();
-
-    if (requestError) {
-      console.error("[service-request] service request insert result failed", requestError);
+    let requestResult;
+    try {
+      requestResult = await supabase
+        .from("service_requests")
+        .insert({
+          customer_id: customer.id,
+          customer_name: validation.data.fullName,
+          customer_email: validation.data.email,
+          customer_phone: validation.data.phone,
+          service_type: validation.data.serviceNeeded || "Other",
+          property_address: validation.data.propertyAddress || null,
+          property_type: validation.data.propertyType || null,
+          occupancy_status: validation.data.occupancyStatus || null,
+          preferred_date: validation.data.preferredDate || null,
+          preferred_time_window: validation.data.preferredTimeWindow || null,
+          preferred_contact_method: validation.data.preferredContactMethod || null,
+          project_description:
+            validation.data.projectDescription || validation.data.message,
+          additional_notes: validation.data.additionalNotes || null,
+          status: "New",
+        })
+        .select("id")
+        .single();
+    } catch (error) {
+      console.error("[service-request] service request insert threw", {
+        error: getSafeErrorMessage(error),
+        nextPublicSupabaseUrlExists: supabaseUrlExists,
+        supabaseServiceRoleKeyExists,
+        serviceClientInitialized: Boolean(supabase),
+      });
       return NextResponse.json(
-        { error: `Unable to save service request: ${requestError.message}` },
+        {
+          error:
+            "We could not save your service request because the database connection failed. Please try again shortly.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const { data: serviceRequest, error: requestError } = requestResult;
+
+    if (requestError || !serviceRequest) {
+      console.error("[service-request] service request insert result failed", {
+        error: requestError,
+        nextPublicSupabaseUrlExists: supabaseUrlExists,
+        supabaseServiceRoleKeyExists,
+        serviceClientInitialized: Boolean(supabase),
+      });
+      return NextResponse.json(
+        {
+          error:
+            "We could not save your service request. Please check the form and try again.",
+        },
         { status: 500 },
       );
     }
@@ -420,4 +481,19 @@ function formatServiceRequestEmail({
     "Uploaded Files:",
     uploadedFileNames.length ? uploadedFileNames.join(", ") : "None",
   ].join("\n");
+}
+
+function getSafeErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      name: error.name,
+      cause:
+        error.cause instanceof Error
+          ? { message: error.cause.message, name: error.cause.name }
+          : undefined,
+    };
+  }
+
+  return { message: String(error) };
 }
