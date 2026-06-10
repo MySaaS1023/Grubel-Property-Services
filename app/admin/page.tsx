@@ -1,9 +1,6 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { AdminDataNotice } from "@/components/AdminDataNotice";
 import { AdminGuard } from "@/components/AuthGuards";
-import { LogoutButton } from "@/components/LogoutButton";
-import { PageHero } from "@/components/PageHero";
+import { AdminNotice, AdminShell } from "@/components/AdminShell";
 import {
   countWhere,
   getAdminData,
@@ -14,25 +11,23 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const adminLinks = [
-  { href: "/admin/quotes", label: "Create Quote" },
-  { href: "/admin/projects", label: "Project Management" },
-  { href: "/admin/appointments", label: "Appointments" },
-  { href: "/admin/crm", label: "CRM Logs" },
-  { href: "/admin/subcontractors", label: "Subcontractors" },
+const quickActions = [
+  { href: "/admin/requests", label: "Review Requests" },
+  { href: "/admin/customers", label: "View Customers" },
+  { href: "/admin/quotes", label: "Manage Quotes" },
+  { href: "/admin/projects", label: "Track Projects" },
+  { href: "/admin/uploads", label: "Review Uploads" },
+  { href: "/admin/subcontractors", label: "Review Subcontractors" },
 ];
 
 export default async function AdminPage() {
   const {
     applications,
     appointments,
-    customers,
-    jobAssignments,
     payments,
     projects,
     quotes,
     serviceRequests,
-    subcontractors,
     uploads,
   } = await getAdminData();
 
@@ -45,30 +40,24 @@ export default async function AdminPage() {
     },
     { label: "Scheduled Jobs", value: countWhere(appointments, "status", "Scheduled") },
     {
-      label: "Pending Subcontractors",
-      value: applications.filter((item) => readText(item, "status", "") !== "Approved")
-        .length,
+      label: "Pending Subs",
+      value: applications.filter((item) =>
+        ["New", "Pending Review", "More Info Requested"].includes(
+          readText(item, "status", ""),
+        ),
+      ).length,
     },
     { label: "Completed Projects", value: countWhere(projects, "status", "Completed") },
   ];
 
   return (
     <AdminGuard>
-      <PageHero
-        eyebrow="Internal Operations"
+      <AdminShell
+        description="A focused operations dashboard for current requests, quote activity, projects, payments, uploads, and subcontractor activity."
         title="Admin Dashboard"
-        description="MVP operations dashboard for requests, customers, quotes, projects, appointments, payments, uploads, subcontractors, and job assignments."
-      />
-      <section className="bg-white py-16">
-        <div className="site-container grid gap-8">
-          <p className="rounded-md bg-accent/10 p-4 text-sm font-semibold leading-6 text-charcoal">
-            MVP authentication is active. Replace with Supabase Auth role
-            enforcement before handling production-sensitive data.
-          </p>
-          <div>
-            <LogoutButton role="admin" />
-          </div>
-          <AdminDataNotice />
+      >
+        <div className="grid gap-8">
+          <AdminNotice />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {stats.map((stat) => (
@@ -76,144 +65,80 @@ export default async function AdminPage() {
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            {adminLinks.map((link) => (
-              <Link
-                className="rounded-md bg-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-accentDark"
-                href={link.href}
-                key={link.href}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-
-          <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="New Service Requests">
-              <DataTable
-                columns={["Customer", "Service", "Property", "Status"]}
-                rows={serviceRequests.map((item) => [
-                  readText(item, ["customer_name", "customer_email"]),
-                  readText(item, "service_type"),
-                  readText(item, "property_address"),
-                  readText(item, "status"),
-                ])}
-              />
-            </DashboardPanel>
-            <DashboardPanel title="Customers">
-              <DataTable
-                columns={["Name", "Email", "Phone", "Property"]}
-                rows={customers.map((customer) => [
-                  readText(customer, "full_name"),
-                  readText(customer, "email"),
-                  readText(customer, "phone"),
-                  readText(customer, ["property_address", "billing_address"]),
-                ])}
-              />
-            </DashboardPanel>
+          <section className="grid gap-5 lg:grid-cols-3">
+            <SummaryCard
+              label="Payments"
+              title={`${payments.length} payment record${payments.length === 1 ? "" : "s"}`}
+              value={
+                payments.length
+                  ? `${readCurrency(payments[0], "amount")} latest payment`
+                  : "No records yet."
+              }
+            />
+            <SummaryCard
+              label="Uploads"
+              title={`${uploads.length} uploaded file${uploads.length === 1 ? "" : "s"}`}
+              value={
+                uploads.length
+                  ? `${readText(uploads[0], "file_name")} latest upload`
+                  : "No records yet."
+              }
+            />
+            <SummaryCard
+              label="Projects"
+              title={`${projects.length} project${projects.length === 1 ? "" : "s"}`}
+              value={
+                projects.length
+                  ? `${readText(projects[0], "status")} latest status`
+                  : "No records yet."
+              }
+            />
           </section>
 
-          <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="Quotes">
-              <DataTable
-                columns={["Quote", "Customer", "Amount", "Status"]}
-                rows={quotes.map((quote) => [
-                  readText(quote, "quote_number"),
-                  readText(quote, ["customer_name", "customer_email"]),
-                  readCurrency(quote, "amount"),
-                  readText(quote, ["quote_status", "payment_status"]),
-                ])}
-              />
-            </DashboardPanel>
-            <DashboardPanel title="Active Projects">
-              <DataTable
-                columns={["Project", "Service", "Schedule", "Status"]}
-                rows={projects.map((project) => [
-                  readText(project, "quote_number"),
-                  readText(project, "service_type"),
-                  readDate(project, "scheduled_date"),
-                  readText(project, "status"),
-                ])}
-              />
-            </DashboardPanel>
+          <section className="grid gap-6 lg:grid-cols-2">
+            <AlertPanel title="Newest Service Requests" href="/admin/requests">
+              {serviceRequests.length === 0 ? <EmptyCard /> : null}
+              {serviceRequests.slice(0, 4).map((request) => (
+                <AlertCard
+                  href="/admin/requests"
+                  key={readText(request, "id")}
+                  meta={`${readText(request, "service_type")} - ${readDate(request, "created_at", "Not listed")}`}
+                  title={readText(request, ["customer_name", "customer_email"])}
+                  value={readText(request, "property_address")}
+                />
+              ))}
+            </AlertPanel>
+
+            <AlertPanel title="Newest Subcontractor Applications" href="/admin/subcontractors">
+              {applications.length === 0 ? <EmptyCard /> : null}
+              {applications.slice(0, 4).map((application) => (
+                <AlertCard
+                  href="/admin/subcontractors"
+                  key={readText(application, "id")}
+                  meta={`${readText(application, "application_type")} - ${readDate(application, "created_at", "Not listed")}`}
+                  title={readText(application, "applicant_name")}
+                  value={readText(application, "status")}
+                />
+              ))}
+            </AlertPanel>
           </section>
 
-          <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="Appointments">
-              <DataTable
-                columns={["Customer", "Date", "Window", "Status"]}
-                rows={appointments.map((appointment) => [
-                  readText(appointment, "customer_name"),
-                  readDate(appointment, "appointment_date"),
-                  readText(appointment, "time_window"),
-                  readText(appointment, "status"),
-                ])}
-              />
-            </DashboardPanel>
-            <DashboardPanel title="Payments">
-              <DataTable
-                columns={["Quote", "Amount", "Status", "Method"]}
-                rows={payments.map((payment) => [
-                  readText(payment, "quote_number"),
-                  readCurrency(payment, "amount"),
-                  readText(payment, "status"),
-                  readText(payment, "method"),
-                ])}
-              />
-            </DashboardPanel>
-          </section>
-
-          <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="Uploaded Files">
-              <DataTable
-                columns={["File", "Category", "Uploaded By", "Date"]}
-                rows={uploads.map((upload) => [
-                  readText(upload, "file_name"),
-                  readText(upload, "category"),
-                  readText(upload, "uploaded_by"),
-                  readDate(upload, "created_at", "Not listed"),
-                ])}
-              />
-            </DashboardPanel>
-            <DashboardPanel title="Subcontractor Applications">
-              <DataTable
-                columns={["Applicant", "Type", "Status", "Submitted"]}
-                rows={applications.map((application) => [
-                  readText(application, "applicant_name"),
-                  readText(application, "application_type"),
-                  readText(application, "status"),
-                  readDate(application, "created_at", "Not listed"),
-                ])}
-              />
-            </DashboardPanel>
-          </section>
-
-          <section className="grid gap-8 xl:grid-cols-2">
-            <DashboardPanel title="Approved Subcontractors">
-              <DataTable
-                columns={["Name", "Skills", "Status", "Availability"]}
-                rows={subcontractors.map((subcontractor) => [
-                  readText(subcontractor, "full_name"),
-                  readText(subcontractor, "trade_skills"),
-                  readText(subcontractor, "status"),
-                  readText(subcontractor, "availability"),
-                ])}
-              />
-            </DashboardPanel>
-            <DashboardPanel title="Job Assignments">
-              <DataTable
-                columns={["Job", "Subcontractor", "Due", "Status"]}
-                rows={jobAssignments.map((job) => [
-                  readText(job, "title"),
-                  readText(job, "subcontractor_name"),
-                  readDate(job, "due_date"),
-                  readText(job, "status"),
-                ])}
-              />
-            </DashboardPanel>
+          <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-black text-navy">Quick Actions</h2>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {quickActions.map((action) => (
+                <Link
+                  className="rounded-md bg-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-accentDark"
+                  href={action.href}
+                  key={action.href}
+                >
+                  {action.label}
+                </Link>
+              ))}
+            </div>
           </section>
         </div>
-      </section>
+      </AdminShell>
     </AdminGuard>
   );
 }
@@ -229,60 +154,74 @@ function MetricCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function DashboardPanel({
+function SummaryCard({
+  label,
   title,
-  children,
+  value,
 }: {
+  label: string;
   title: string;
-  children: ReactNode;
+  value: string;
 }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-2xl font-black text-navy">{title}</h2>
-      <div className="mt-5">{children}</div>
-    </div>
+    <article className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
+        {label}
+      </p>
+      <h2 className="mt-2 text-xl font-black text-navy">{title}</h2>
+      <p className="mt-2 text-sm font-semibold leading-6 text-charcoal/70">{value}</p>
+    </article>
   );
 }
 
-function DataTable({
-  columns,
-  rows,
+function AlertPanel({
+  children,
+  href,
+  title,
 }: {
-  columns: string[];
-  rows: string[][];
+  children: React.ReactNode;
+  href: string;
+  title: string;
 }) {
-  if (rows.length === 0) {
-    return (
-      <p className="rounded-md bg-stonewash p-4 text-sm font-semibold text-charcoal/70">
-        No records yet.
-      </p>
-    );
-  }
-
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[620px] border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-slate-200 text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
-            {columns.map((column) => (
-              <th className="py-3 pr-4" key={column}>
-                {column}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, rowIndex) => (
-            <tr className="border-b border-slate-100 last:border-b-0" key={`${row.join("-")}-${rowIndex}`}>
-              {row.map((cell, cellIndex) => (
-                <td className="py-3 pr-4 font-semibold leading-6 text-charcoal" key={`${cell}-${cellIndex}`}>
-                  {cell}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-2xl font-black text-navy">{title}</h2>
+        <Link className="text-sm font-black text-accentDark hover:text-navy" href={href}>
+          View all
+        </Link>
+      </div>
+      <div className="mt-5 grid gap-3">{children}</div>
+    </section>
+  );
+}
+
+function AlertCard({
+  href,
+  meta,
+  title,
+  value,
+}: {
+  href: string;
+  meta: string;
+  title: string;
+  value: string;
+}) {
+  return (
+    <Link className="rounded-md bg-stonewash p-4 transition hover:bg-accent/10" href={href}>
+      <h3 className="font-black text-navy">{title}</h3>
+      <p className="mt-1 text-sm font-semibold leading-6 text-charcoal/70">{value}</p>
+      <p className="mt-2 text-xs font-black uppercase tracking-[0.14em] text-charcoal/50">
+        {meta}
+      </p>
+    </Link>
+  );
+}
+
+function EmptyCard() {
+  return (
+    <p className="rounded-md bg-stonewash p-4 text-sm font-semibold text-charcoal/70">
+      No records yet.
+    </p>
   );
 }
