@@ -198,7 +198,12 @@ export async function POST(request: Request) {
     message: "Subcontractor application received.",
     applicationId,
     supabaseConfigured,
-    uploadedFiles,
+    uploadedFiles: uploadedFiles.map((file) => ({
+      fileName: file.fileName,
+      fileType: file.fileType,
+      size: file.size,
+      category: file.category,
+    })),
   });
 }
 

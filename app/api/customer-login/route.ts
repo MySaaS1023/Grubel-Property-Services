@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { setAuthCookie } from "@/lib/auth";
 import { quotes } from "@/lib/mock-data";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 
@@ -40,8 +41,12 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
+      quoteNumber: quote.quote_number,
+    });
+    return setAuthCookie(response, "customer", {
+      email,
       quoteNumber: quote.quote_number,
     });
   }
@@ -72,8 +77,12 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     success: true,
+    quoteNumber: quote.quoteNumber,
+  });
+  return setAuthCookie(response, "customer", {
+    email,
     quoteNumber: quote.quoteNumber,
   });
 }

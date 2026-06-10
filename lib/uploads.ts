@@ -4,11 +4,13 @@ import { createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export const allowedUploadTypes = new Set([
   "image/jpeg",
+  "image/jpg",
   "image/png",
   "application/pdf",
 ]);
+const allowedUploadExtensions = new Set(["jpg", "jpeg", "png", "pdf"]);
 
-export const maxUploadSize = 8 * 1024 * 1024;
+export const maxUploadSize = 10 * 1024 * 1024;
 
 export type PreparedUpload = UploadMetadata & {
   category: UploadCategory;
@@ -20,7 +22,9 @@ export type PreparedUpload = UploadMetadata & {
 };
 
 export function validateUploadFile(file: File) {
-  if (!allowedUploadTypes.has(file.type)) {
+  const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+
+  if (!allowedUploadTypes.has(file.type) && !allowedUploadExtensions.has(extension)) {
     return {
       success: false as const,
       error: "Uploads must be JPG, PNG, JPEG, or PDF files.",
@@ -30,7 +34,7 @@ export function validateUploadFile(file: File) {
   if (file.size > maxUploadSize) {
     return {
       success: false as const,
-      error: "Each uploaded file must be 8MB or smaller.",
+      error: "Each uploaded file must be 10MB or smaller.",
     };
   }
 

@@ -36,11 +36,7 @@ export function CustomerPortalDashboard({ quoteNumber }: { quoteNumber: string }
   const [paying, setPaying] = useState(false);
 
   useEffect(() => {
-    // Future auth replacement: use customer magic links or email/quote
-    // verification backed by Supabase Auth/session cookies.
-    const allowedQuote = sessionStorage.getItem("gps_customer_quote");
-
-    if (!quoteNumber || allowedQuote !== quoteNumber.toUpperCase()) {
+    if (!quoteNumber) {
       router.replace("/customer-login");
       return;
     }

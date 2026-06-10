@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { subcontractors } from "@/lib/mock-data";
+import {
+  authenticateWithSupabasePassword,
+  getProfileByUserId,
+  setAuthCookie,
+} from "@/lib/auth";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -12,22 +16,36 @@ export async function POST(request: Request) {
       ? String((body as Record<string, unknown>).accessCode).trim()
       : "";
 
-  const subcontractor = subcontractors.find(
-    (item) => item.email.toLowerCase() === email,
-  );
+  const { user, error } = await authenticateWithSupabasePassword({
+    email,
+    password: accessCode,
+  });
 
-  // MVP demo access code. Future auth should use Supabase Auth with
-  // subcontractor role permissions and invite-based onboarding.
-  if (!subcontractor || accessCode !== "sub123") {
+  if (error || !user) {
     return NextResponse.json(
-      { error: "We could not validate that subcontractor access." },
+      { error: error ?? "We could not validate that subcontractor access." },
       { status: 401 },
     );
   }
 
-  return NextResponse.json({
+  const profile = await getProfileByUserId(user.id);
+
+  if (!profile || profile.role !== "subcontractor") {
+    return NextResponse.json(
+      { error: "You do not have subcontractor access." },
+      { status: 403 },
+    );
+  }
+
+  const response = NextResponse.json({
     success: true,
-    email: subcontractor.email,
-    subcontractorId: subcontractor.id,
+    email: profile.email,
+    subcontractorId: user.id,
+  });
+
+  return setAuthCookie(response, "subcontractor", {
+    userId: user.id,
+    email: profile.email,
+    subcontractorId: user.id,
   });
 }
