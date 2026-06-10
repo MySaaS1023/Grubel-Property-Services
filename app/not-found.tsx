@@ -1,39 +1,28 @@
-import Link from "next/link";
-
-import { PageContainer } from "@/components/page-container";
-import { primaryButtonClass } from "@/lib/styles";
+import { Button } from "@/components/Button";
 
 export default function NotFound() {
   return (
-    <section className="py-20 sm:py-28">
-      <PageContainer>
-        <div className="mx-auto max-w-2xl rounded-[2rem] border border-[var(--line)] bg-white/90 p-8 text-center shadow-[var(--shadow)] sm:p-12">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent-strong)]">
+    <section className="bg-stonewash py-20 sm:py-28">
+      <div className="site-container">
+        <div className="mx-auto max-w-2xl rounded-lg border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-12">
+          <p className="text-sm font-black uppercase tracking-[0.18em] text-accentDark">
             404
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-5xl">
-            This page took a wrong turn.
+          <h1 className="mt-3 text-4xl font-black text-navy sm:text-5xl">
+            Page Not Found
           </h1>
-          <p className="mt-5 text-base leading-8 text-[var(--muted)]">
-            The page you&apos;re looking for isn&apos;t here, but your website project can
-            still move forward.
+          <p className="mt-5 text-base font-semibold leading-8 text-charcoal/70">
+            The page you are looking for is not available. Return to Grubel
+            Property Services or contact the team for help.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <Link
-              href="/"
-              className={`${primaryButtonClass} force-white-btn text-sm shadow-[var(--shadow)]`}
-            >
-              Go Home
-            </Link>
-            <Link
-              href="/pricing"
-              className={`${primaryButtonClass} force-white-btn text-sm shadow-[var(--shadow)]`}
-            >
-              View Pricing
-            </Link>
+            <Button href="/">Go Home</Button>
+            <Button href="/contact" variant="secondary">
+              Contact Us
+            </Button>
           </div>
         </div>
-      </PageContainer>
+      </div>
     </section>
   );
 }
