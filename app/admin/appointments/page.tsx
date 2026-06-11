@@ -27,7 +27,9 @@ export default async function AdminAppointmentsPage() {
                 "Status",
                 "Notes",
               ]}
+              deleteTableName="appointments"
               minWidth="980px"
+              rowIds={appointments.map((appointment) => readText(appointment, "id"))}
               rows={appointments.map((appointment) => [
                 readText(appointment, "customer_name"),
                 readText(appointment, "service_type"),

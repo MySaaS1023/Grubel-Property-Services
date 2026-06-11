@@ -76,6 +76,18 @@ export async function updateSubcontractorApplicationStatus(formData: FormData) {
     }
   }
 
+  const { error: logError } = await supabase.from("crm_logs").insert({
+    actor: "Admin",
+    notes: `Subcontractor application for ${application.applicant_name} updated to ${status}.`,
+    related_quote_or_project: applicationId,
+    status,
+    type: "Subcontractor Action",
+  });
+
+  if (logError) {
+    console.error("[admin-subcontractors] CRM log insert failed", logError);
+  }
+
   revalidatePath("/admin");
   revalidatePath("/admin/subcontractors");
 }

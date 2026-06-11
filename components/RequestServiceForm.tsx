@@ -7,15 +7,29 @@ const services = [
   "Maintenance & Repair",
   "Property Preservation",
   "Builds & Remodels",
-  "General Property Questions",
-  "Other",
 ];
-const propertyTypes = ["Residential", "Commercial", "Rental", "Other"];
-const occupancyOptions = ["Occupied", "Vacant", "Unknown"];
+const walkthroughOptions = [
+  "Live Virtual Walkthrough",
+  "Upload Photos/Videos Only",
+  "Request Callback First",
+];
+const propertyTypes = ["Residential", "Commercial", "Rental / Investment Property", "Other"];
+const occupancyOptions = [
+  "Occupied",
+  "Vacant",
+  "Move-In Prep",
+  "Move-Out / Turnover",
+  "Unknown",
+];
 const timeWindows = ["Morning", "Afternoon", "Evening", "Flexible"];
-const contactMethods = ["Phone", "Video Call"];
-const acceptedFileTypes = new Set(["image/jpeg", "image/png", "application/pdf"]);
-const maxFileSize = 10 * 1024 * 1024;
+const acceptedFileTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "application/pdf",
+  "video/mp4",
+  "video/quicktime",
+]);
+const maxFileSize = 25 * 1024 * 1024;
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
@@ -32,13 +46,13 @@ export function RequestServiceForm() {
 
     for (const file of files) {
       if (!acceptedFileTypes.has(file.type)) {
-        setFileError("Uploads must be JPG, JPEG, PNG, or PDF files.");
+        setFileError("Uploads must be JPG, JPEG, PNG, PDF, MP4, or MOV files.");
         event.currentTarget.value = "";
         return;
       }
 
       if (file.size > maxFileSize) {
-        setFileError("Each uploaded file must be 10MB or smaller.");
+        setFileError("Each uploaded file must be 25MB or smaller.");
         event.currentTarget.value = "";
         return;
       }
@@ -54,7 +68,7 @@ export function RequestServiceForm() {
     setMessage("");
 
     const formData = new FormData(form);
-    formData.set("subject", "Service Request");
+    formData.set("subject", "Project Request");
     formData.set("message", String(formData.get("projectDescription") ?? ""));
 
     try {
@@ -105,20 +119,25 @@ export function RequestServiceForm() {
         <Field label="Full Name" name="fullName" required />
         <Field label="Email" name="email" required type="email" />
         <Field label="Phone" name="phone" required type="tel" />
-        <SelectField label="Service Needed" name="serviceNeeded" options={services} required />
         <Field label="Property Address" name="propertyAddress" required />
-        <SelectField label="Property Type" name="propertyType" options={propertyTypes} required />
-        <SelectField label="Occupied or Vacant" name="occupancyStatus" options={occupancyOptions} required />
-        <Field label="Preferred Date" name="preferredDate" type="date" />
+        <SelectField label="Service Needed" name="serviceNeeded" options={services} required />
+        <SelectField
+          label="Walkthrough Option"
+          name="walkthroughOption"
+          options={walkthroughOptions}
+          required
+        />
+        <Field label="Preferred Appointment Date" name="preferredDate" type="date" />
         <SelectField
           label="Preferred Time Window"
           name="preferredTimeWindow"
           options={timeWindows}
         />
+        <SelectField label="Property Type" name="propertyType" options={propertyTypes} required />
         <SelectField
-          label="Preferred Contact Method"
-          name="preferredContactMethod"
-          options={contactMethods}
+          label="Occupancy Status"
+          name="occupancyStatus"
+          options={occupancyOptions}
           required
         />
       </div>
@@ -131,18 +150,18 @@ export function RequestServiceForm() {
         />
       </label>
       <div className="grid gap-2 text-sm font-bold text-navy">
-        Upload Photos or Documents
+        Upload Photos, Videos, or Documents
         <p className="text-sm font-normal leading-6 text-charcoal/65">
-          Upload photos of the property, repair area, damage, or related
-          documents if available.
+          Upload photos, videos, property documents, repair area details, or
+          related documents if available.
         </p>
         <label className="flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-stonewash px-4 py-6 text-center text-sm font-semibold text-charcoal transition hover:border-accent hover:bg-white">
           <span>Choose photos or documents</span>
           <span className="mt-1 text-xs font-normal text-charcoal/60">
-            JPG, PNG, JPEG, or PDF
+            JPG, JPEG, PNG, PDF, MP4, or MOV. 25MB max per file.
           </span>
           <input
-            accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+            accept=".jpg,.jpeg,.png,.pdf,.mp4,.mov,image/jpeg,image/png,application/pdf,video/mp4,video/quicktime"
             className="sr-only"
             multiple
             name="photos"
@@ -169,8 +188,8 @@ export function RequestServiceForm() {
         ) : null}
       </div>
       <p className="text-sm leading-6 text-charcoal/65">
-        For virtual inspections, choose a preferred date and time window for a
-        walkthrough or review.
+        For live virtual walkthroughs, choose a preferred appointment date and
+        time window for review.
       </p>
       <label className="grid gap-2 text-sm font-bold text-navy">
         Additional Notes
@@ -189,7 +208,7 @@ export function RequestServiceForm() {
         </p>
       ) : null}
       <Button disabled={state === "submitting"} type="submit">
-        {state === "submitting" ? "Submitting..." : "Submit Request"}
+        {state === "submitting" ? "Submitting..." : "Submit Project Request"}
       </Button>
     </form>
   );

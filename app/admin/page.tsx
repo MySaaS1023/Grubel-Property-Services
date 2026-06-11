@@ -8,6 +8,7 @@ import {
   readDate,
   readText,
 } from "@/lib/admin-data";
+import { formatWorkflowStage } from "@/lib/workflow";
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +19,14 @@ const quickActions = [
   { href: "/admin/projects", label: "Track Projects" },
   { href: "/admin/uploads", label: "Review Uploads" },
   { href: "/admin/subcontractors", label: "Review Subcontractors" },
+  { href: "/admin/finance", label: "Finance" },
 ];
 
 export default async function AdminPage() {
   const {
     applications,
-    appointments,
     payments,
     projects,
-    quotes,
     serviceRequests,
     uploads,
   } = await getAdminData();
@@ -34,11 +34,18 @@ export default async function AdminPage() {
   const stats = [
     { label: "New Requests", value: countWhere(serviceRequests, "status", "New") },
     {
-      label: "Active Quotes",
-      value: quotes.filter((item) => readText(item, "quote_status", "") !== "Completed")
-        .length,
+      label: "PM Review",
+      value: countWhere(projects, "workflow_stage", "pm_review"),
     },
-    { label: "Scheduled Jobs", value: countWhere(appointments, "status", "Scheduled") },
+    {
+      label: "Awaiting Approval",
+      value: countWhere(projects, "workflow_stage", "approval_to_proceed"),
+    },
+    {
+      label: "Awaiting Payment",
+      value: countWhere(projects, "workflow_stage", "payment_to_start"),
+    },
+    { label: "Scheduled Jobs", value: countWhere(projects, "workflow_stage", "scheduled") },
     {
       label: "Pending Subs",
       value: applications.filter((item) =>
@@ -47,7 +54,6 @@ export default async function AdminPage() {
         ),
       ).length,
     },
-    { label: "Completed Projects", value: countWhere(projects, "status", "Completed") },
   ];
 
   return (
@@ -109,7 +115,44 @@ export default async function AdminPage() {
               ))}
             </AlertPanel>
 
-            <AlertPanel title="Newest Subcontractor Applications" href="/admin/subcontractors">
+            <AlertPanel title="Latest Project Alerts" href="/admin/projects">
+              {projects.length === 0 ? <EmptyCard /> : null}
+              {projects.slice(0, 4).map((project) => (
+                <AlertCard
+                  href="/admin/projects"
+                  key={readText(project, "id")}
+                  meta={`${formatWorkflowStage(readText(project, "workflow_stage", "intake_received"))} - ${readDate(project, "updated_at", "Not listed")}`}
+                  title={readText(project, "customer_name")}
+                  value={readText(project, "property_address")}
+                />
+              ))}
+            </AlertPanel>
+
+            <AlertPanel title="Pending Approval Alerts" href="/admin/projects">
+              {projects.filter((project) =>
+                ["approval_to_proceed", "payment_to_start"].includes(
+                  readText(project, "workflow_stage", ""),
+                ),
+              ).length === 0 ? <EmptyCard /> : null}
+              {projects
+                .filter((project) =>
+                  ["approval_to_proceed", "payment_to_start"].includes(
+                    readText(project, "workflow_stage", ""),
+                  ),
+                )
+                .slice(0, 4)
+                .map((project) => (
+                  <AlertCard
+                    href="/admin/projects"
+                    key={readText(project, "id")}
+                    meta={formatWorkflowStage(readText(project, "workflow_stage", ""))}
+                    title={readText(project, "customer_name")}
+                    value={readText(project, "service_type")}
+                  />
+                ))}
+            </AlertPanel>
+
+            <AlertPanel title="Pending Subcontractor Applications" href="/admin/subcontractors">
               {applications.length === 0 ? <EmptyCard /> : null}
               {applications.slice(0, 4).map((application) => (
                 <AlertCard

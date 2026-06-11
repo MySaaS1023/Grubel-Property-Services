@@ -28,7 +28,9 @@ export default async function AdminRequestsPage() {
                 "Status",
                 "Submitted",
               ]}
+              deleteTableName="service_requests"
               minWidth="980px"
+              rowIds={serviceRequests.map((request) => readText(request, "id"))}
               rows={serviceRequests.map((request) => [
                 readText(request, "customer_name"),
                 readText(request, "customer_email"),

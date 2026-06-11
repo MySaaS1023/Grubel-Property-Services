@@ -193,6 +193,28 @@ create table if not exists crm_logs (
   notes text
 );
 
+alter table if exists projects add column if not exists workflow_stage text;
+alter table if exists projects add column if not exists walkthrough_option text;
+alter table if exists projects add column if not exists rom_amount numeric;
+alter table if exists projects add column if not exists sow_summary text;
+alter table if exists projects add column if not exists approval_status text;
+alter table if exists projects add column if not exists payment_to_start_status text;
+alter table if exists projects add column if not exists vendor_status text;
+alter table if exists projects add column if not exists customer_signoff_status text;
+alter table if exists projects add column if not exists closeout_status text;
+
+alter table if exists service_requests add column if not exists walkthrough_option text;
+alter table if exists service_requests add column if not exists media_status text;
+
+alter table if exists appointments add column if not exists appointment_type text;
+alter table if exists appointments add column if not exists contact_method text;
+alter table if exists appointments add column if not exists confirmation_status text;
+
+alter table if exists uploads add column if not exists storage_bucket text;
+alter table if exists uploads add column if not exists storage_path text;
+alter table if exists uploads add column if not exists file_size bigint;
+alter table if exists uploads add column if not exists mime_type text;
+
 create index if not exists idx_quotes_quote_number on quotes(quote_number);
 create index if not exists idx_projects_quote_number on projects(quote_number);
 create index if not exists idx_uploads_related on uploads(related_type, related_id);

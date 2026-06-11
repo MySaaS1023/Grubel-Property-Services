@@ -7,6 +7,7 @@ import {
   validateUploadFile,
 } from "@/lib/uploads";
 import { validateServiceRequest } from "@/lib/validation";
+import { getWorkflowStageForWalkthroughOption } from "@/lib/workflow";
 
 export async function POST(request: Request) {
   console.log("[service-request] request received");
@@ -42,6 +43,7 @@ export async function POST(request: Request) {
     email: fields.email ? "present" : "missing",
     phone: fields.phone ? "present" : "missing",
     serviceNeeded: fields.serviceNeeded,
+    walkthroughOption: fields.walkthroughOption,
     propertyAddress: fields.propertyAddress ? "present" : "missing",
     projectDescription: fields.projectDescription ? "present" : "missing",
     message: fields.message ? "present" : "missing",
@@ -51,6 +53,7 @@ export async function POST(request: Request) {
     serviceNeeded: fields.serviceNeeded,
     propertyType: fields.propertyType,
     preferredDate: fields.preferredDate,
+    walkthroughOption: fields.walkthroughOption,
   });
 
   const validation = validateServiceRequest(fields);
@@ -92,6 +95,10 @@ export async function POST(request: Request) {
   });
   const fallbackRelatedId = validation.data.email;
   let serviceRequestId = fallbackRelatedId;
+  let projectId = fallbackRelatedId;
+  const workflowStage = getWorkflowStageForWalkthroughOption(
+    validation.data.walkthroughOption ?? "",
+  );
   let supabaseConfigured = false;
   let requestSaved = false;
   const postSaveWarnings: string[] = [];
@@ -119,6 +126,8 @@ export async function POST(request: Request) {
       preferredDate: validation.data.preferredDate,
       preferredTimeWindow: validation.data.preferredTimeWindow,
       preferredContactMethod: validation.data.preferredContactMethod,
+      walkthroughOption: validation.data.walkthroughOption,
+      workflowStage,
     },
     projectDescription: validation.data.projectDescription || validation.data.message,
     additionalNotes: validation.data.additionalNotes,
@@ -182,27 +191,30 @@ export async function POST(request: Request) {
       customerId: customer.id,
     });
 
+    const serviceRequestInsert = {
+      customer_id: customer.id,
+      customer_name: validation.data.fullName,
+      customer_email: validation.data.email,
+      customer_phone: validation.data.phone,
+      service_type: validation.data.serviceNeeded || "Other",
+      property_address: validation.data.propertyAddress || null,
+      property_type: validation.data.propertyType || null,
+      occupancy_status: validation.data.occupancyStatus || null,
+      preferred_date: validation.data.preferredDate || null,
+      preferred_time_window: validation.data.preferredTimeWindow || null,
+      preferred_contact_method: validation.data.preferredContactMethod || null,
+      project_description:
+        validation.data.projectDescription || validation.data.message,
+      additional_notes: validation.data.additionalNotes || null,
+      status: "New",
+      walkthrough_option: validation.data.walkthroughOption || null,
+      media_status: files.length ? "Media Received" : "No Media Uploaded",
+    };
     let requestResult;
     try {
       requestResult = await supabase
         .from("service_requests")
-        .insert({
-          customer_id: customer.id,
-          customer_name: validation.data.fullName,
-          customer_email: validation.data.email,
-          customer_phone: validation.data.phone,
-          service_type: validation.data.serviceNeeded || "Other",
-          property_address: validation.data.propertyAddress || null,
-          property_type: validation.data.propertyType || null,
-          occupancy_status: validation.data.occupancyStatus || null,
-          preferred_date: validation.data.preferredDate || null,
-          preferred_time_window: validation.data.preferredTimeWindow || null,
-          preferred_contact_method: validation.data.preferredContactMethod || null,
-          project_description:
-            validation.data.projectDescription || validation.data.message,
-          additional_notes: validation.data.additionalNotes || null,
-          status: "New",
-        })
+        .insert(serviceRequestInsert)
         .select("id")
         .single();
     } catch (error) {
@@ -243,6 +255,65 @@ export async function POST(request: Request) {
     });
 
     serviceRequestId = serviceRequest.id;
+
+    const projectInsert = {
+      customer_id: customer.id,
+      customer_name: validation.data.fullName,
+      service_type: validation.data.serviceNeeded || "Other",
+      property_address: validation.data.propertyAddress || null,
+      status: "Intake Received",
+      payment_status: "Unpaid",
+      scheduled_date: validation.data.preferredDate || null,
+      next_step: "Project intake received. PM review is next.",
+      notes: validation.data.projectDescription || validation.data.message,
+      workflow_stage: workflowStage,
+      walkthrough_option: validation.data.walkthroughOption || null,
+      approval_status: "Not Requested",
+      payment_to_start_status: "Not Requested",
+      vendor_status: "Not Assigned",
+      customer_signoff_status: "Not Requested",
+      closeout_status: "Open",
+    };
+    let projectResult;
+    try {
+      projectResult = await supabase
+        .from("projects")
+        .insert(projectInsert)
+        .select("id")
+        .single();
+    } catch (error) {
+      console.error("[service-request] project insert threw", {
+        error: getSafeErrorMessage(error),
+      });
+      return NextResponse.json(
+        {
+          error:
+            "We could not create your project record because the database connection failed. Please try again shortly.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const { data: project, error: projectError } = projectResult;
+
+    if (projectError || !project) {
+      console.error("[service-request] project insert result failed", {
+        error: projectError,
+      });
+      return NextResponse.json(
+        {
+          error:
+            "We could not create your project record. Please check the form and try again.",
+        },
+        { status: 500 },
+      );
+    }
+
+    projectId = project.id;
+    console.log("[service-request] project insert result", {
+      projectId,
+      workflowStage,
+    });
     requestSaved = true;
     const uploadFailures: string[] = [];
     uploadedFiles = await Promise.all(
@@ -286,12 +357,14 @@ export async function POST(request: Request) {
       if (uploadedFiles.length) {
         const { error: uploadError } = await supabase.from("uploads").insert(
           uploadedFiles.map((file) => ({
-            related_id: serviceRequestId,
+          related_id: serviceRequestId,
             related_type: file.relatedType,
             category: file.category,
             file_name: file.fileName,
             file_type: file.fileType,
             size: file.size,
+            file_size: file.size,
+            mime_type: file.fileType,
             uploaded_by: file.uploadedBy,
             storage_bucket: file.storageBucket ?? null,
             storage_path: file.storagePath,
@@ -322,7 +395,10 @@ export async function POST(request: Request) {
     }
 
     try {
-      if (validation.data.preferredDate) {
+      if (
+        validation.data.walkthroughOption === "Live Virtual Walkthrough" &&
+        validation.data.preferredDate
+      ) {
         await supabase.from("appointments").insert({
           customer_id: customer.id,
           service_request_id: serviceRequestId,
@@ -330,9 +406,11 @@ export async function POST(request: Request) {
           service_type: validation.data.serviceNeeded || "Other",
           appointment_date: validation.data.preferredDate,
           time_window: validation.data.preferredTimeWindow || "Flexible",
-          contact_method: validation.data.preferredContactMethod || "Phone",
+          contact_method: "Video Call",
+          appointment_type: "Live Virtual Walkthrough",
+          confirmation_status: "Requested",
           status: "Requested",
-          notes: "Created from request service intake.",
+          notes: "Created from project intake workflow.",
         });
       }
     } catch (error) {
@@ -345,9 +423,9 @@ export async function POST(request: Request) {
       await supabase.from("crm_logs").insert({
         type: "Service Request",
         actor: validation.data.fullName,
-        related_quote_or_project: serviceRequestId,
-        status: "New",
-        notes: `New ${validation.data.serviceNeeded || "service"} request received.`,
+        related_quote_or_project: projectId,
+        status: workflowStage,
+        notes: `New ${validation.data.serviceNeeded || "service"} project request received. Walkthrough option: ${validation.data.walkthroughOption || "Not provided"}.`,
       });
 
       if (uploadFailures.length) {
@@ -381,7 +459,7 @@ export async function POST(request: Request) {
       from:
         process.env.FROM_EMAIL ??
         "Grubel Property Services <onboarding@resend.dev>",
-      subject: "New Service Request - Grubel Property Services",
+      subject: "New Project Request - Grubel Property Services",
       text: formatServiceRequestEmail({
         fullName: validation.data.fullName,
         email: validation.data.email,
@@ -393,6 +471,8 @@ export async function POST(request: Request) {
         preferredDate: validation.data.preferredDate,
         preferredTimeWindow: validation.data.preferredTimeWindow,
         preferredContactMethod: validation.data.preferredContactMethod,
+        walkthroughOption: validation.data.walkthroughOption,
+        workflowStage,
         projectDescription:
           validation.data.projectDescription || validation.data.message,
         additionalNotes: validation.data.additionalNotes,
@@ -415,6 +495,7 @@ export async function POST(request: Request) {
     success: requestSaved,
     message: "Service request received.",
     serviceRequestId,
+    projectId,
     supabaseConfigured,
     warning: postSaveWarnings.length ? postSaveWarnings.join(" ") : undefined,
     uploadedFiles: uploadedFiles.map((file) => ({
@@ -440,6 +521,8 @@ function formatServiceRequestEmail({
   preferredDate,
   preferredTimeWindow,
   preferredContactMethod,
+  walkthroughOption,
+  workflowStage,
   projectDescription,
   additionalNotes,
   uploadedFileNames,
@@ -454,12 +537,14 @@ function formatServiceRequestEmail({
   preferredDate?: string;
   preferredTimeWindow?: string;
   preferredContactMethod?: string;
+  walkthroughOption?: string;
+  workflowStage: string;
   projectDescription?: string;
   additionalNotes?: string;
   uploadedFileNames: string[];
 }) {
   return [
-    "New Service Request - Grubel Property Services",
+    "New Project Request - Grubel Property Services",
     "",
     `Full Name: ${fullName}`,
     `Email: ${email}`,
@@ -471,6 +556,8 @@ function formatServiceRequestEmail({
     `Preferred Date: ${preferredDate || "Not provided"}`,
     `Preferred Time Window: ${preferredTimeWindow || "Not provided"}`,
     `Preferred Contact Method: ${preferredContactMethod || "Not provided"}`,
+    `Walkthrough Option: ${walkthroughOption || "Not provided"}`,
+    `Created Project Workflow Stage: ${workflowStage}`,
     "",
     "Project Description:",
     projectDescription || "Not provided",

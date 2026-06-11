@@ -5,8 +5,7 @@ export function AdminDataNotice() {
 
   return (
     <p className="rounded-md bg-accent/10 p-4 text-sm font-semibold leading-6 text-charcoal">
-      MVP authentication is active. Replace with Supabase Auth before handling
-      production-sensitive data.
+      Admin access is protected by Supabase Auth and role-based permissions.
       {!supabaseConfigured ? (
         <>
           {" "}

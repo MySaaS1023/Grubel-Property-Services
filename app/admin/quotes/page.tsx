@@ -28,7 +28,9 @@ export default async function AdminQuotesPage() {
                 "Service Status",
                 "Created",
               ]}
+              deleteTableName="quotes"
               minWidth="1020px"
+              rowIds={quotes.map((quote) => readText(quote, "id"))}
               rows={quotes.map((quote) => [
                 readText(quote, "quote_number"),
                 readText(quote, "customer_name"),

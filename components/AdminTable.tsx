@@ -1,10 +1,16 @@
+import { AdminDeleteButton } from "@/components/AdminDeleteButton";
+
 export function AdminTable({
   columns,
+  deleteTableName,
   rows,
+  rowIds,
   minWidth = "720px",
 }: {
   columns: string[];
+  deleteTableName?: string;
   rows: string[][];
+  rowIds?: string[];
   minWidth?: string;
 }) {
   if (rows.length === 0) {
@@ -24,6 +30,7 @@ export function AdminTable({
                 {column}
               </th>
             ))}
+            {deleteTableName ? <th className="py-3 pr-4">Actions</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -37,6 +44,14 @@ export function AdminTable({
                   {cell}
                 </td>
               ))}
+              {deleteTableName ? (
+                <td className="py-3 pr-4">
+                  <AdminDeleteButton
+                    recordId={rowIds?.[rowIndex] ?? ""}
+                    tableName={deleteTableName}
+                  />
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

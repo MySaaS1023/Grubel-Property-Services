@@ -6,12 +6,13 @@ const adminTabs = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/requests", label: "Requests" },
   { href: "/admin/customers", label: "Customers" },
-  { href: "/admin/quotes", label: "Quotes" },
   { href: "/admin/projects", label: "Projects" },
   { href: "/admin/appointments", label: "Appointments" },
+  { href: "/admin/quotes", label: "Quotes" },
   { href: "/admin/crm", label: "CRM Logs" },
   { href: "/admin/subcontractors", label: "Subcontractors" },
   { href: "/admin/uploads", label: "Uploads" },
+  { href: "/admin/finance", label: "Finance" },
 ];
 
 export function AdminShell({

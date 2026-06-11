@@ -26,7 +26,9 @@ export default async function AdminUploadsPage() {
                 "Bucket",
                 "Date",
               ]}
+              deleteTableName="uploads"
               minWidth="920px"
+              rowIds={uploads.map((upload) => readText(upload, "id"))}
               rows={uploads.map((upload) => [
                 readText(upload, "file_name"),
                 readText(upload, "category"),

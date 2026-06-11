@@ -7,10 +7,12 @@ export const allowedUploadTypes = new Set([
   "image/jpg",
   "image/png",
   "application/pdf",
+  "video/mp4",
+  "video/quicktime",
 ]);
-const allowedUploadExtensions = new Set(["jpg", "jpeg", "png", "pdf"]);
+const allowedUploadExtensions = new Set(["jpg", "jpeg", "png", "pdf", "mp4", "mov"]);
 
-export const maxUploadSize = 10 * 1024 * 1024;
+export const maxUploadSize = 25 * 1024 * 1024;
 
 export type PreparedUpload = UploadMetadata & {
   category: UploadCategory;
@@ -27,14 +29,14 @@ export function validateUploadFile(file: File) {
   if (!allowedUploadTypes.has(file.type) && !allowedUploadExtensions.has(extension)) {
     return {
       success: false as const,
-      error: "Uploads must be JPG, PNG, JPEG, or PDF files.",
+      error: "Uploads must be JPG, JPEG, PNG, PDF, MP4, or MOV files.",
     };
   }
 
   if (file.size > maxUploadSize) {
     return {
       success: false as const,
-      error: "Each uploaded file must be 10MB or smaller.",
+      error: "Each uploaded file must be 25MB or smaller.",
     };
   }
 

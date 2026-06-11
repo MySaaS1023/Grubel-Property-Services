@@ -19,7 +19,9 @@ export default async function AdminCustomersPage() {
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <AdminTable
               columns={["Name", "Email", "Phone", "Property", "Created"]}
+              deleteTableName="customers"
               minWidth="820px"
+              rowIds={customers.map((customer) => readText(customer, "id"))}
               rows={customers.map((customer) => [
                 readText(customer, "full_name"),
                 readText(customer, "email"),

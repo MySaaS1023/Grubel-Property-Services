@@ -19,7 +19,9 @@ export default async function AdminCRMPage() {
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <AdminTable
               columns={["Date", "Type", "Customer/Sub", "Related Record", "Status", "Notes"]}
+              deleteTableName="crm_logs"
               minWidth="880px"
+              rowIds={crmLogs.map((log) => readText(log, "id"))}
               rows={crmLogs.map((log) => [
                 readDate(log, ["log_date", "created_at"], "Not listed"),
                 readText(log, "type"),

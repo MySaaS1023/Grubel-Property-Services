@@ -7,6 +7,7 @@ export type ServiceRequestInput = {
   propertyAddress?: string;
   city?: string;
   serviceNeeded?: string;
+  walkthroughOption?: string;
   preferredDate?: string;
   preferredTimeWindow?: string;
   propertyType?: string;
@@ -24,8 +25,12 @@ const allowedServices = new Set([
   "Maintenance & Repair",
   "Property Preservation",
   "Builds & Remodels",
-  "General Property Questions",
-  "Other",
+]);
+
+const allowedWalkthroughOptions = new Set([
+  "Live Virtual Walkthrough",
+  "Upload Photos/Videos Only",
+  "Request Callback First",
 ]);
 
 export function validateServiceRequest(input: unknown): ValidationResult {
@@ -39,6 +44,7 @@ export function validateServiceRequest(input: unknown): ValidationResult {
   const phone = toCleanString(body.phone);
   const subject = toCleanString(body.subject);
   const serviceNeeded = toCleanString(body.serviceNeeded);
+  const walkthroughOption = toCleanString(body.walkthroughOption);
   const message = toCleanString(body.message) || toCleanString(body.projectDescription);
 
   if (!fullName) {
@@ -61,6 +67,10 @@ export function validateServiceRequest(input: unknown): ValidationResult {
     return { success: false, error: "Service needed is invalid." };
   }
 
+  if (walkthroughOption && !allowedWalkthroughOptions.has(walkthroughOption)) {
+    return { success: false, error: "Walkthrough option is invalid." };
+  }
+
   if (!message) {
     return { success: false, error: "Message is required." };
   }
@@ -75,6 +85,7 @@ export function validateServiceRequest(input: unknown): ValidationResult {
       propertyAddress: toCleanString(body.propertyAddress),
       city: toCleanString(body.city),
       serviceNeeded,
+      walkthroughOption,
       preferredDate: toCleanString(body.preferredDate),
       preferredTimeWindow: toCleanString(body.preferredTimeWindow),
       propertyType: toCleanString(body.propertyType),

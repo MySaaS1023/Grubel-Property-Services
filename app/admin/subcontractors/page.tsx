@@ -1,4 +1,5 @@
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
+import { AdminDeleteButton } from "@/components/AdminDeleteButton";
 import { AdminEmptyState, AdminTable } from "@/components/AdminTable";
 import { AdminGuard } from "@/components/AuthGuards";
 import { getAdminData, readDate, readText } from "@/lib/admin-data";
@@ -65,6 +66,10 @@ export default async function AdminSubcontractorsPage() {
                           />
                         </div>
                       ) : null}
+                      <AdminDeleteButton
+                        recordId={readText(application, "id")}
+                        tableName="subcontractor_applications"
+                      />
                     </div>
                   </article>
                 );
@@ -77,7 +82,11 @@ export default async function AdminSubcontractorsPage() {
             <div className="mt-5">
               <AdminTable
                 columns={["Name", "Business", "Email", "Phone", "Skills", "Status"]}
+                deleteTableName="subcontractors"
                 minWidth="900px"
+                rowIds={subcontractors.map((subcontractor) =>
+                  readText(subcontractor, "id"),
+                )}
                 rows={subcontractors.map((subcontractor) => [
                   readText(subcontractor, "full_name"),
                   readText(subcontractor, "business_name"),
