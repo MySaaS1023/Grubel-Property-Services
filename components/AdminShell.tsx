@@ -4,13 +4,13 @@ import { LogoutButton } from "@/components/LogoutButton";
 
 const adminTabs = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/requests", label: "Requests" },
+  { href: "/admin/requests", label: "Manage Requests" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/projects", label: "Projects" },
   { href: "/admin/appointments", label: "Appointments" },
-  { href: "/admin/quotes", label: "Quotes" },
+  { href: "/admin/quotes", label: "Manage Quotes" },
   { href: "/admin/crm", label: "CRM Logs" },
-  { href: "/admin/subcontractors", label: "Subcontractors" },
+  { href: "/admin/subcontractors", label: "Review Subcontractors" },
   { href: "/admin/uploads", label: "Uploads" },
   { href: "/admin/finance", label: "Finance" },
 ];
