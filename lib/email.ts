@@ -7,7 +7,8 @@ type EmailType =
   | "appointment_scheduled"
   | "project_scheduled"
   | "subcontractor_application_received"
-  | "job_assignment_notification";
+  | "job_assignment_notification"
+  | "contact_message";
 
 type EmailPayload = {
   type: EmailType;
