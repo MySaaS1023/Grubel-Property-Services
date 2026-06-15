@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
+import { validateContactMessage } from "@/lib/contact-validation";
 import { queueOperationalEmail } from "@/lib/email";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
-import { prepareUploadRecord, validateUploadFile } from "@/lib/uploads";
+import { prepareUploadRecord } from "@/lib/uploads";
+
+const acceptedContactFileTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "application/pdf",
+]);
+const acceptedContactFileExtensions = new Set(["jpg", "jpeg", "png", "pdf"]);
+const maxContactFileSize = 25 * 1024 * 1024;
 
 export async function POST(request: Request) {
   const contentType = request.headers.get("content-type") ?? "";
@@ -24,43 +33,34 @@ export async function POST(request: Request) {
     );
   }
 
-  const fullName = clean(formData.get("fullName"));
-  const email = clean(formData.get("email"));
-  const phone = clean(formData.get("phone"));
-  const subject = clean(formData.get("subject"));
-  const message = clean(formData.get("message"));
+  const fields = Object.fromEntries(
+    Array.from(formData.entries()).filter(([, value]) => typeof value === "string"),
+  );
+  const validation = validateContactMessage(fields);
 
-  if (!fullName) {
-    return NextResponse.json({ error: "Full name is required." }, { status: 400 });
-  }
-
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!validation.success) {
     return NextResponse.json(
-      { error: "A valid email is required." },
+      { error: validation.error, fieldErrors: validation.fieldErrors },
       { status: 400 },
     );
   }
 
-  if (!phone) {
-    return NextResponse.json({ error: "Phone is required." }, { status: 400 });
-  }
-
-  if (!subject) {
-    return NextResponse.json({ error: "Subject is required." }, { status: 400 });
-  }
-
-  if (!message) {
-    return NextResponse.json({ error: "Message is required." }, { status: 400 });
-  }
+  const { fullName, email, phone, subject, message } = validation.data;
 
   const files = formData
     .getAll("photos")
     .filter((value): value is File => value instanceof File && value.size > 0);
 
   for (const file of files) {
-    const fileValidation = validateUploadFile(file);
+    const fileValidation = validateContactFile(file);
     if (!fileValidation.success) {
-      return NextResponse.json({ error: fileValidation.error }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: fileValidation.error,
+          fieldErrors: { photos: fileValidation.error },
+        },
+        { status: 400 },
+      );
     }
   }
 
@@ -140,10 +140,6 @@ export async function POST(request: Request) {
   });
 }
 
-function clean(value: FormDataEntryValue | null) {
-  return typeof value === "string" ? value.trim() : "";
-}
-
 function formatContactEmail({
   fullName,
   email,
@@ -173,4 +169,27 @@ function formatContactEmail({
     "Uploaded Files:",
     uploadedFileNames.length ? uploadedFileNames.join(", ") : "None",
   ].join("\n");
+}
+
+function validateContactFile(file: File) {
+  const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+
+  if (
+    !acceptedContactFileTypes.has(file.type) &&
+    !acceptedContactFileExtensions.has(extension)
+  ) {
+    return {
+      success: false as const,
+      error: "Uploads must be JPG, JPEG, PNG, or PDF files.",
+    };
+  }
+
+  if (file.size > maxContactFileSize) {
+    return {
+      success: false as const,
+      error: "Each uploaded file must be 25MB or smaller.",
+    };
+  }
+
+  return { success: true as const };
 }

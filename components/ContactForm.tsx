@@ -4,15 +4,24 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { Button } from "@/components/Button";
 
 type FormState = "idle" | "submitting" | "success" | "error";
+type FieldErrors = Record<string, string>;
 const acceptedFileTypes = new Set(["image/jpeg", "image/png", "application/pdf"]);
 const acceptedFileExtensions = new Set(["jpg", "jpeg", "png", "pdf"]);
 const maxFileSize = 25 * 1024 * 1024;
+const requiredFields = [
+  { name: "fullName", label: "Full Name" },
+  { name: "email", label: "Email" },
+  { name: "phone", label: "Phone" },
+  { name: "subject", label: "Subject" },
+  { name: "message", label: "Message" },
+];
 
 export function ContactForm() {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.currentTarget.files ?? []);
@@ -38,6 +47,15 @@ export function ContactForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
+    const validationErrors = getContactValidationErrors(form, selectedFiles);
+    setFieldErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length) {
+      setState("error");
+      setMessage(Object.values(validationErrors)[0]);
+      return;
+    }
 
     if (fileError) {
       setState("error");
@@ -48,7 +66,7 @@ export function ContactForm() {
     setState("submitting");
     setMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
 
     try {
       const response = await fetch("/api/contact-message", {
@@ -72,6 +90,8 @@ export function ContactForm() {
         response.ok || data?.success === true || data?.emailSent === true;
 
       if (!success) {
+        const apiFieldErrors = getApiFieldErrors(data?.fieldErrors);
+        setFieldErrors(apiFieldErrors);
         setState("error");
         setMessage(
           typeof data?.error === "string"
@@ -81,9 +101,10 @@ export function ContactForm() {
         return;
       }
 
-      event.currentTarget.reset();
+      form.reset();
       setSelectedFiles([]);
       setFileError("");
+      setFieldErrors({});
       setState("success");
       setMessage(
         "Thanks. Your message was received and Grubel Property Services will follow up soon.",
@@ -98,10 +119,10 @@ export function ContactForm() {
   return (
     <form className="grid gap-5 rounded-lg border border-slate-200 bg-white p-6 shadow-soft" onSubmit={handleSubmit}>
       <div className="grid gap-5 md:grid-cols-2">
-        <Field label="Full Name" name="fullName" required />
-        <Field label="Email" name="email" required type="email" />
-        <Field label="Phone" name="phone" required type="tel" />
-        <Field label="Subject" name="subject" required />
+        <Field error={fieldErrors.fullName} label="Full Name" name="fullName" required />
+        <Field error={fieldErrors.email} label="Email" name="email" required type="email" />
+        <Field error={fieldErrors.phone} label="Phone" name="phone" required type="tel" />
+        <Field error={fieldErrors.subject} label="Subject" name="subject" required />
       </div>
       <label className="grid gap-2 text-sm font-bold text-navy">
         Message
@@ -110,6 +131,11 @@ export function ContactForm() {
           name="message"
           required
         />
+        {fieldErrors.message ? (
+          <span className="text-xs font-semibold text-red-700">
+            {fieldErrors.message}
+          </span>
+        ) : null}
       </label>
       <div className="grid gap-2 text-sm font-bold text-navy">
         Upload Photos or Documents
@@ -143,9 +169,9 @@ export function ContactForm() {
             </ul>
           </div>
         ) : null}
-        {fileError ? (
+        {fileError || fieldErrors.photos ? (
           <p className="rounded-md bg-red-50 p-3 text-sm font-semibold text-red-800">
-            {fileError}
+            {fileError || fieldErrors.photos}
           </p>
         ) : null}
       </div>
@@ -172,26 +198,74 @@ function isAcceptedFile(file: File) {
   return acceptedFileTypes.has(file.type) || acceptedFileExtensions.has(extension);
 }
 
+function getContactValidationErrors(form: HTMLFormElement, files: File[]) {
+  const formData = new FormData(form);
+  const errors: FieldErrors = {};
+
+  for (const field of requiredFields) {
+    const value = String(formData.get(field.name) ?? "").trim();
+    if (!value) {
+      errors[field.name] = `${field.label} is required.`;
+    }
+  }
+
+  const email = String(formData.get("email") ?? "").trim();
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.email = "Enter a valid email address.";
+  }
+
+  for (const file of files) {
+    if (!isAcceptedFile(file)) {
+      errors.photos = "Uploads must be JPG, JPEG, PNG, or PDF files.";
+      break;
+    }
+
+    if (file.size > maxFileSize) {
+      errors.photos = "Each uploaded file must be 25MB or smaller.";
+      break;
+    }
+  }
+
+  return errors;
+}
+
+function getApiFieldErrors(value: unknown) {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      (entry): entry is [string, string] => typeof entry[1] === "string",
+    ),
+  );
+}
+
 function Field({
   label,
   name,
   type = "text",
   required = false,
+  error,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
+  error?: string;
 }) {
   return (
     <label className="grid gap-2 text-sm font-bold text-navy">
       {label}
       <input
-        className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className={`min-h-11 rounded-md border px-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 ${
+          error ? "border-red-500" : "border-slate-300"
+        }`}
         name={name}
         required={required}
         type={type}
       />
+      {error ? <span className="text-xs font-semibold text-red-700">{error}</span> : null}
     </label>
   );
 }
