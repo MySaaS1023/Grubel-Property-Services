@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, ReactNode, useState } from "react";
 import { Button } from "@/components/Button";
 
 const services = [
@@ -10,8 +10,7 @@ const services = [
 ];
 const walkthroughOptions = [
   "Live Virtual Walkthrough",
-  "Upload Photos/Videos Only",
-  "Request Callback First",
+  "Uploaded Photos/Videos Only",
 ];
 const propertyTypes = ["Residential", "Commercial", "Rental / Investment Property", "Other"];
 const occupancyOptions = [
@@ -21,7 +20,8 @@ const occupancyOptions = [
   "Move-Out / Turnover",
   "Unknown",
 ];
-const timeWindows = ["Morning", "Afternoon", "Evening", "Flexible"];
+const contactMethods = ["Phone", "Video Call"];
+const timeWindows = ["Morning", "Afternoon", "Evening"];
 const acceptedFileTypes = new Set([
   "image/jpeg",
   "image/png",
@@ -39,6 +39,7 @@ const requiredFields = [
   { name: "fullName", label: "Full Name" },
   { name: "email", label: "Email" },
   { name: "phone", label: "Phone" },
+  { name: "preferredContactMethod", label: "Preferred Contact Method" },
   { name: "propertyAddress", label: "Property Address" },
   { name: "serviceNeeded", label: "Service Needed" },
   { name: "walkthroughOption", label: "Walkthrough Option" },
@@ -159,66 +160,73 @@ export function RequestServiceForm() {
 
   return (
     <form className="grid gap-5 rounded-lg border border-slate-200 bg-white p-6 shadow-soft" onSubmit={handleSubmit}>
-      <div className="grid gap-5 md:grid-cols-2">
-        <Field error={fieldErrors.fullName} label="Full Name" name="fullName" required />
-        <Field error={fieldErrors.email} label="Email" name="email" required type="email" />
-        <Field error={fieldErrors.phone} label="Phone" name="phone" required type="tel" />
-        <Field
-          error={fieldErrors.propertyAddress}
-          label="Property Address"
-          name="propertyAddress"
-          required
-        />
-        <SelectField
-          error={fieldErrors.serviceNeeded}
-          label="Service Needed"
-          name="serviceNeeded"
-          options={services}
-          required
-        />
-        <SelectField
-          error={fieldErrors.walkthroughOption}
-          label="Walkthrough Option"
-          name="walkthroughOption"
-          options={walkthroughOptions}
-          required
-        />
-        <Field label="Preferred Appointment Date" name="preferredDate" type="date" />
-        <SelectField
-          label="Preferred Time Window"
-          name="preferredTimeWindow"
-          options={timeWindows}
-        />
-        <SelectField
-          error={fieldErrors.propertyType}
-          label="Property Type"
-          name="propertyType"
-          options={propertyTypes}
-          required
-        />
-        <SelectField
-          error={fieldErrors.occupancyStatus}
-          label="Occupancy Status"
-          name="occupancyStatus"
-          options={occupancyOptions}
-          required
-        />
-      </div>
-      <label className="grid gap-2 text-sm font-bold text-navy">
-        Project Description
-        <textarea
-          className="min-h-36 rounded-md border border-slate-300 px-3 py-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
-          name="projectDescription"
-          required
-        />
-        {fieldErrors.projectDescription ? (
-          <span className="text-xs font-semibold text-red-700">
-            {fieldErrors.projectDescription}
-          </span>
-        ) : null}
-      </label>
+      <FormSection title="Customer Information">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field error={fieldErrors.fullName} label="Full Name" name="fullName" required />
+          <Field error={fieldErrors.email} label="Email" name="email" required type="email" />
+          <Field error={fieldErrors.phone} label="Phone Number" name="phone" required type="tel" />
+          <SelectField
+            error={fieldErrors.preferredContactMethod}
+            label="Preferred Contact Method"
+            name="preferredContactMethod"
+            options={contactMethods}
+            required
+          />
+        </div>
+      </FormSection>
+
+      <FormSection title="Property Information">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field
+            error={fieldErrors.propertyAddress}
+            label="Property Address"
+            name="propertyAddress"
+            required
+          />
+          <SelectField
+            error={fieldErrors.propertyType}
+            label="Property Type"
+            name="propertyType"
+            options={propertyTypes}
+            required
+          />
+          <SelectField
+            error={fieldErrors.occupancyStatus}
+            label="Occupancy Status"
+            name="occupancyStatus"
+            options={occupancyOptions}
+            required
+          />
+        </div>
+      </FormSection>
+
+      <FormSection title="Project Information">
+        <div className="grid gap-5">
+          <SelectField
+            error={fieldErrors.serviceNeeded}
+            label="Service Needed"
+            name="serviceNeeded"
+            options={services}
+            required
+          />
+          <label className="grid gap-2 text-sm font-bold text-navy">
+            Project Description
+            <textarea
+              className="min-h-36 rounded-md border border-slate-300 px-3 py-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              name="projectDescription"
+              required
+            />
+            {fieldErrors.projectDescription ? (
+              <span className="text-xs font-semibold text-red-700">
+                {fieldErrors.projectDescription}
+              </span>
+            ) : null}
+          </label>
+        </div>
+      </FormSection>
+
       <div className="grid gap-2 text-sm font-bold text-navy">
-        Upload Photos, Videos, or Documents
+        <h2 className="text-lg font-black text-navy">Media Uploads</h2>
         <p className="text-sm font-normal leading-6 text-charcoal/65">
           Upload photos, videos, property documents, repair area details, or
           related documents if available.
@@ -255,17 +263,31 @@ export function RequestServiceForm() {
           </p>
         ) : null}
       </div>
-      <p className="text-sm leading-6 text-charcoal/65">
-        For live virtual walkthroughs, choose a preferred appointment date and
-        time window for review.
-      </p>
-      <label className="grid gap-2 text-sm font-bold text-navy">
-        Additional Notes
-        <textarea
-          className="min-h-28 rounded-md border border-slate-300 px-3 py-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
-          name="additionalNotes"
+
+      <FormSection title="Walkthrough Preference">
+        <SelectField
+          error={fieldErrors.walkthroughOption}
+          label="Walkthrough Preference"
+          name="walkthroughOption"
+          options={walkthroughOptions}
+          required
         />
-      </label>
+      </FormSection>
+
+      <FormSection title="Availability">
+        <div className="grid gap-5 md:grid-cols-2">
+          <Field label="Preferred Days" name="preferredDays" />
+          <SelectField
+            label="Preferred Time Range"
+            name="preferredTimeWindow"
+            options={timeWindows}
+          />
+        </div>
+      </FormSection>
+      <p className="text-sm leading-6 text-charcoal/65">
+        For live virtual walkthroughs, share your preferred days and time range
+        so the team can coordinate next steps.
+      </p>
       {message ? (
         <p
           className={`rounded-md px-4 py-3 text-sm font-semibold ${
@@ -308,6 +330,21 @@ function Field({
       />
       {error ? <span className="text-xs font-semibold text-red-700">{error}</span> : null}
     </label>
+  );
+}
+
+function FormSection({
+  children,
+  title,
+}: {
+  children: ReactNode;
+  title: string;
+}) {
+  return (
+    <section className="grid gap-4">
+      <h2 className="text-lg font-black text-navy">{title}</h2>
+      {children}
+    </section>
   );
 }
 

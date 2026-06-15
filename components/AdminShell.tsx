@@ -3,15 +3,9 @@ import type { ReactNode } from "react";
 import { LogoutButton } from "@/components/LogoutButton";
 
 const adminTabs = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/requests", label: "Manage Requests" },
-  { href: "/admin/customers", label: "Customers" },
+  { href: "/admin/requests", label: "Requests" },
   { href: "/admin/projects", label: "Projects" },
-  { href: "/admin/appointments", label: "Appointments" },
-  { href: "/admin/quotes", label: "Manage Quotes" },
-  { href: "/admin/crm", label: "CRM Logs" },
-  { href: "/admin/subcontractors", label: "Review Subcontractors" },
-  { href: "/admin/uploads", label: "Uploads" },
+  { href: "/admin/subcontractors", label: "Vendors" },
   { href: "/admin/finance", label: "Finance" },
 ];
 
@@ -67,9 +61,9 @@ export function AdminBackLink() {
   return (
     <Link
       className="inline-flex text-sm font-black text-navy transition hover:text-accentDark"
-      href="/admin"
+      href="/admin/requests"
     >
-      ← Back to Dashboard
+      Back to Requests
     </Link>
   );
 }

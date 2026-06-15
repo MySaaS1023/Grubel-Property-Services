@@ -6,12 +6,12 @@ import { getAdminData, readCurrency, readDate, readText } from "@/lib/admin-data
 export const dynamic = "force-dynamic";
 
 export default async function AdminFinancePage() {
-  const { payments, projects } = await getAdminData();
+  const { payments, projects, quotes } = await getAdminData();
 
   return (
     <AdminGuard>
       <AdminShell
-        description="Track deposits, final payments, payment-to-start status, and vendor payout workflow."
+        description="Track customer payments, vendor payouts, and outstanding balances."
         title="Finance"
       >
         <div className="grid gap-8">
@@ -36,27 +36,40 @@ export default async function AdminFinancePage() {
           </section>
 
           <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-2xl font-black text-navy">Project Payment Workflow</h2>
+            <h2 className="text-2xl font-black text-navy">Outstanding Balances</h2>
+            <div className="mt-5">
+              <AdminTable
+                columns={["Quote", "Customer", "Service", "Balance Due", "Payment Status"]}
+                minWidth="900px"
+                rows={quotes.map((quote) => [
+                  readText(quote, "quote_number"),
+                  readText(quote, "customer_name"),
+                  readText(quote, "service_type"),
+                  readCurrency(quote, "balance_due"),
+                  readText(quote, "payment_status"),
+                ])}
+              />
+            </div>
+          </section>
+
+          <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-black text-navy">Vendor Payouts</h2>
             <div className="mt-5">
               <AdminTable
                 columns={[
                   "Project",
                   "Customer",
-                  "Payment Status",
-                  "Payment to Start",
-                  "Final Sign-Off",
                   "Vendor Status",
-                  "Closeout",
+                  "Project Status",
+                  "Payment Status",
                 ]}
                 minWidth="980px"
                 rows={projects.map((project) => [
                   readText(project, "id").slice(0, 8),
                   readText(project, "customer_name"),
-                  readText(project, "payment_status"),
-                  readText(project, "payment_to_start_status"),
-                  readText(project, "customer_signoff_status"),
                   readText(project, "vendor_status"),
-                  readText(project, "closeout_status"),
+                  readText(project, "status"),
+                  readText(project, "payment_status"),
                 ])}
               />
             </div>

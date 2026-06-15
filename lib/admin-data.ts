@@ -4,44 +4,32 @@ export type AdminRow = Record<string, unknown>;
 
 type AdminData = {
   applications: AdminRow[];
-  appointments: AdminRow[];
-  crmLogs: AdminRow[];
-  customers: AdminRow[];
   jobAssignments: AdminRow[];
   payments: AdminRow[];
   projects: AdminRow[];
   quotes: AdminRow[];
   serviceRequests: AdminRow[];
   subcontractors: AdminRow[];
-  uploads: AdminRow[];
 };
 
 const emptyAdminData: AdminData = {
   applications: [],
-  appointments: [],
-  crmLogs: [],
-  customers: [],
   jobAssignments: [],
   payments: [],
   projects: [],
   quotes: [],
   serviceRequests: [],
   subcontractors: [],
-  uploads: [],
 };
 
 const tableMap = {
   applications: "subcontractor_applications",
-  appointments: "appointments",
-  crmLogs: "crm_logs",
-  customers: "customers",
   jobAssignments: "job_assignments",
   payments: "payments",
   projects: "projects",
   quotes: "quotes",
   serviceRequests: "service_requests",
   subcontractors: "subcontractors",
-  uploads: "uploads",
 } satisfies Record<keyof AdminData, string>;
 
 export async function getAdminData(): Promise<AdminData> {

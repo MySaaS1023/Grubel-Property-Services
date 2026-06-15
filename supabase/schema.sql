@@ -205,6 +205,7 @@ alter table if exists projects add column if not exists closeout_status text;
 
 alter table if exists service_requests add column if not exists walkthrough_option text;
 alter table if exists service_requests add column if not exists media_status text;
+alter table if exists service_requests add column if not exists preferred_days text;
 
 alter table if exists appointments add column if not exists appointment_type text;
 alter table if exists appointments add column if not exists contact_method text;

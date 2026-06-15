@@ -3,25 +3,28 @@ import { AdminDeleteButton } from "@/components/AdminDeleteButton";
 import { AdminEmptyState } from "@/components/AdminTable";
 import { AdminGuard } from "@/components/AuthGuards";
 import { getAdminData, readDate, readText } from "@/lib/admin-data";
-import { adminWorkflowStageOptions, formatWorkflowStage } from "@/lib/workflow";
-import { updateProjectWorkflowStage } from "./actions";
+import { projectStatuses } from "@/lib/operations-workflow";
+import { updateProjectStatus } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProjectsPage() {
   const { projects } = await getAdminData();
+  const activeProjects = projects.filter((project) =>
+    projectStatuses.includes(readText(project, "status", "Vendor Pricing") as never),
+  );
 
   return (
     <AdminGuard>
       <AdminShell
-        description="Manage the project operations pipeline from intake through closeout."
-        title="Projects"
+        description="View active projects created from reviewed requests."
+        title="Active Projects"
       >
         <div className="grid gap-6">
           <AdminBackLink />
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            {projects.length === 0 ? <AdminEmptyState /> : null}
-            {projects.length ? (
+            {activeProjects.length === 0 ? <AdminEmptyState /> : null}
+            {activeProjects.length ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[1320px] border-collapse text-left text-sm">
                   <thead>
@@ -31,14 +34,12 @@ export default async function AdminProjectsPage() {
                         "Customer",
                         "Service Type",
                         "Property Address",
-                        "Workflow Stage",
                         "Status",
-                        "Walkthrough",
                         "Payment",
                         "Assigned Vendor",
                         "Scheduled",
                         "Last Updated",
-                        "Move Stage",
+                        "Move Status",
                         "Actions",
                       ].map((column) => (
                         <th className="py-3 pr-4" key={column}>
@@ -48,13 +49,9 @@ export default async function AdminProjectsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {projects.map((project) => {
+                    {activeProjects.map((project) => {
                       const projectId = readText(project, "id");
-                      const workflowStage = readText(
-                        project,
-                        "workflow_stage",
-                        "intake_received",
-                      );
+                      const currentStatus = readText(project, "status", "Vendor Pricing");
 
                       return (
                         <tr className="border-b border-slate-100 last:border-b-0" key={projectId}>
@@ -71,13 +68,7 @@ export default async function AdminProjectsPage() {
                             {readText(project, "property_address")}
                           </td>
                           <td className="py-3 pr-4 font-semibold text-charcoal">
-                            {formatWorkflowStage(workflowStage)}
-                          </td>
-                          <td className="py-3 pr-4 font-semibold text-charcoal">
                             {readText(project, "status")}
-                          </td>
-                          <td className="py-3 pr-4 font-semibold text-charcoal">
-                            {readText(project, "walkthrough_option")}
                           </td>
                           <td className="py-3 pr-4 font-semibold text-charcoal">
                             {readText(project, "payment_status")}
@@ -92,19 +83,16 @@ export default async function AdminProjectsPage() {
                             {readDate(project, "updated_at", "Not listed")}
                           </td>
                           <td className="py-3 pr-4">
-                            <form action={updateProjectWorkflowStage} className="flex gap-2">
+                            <form action={updateProjectStatus} className="flex gap-2">
                               <input name="projectId" type="hidden" value={projectId} />
                               <select
                                 className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-xs font-bold text-charcoal"
-                                defaultValue=""
-                                name="workflowStage"
+                                defaultValue={currentStatus}
+                                name="status"
                               >
-                                <option disabled value="">
-                                  Select stage
-                                </option>
-                                {adminWorkflowStageOptions.map((option) => (
-                                  <option key={option.value} value={option.value}>
-                                    {option.label}
+                                {projectStatuses.map((status) => (
+                                  <option key={status} value={status}>
+                                    {status}
                                   </option>
                                 ))}
                               </select>

@@ -8,13 +8,13 @@ import { updateSubcontractorApplicationStatus } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function AdminSubcontractorsPage() {
-  const { applications, subcontractors } = await getAdminData();
+  const { applications, jobAssignments, subcontractors } = await getAdminData();
 
   return (
     <AdminGuard>
       <AdminShell
-        description="Review subcontractor applications and approved subcontractor records."
-        title="Subcontractors"
+        description="Manage vendor applications, trade information, contact details, approval status, and assigned project counts."
+        title="Vendors"
       >
         <div className="grid gap-8">
           <AdminBackLink />
@@ -78,10 +78,17 @@ export default async function AdminSubcontractorsPage() {
           </section>
 
           <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-2xl font-black text-navy">Approved Subcontractors</h2>
+            <h2 className="text-2xl font-black text-navy">Vendor Directory</h2>
             <div className="mt-5">
               <AdminTable
-                columns={["Name", "Business", "Email", "Phone", "Skills", "Status"]}
+                columns={[
+                  "Vendor",
+                  "Business",
+                  "Trade Type",
+                  "Contact",
+                  "Approval Status",
+                  "Assigned Projects",
+                ]}
                 deleteTableName="subcontractors"
                 minWidth="900px"
                 rowIds={subcontractors.map((subcontractor) =>
@@ -90,10 +97,16 @@ export default async function AdminSubcontractorsPage() {
                 rows={subcontractors.map((subcontractor) => [
                   readText(subcontractor, "full_name"),
                   readText(subcontractor, "business_name"),
-                  readText(subcontractor, "email"),
-                  readText(subcontractor, "phone"),
                   readText(subcontractor, "trade_skills"),
+                  `${readText(subcontractor, "email")} / ${readText(subcontractor, "phone")}`,
                   readText(subcontractor, "status"),
+                  String(
+                    jobAssignments.filter(
+                      (assignment) =>
+                        readText(assignment, "subcontractor_id", "") ===
+                        readText(subcontractor, "id", ""),
+                    ).length,
+                  ),
                 ])}
               />
             </div>
