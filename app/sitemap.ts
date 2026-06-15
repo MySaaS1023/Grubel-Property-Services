@@ -1,24 +1,23 @@
 import type { MetadataRoute } from "next";
 
-const baseUrl = "https://www.steadystartco.com";
+const baseUrl = "https://grubelps.com";
 
 const routes = [
   "",
-  "/pricing",
-  "/get-started",
   "/about",
+  "/services",
+  "/faq",
   "/contact",
-  "/quick-links",
+  "/request-service",
+  "/customer-login",
+  "/repair",
+  "/turnover-prep",
+  "/builds-remodels",
   "/privacy",
   "/terms",
   "/disclaimer",
-  "/shopify-alternative",
-  "/wix-alternative",
-  "/squarespace-alternative",
-  "/custom-website-vs-wix",
-  "/website-without-monthly-fees",
-  "/custom-website-vs-shopify",
-  "/custom-website-vs-squarespace",
+  "/subcontractor-terms",
+  "/subcontractor-agreement-notice",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

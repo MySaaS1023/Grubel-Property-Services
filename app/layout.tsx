@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description:
     "Preventative property checks, minor repair support, and turnover prep for homeowners, landlords, and property managers in Arizona.",
   metadataBase: new URL("https://grubelps.com"),
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

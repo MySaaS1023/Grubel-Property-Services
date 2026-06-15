@@ -45,6 +45,10 @@ export function validateServiceRequest(input: unknown): ValidationResult {
   const subject = toCleanString(body.subject);
   const serviceNeeded = toCleanString(body.serviceNeeded);
   const walkthroughOption = toCleanString(body.walkthroughOption);
+  const propertyAddress = toCleanString(body.propertyAddress);
+  const propertyType = toCleanString(body.propertyType);
+  const occupancyStatus =
+    toCleanString(body.occupancyStatus) || toCleanString(body.occupiedOrVacant);
   const message = toCleanString(body.message) || toCleanString(body.projectDescription);
 
   if (!fullName) {
@@ -71,8 +75,24 @@ export function validateServiceRequest(input: unknown): ValidationResult {
     return { success: false, error: "Walkthrough option is invalid." };
   }
 
+  if (!walkthroughOption) {
+    return { success: false, error: "Walkthrough option is required." };
+  }
+
+  if (!propertyAddress) {
+    return { success: false, error: "Property address is required." };
+  }
+
+  if (!propertyType) {
+    return { success: false, error: "Property type is required." };
+  }
+
+  if (!occupancyStatus) {
+    return { success: false, error: "Occupancy status is required." };
+  }
+
   if (!message) {
-    return { success: false, error: "Message is required." };
+    return { success: false, error: "Project description is required." };
   }
 
   return {
@@ -82,15 +102,14 @@ export function validateServiceRequest(input: unknown): ValidationResult {
       email,
       phone,
       subject,
-      propertyAddress: toCleanString(body.propertyAddress),
+      propertyAddress,
       city: toCleanString(body.city),
       serviceNeeded,
       walkthroughOption,
       preferredDate: toCleanString(body.preferredDate),
       preferredTimeWindow: toCleanString(body.preferredTimeWindow),
-      propertyType: toCleanString(body.propertyType),
-      occupancyStatus:
-        toCleanString(body.occupancyStatus) || toCleanString(body.occupiedOrVacant),
+      propertyType,
+      occupancyStatus,
       projectDescription: toCleanString(body.projectDescription),
       preferredContactMethod: toCleanString(body.preferredContactMethod),
       additionalNotes: toCleanString(body.additionalNotes),

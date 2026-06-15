@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://www.steadystartco.com/sitemap.xml",
+    sitemap: "https://grubelps.com/sitemap.xml",
   };
 }

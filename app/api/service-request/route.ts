@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { queueOperationalEmail } from "@/lib/email";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import {
@@ -212,11 +213,12 @@ export async function POST(request: Request) {
     };
     let requestResult;
     try {
-      requestResult = await supabase
-        .from("service_requests")
-        .insert(serviceRequestInsert)
-        .select("id")
-        .single();
+      requestResult = await insertRecordReturningId({
+        supabase,
+        table: "service_requests",
+        payload: serviceRequestInsert,
+        optionalColumns: ["walkthrough_option", "media_status"],
+      });
     } catch (error) {
       console.error("[service-request] service request insert threw", {
         error: getSafeErrorMessage(error),
@@ -233,11 +235,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data: serviceRequest, error: requestError } = requestResult;
+    const { data: serviceRequest, error: requestError, usedFallback } = requestResult;
 
     if (requestError || !serviceRequest) {
       console.error("[service-request] service request insert result failed", {
         error: requestError,
+        submittedColumns: Object.keys(serviceRequestInsert),
         nextPublicSupabaseUrlExists: supabaseUrlExists,
         supabaseServiceRoleKeyExists,
         serviceClientInitialized: Boolean(supabase),
@@ -245,13 +248,17 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error:
-            "We could not save your service request. Please check the form and try again.",
+            getDatabaseErrorMessage(
+              requestError,
+              "We could not save your service request. Please check the form and try again.",
+            ),
         },
         { status: 500 },
       );
     }
     console.log("[service-request] service request insert result", {
       serviceRequestId: serviceRequest.id,
+      usedFallback,
     });
 
     serviceRequestId = serviceRequest.id;
@@ -276,11 +283,20 @@ export async function POST(request: Request) {
     };
     let projectResult;
     try {
-      projectResult = await supabase
-        .from("projects")
-        .insert(projectInsert)
-        .select("id")
-        .single();
+      projectResult = await insertRecordReturningId({
+        supabase,
+        table: "projects",
+        payload: projectInsert,
+        optionalColumns: [
+          "workflow_stage",
+          "walkthrough_option",
+          "approval_status",
+          "payment_to_start_status",
+          "vendor_status",
+          "customer_signoff_status",
+          "closeout_status",
+        ],
+      });
     } catch (error) {
       console.error("[service-request] project insert threw", {
         error: getSafeErrorMessage(error),
@@ -294,11 +310,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const { data: project, error: projectError } = projectResult;
+    const { data: project, error: projectError, usedFallback: projectUsedFallback } = projectResult;
 
     if (projectError || !project) {
       console.error("[service-request] project insert result failed", {
         error: projectError,
+        submittedColumns: Object.keys(projectInsert),
       });
       return NextResponse.json(
         {
@@ -313,6 +330,7 @@ export async function POST(request: Request) {
     console.log("[service-request] project insert result", {
       projectId,
       workflowStage,
+      usedFallback: projectUsedFallback,
     });
     requestSaved = true;
     const uploadFailures: string[] = [];
@@ -355,21 +373,25 @@ export async function POST(request: Request) {
 
     try {
       if (uploadedFiles.length) {
-        const { error: uploadError } = await supabase.from("uploads").insert(
-          uploadedFiles.map((file) => ({
+        const uploadRows = uploadedFiles.map((file) => ({
           related_id: serviceRequestId,
-            related_type: file.relatedType,
-            category: file.category,
-            file_name: file.fileName,
-            file_type: file.fileType,
-            size: file.size,
-            file_size: file.size,
-            mime_type: file.fileType,
-            uploaded_by: file.uploadedBy,
-            storage_bucket: file.storageBucket ?? null,
-            storage_path: file.storagePath,
-          })),
-        );
+          related_type: file.relatedType,
+          category: file.category,
+          file_name: file.fileName,
+          file_type: file.fileType,
+          size: file.size,
+          file_size: file.size,
+          mime_type: file.fileType,
+          uploaded_by: file.uploadedBy,
+          storage_bucket: file.storageBucket ?? null,
+          storage_path: file.storagePath,
+        }));
+        const { error: uploadError } = await insertRowsWithOptionalColumnFallback({
+          supabase,
+          table: "uploads",
+          rows: uploadRows,
+          optionalColumns: ["file_size", "mime_type", "storage_bucket", "storage_path"],
+        });
 
         if (uploadError) {
           postSaveWarnings.push("Upload metadata could not be saved.");
@@ -568,6 +590,108 @@ function formatServiceRequestEmail({
     "Uploaded Files:",
     uploadedFileNames.length ? uploadedFileNames.join(", ") : "None",
   ].join("\n");
+}
+
+type DatabaseError = {
+  code?: string;
+  details?: string | null;
+  hint?: string | null;
+  message?: string;
+};
+
+async function insertRecordReturningId({
+  supabase,
+  table,
+  payload,
+  optionalColumns,
+}: {
+  supabase: SupabaseClient;
+  table: string;
+  payload: Record<string, unknown>;
+  optionalColumns: string[];
+}) {
+  const primary = await supabase.from(table).insert(payload).select("id").single();
+
+  if (!primary.error || !isMissingColumnError(primary.error, optionalColumns)) {
+    return { ...primary, usedFallback: false };
+  }
+
+  const fallbackPayload = omitColumns(payload, optionalColumns);
+  console.error("[service-request] retrying insert without optional columns", {
+    table,
+    optionalColumns,
+    originalError: primary.error,
+  });
+
+  const fallback = await supabase
+    .from(table)
+    .insert(fallbackPayload)
+    .select("id")
+    .single();
+
+  return { ...fallback, usedFallback: true };
+}
+
+async function insertRowsWithOptionalColumnFallback({
+  supabase,
+  table,
+  rows,
+  optionalColumns,
+}: {
+  supabase: SupabaseClient;
+  table: string;
+  rows: Array<Record<string, unknown>>;
+  optionalColumns: string[];
+}) {
+  const primary = await supabase.from(table).insert(rows);
+
+  if (!primary.error || !isMissingColumnError(primary.error, optionalColumns)) {
+    return { ...primary, usedFallback: false };
+  }
+
+  console.error("[service-request] retrying row insert without optional columns", {
+    table,
+    optionalColumns,
+    originalError: primary.error,
+  });
+
+  const fallback = await supabase
+    .from(table)
+    .insert(rows.map((row) => omitColumns(row, optionalColumns)));
+
+  return { ...fallback, usedFallback: true };
+}
+
+function isMissingColumnError(error: DatabaseError, columns: string[]) {
+  const searchable = `${error.code ?? ""} ${error.message ?? ""} ${error.details ?? ""}`;
+  return (
+    searchable.includes("PGRST204") ||
+    columns.some((column) => searchable.toLowerCase().includes(column.toLowerCase()))
+  );
+}
+
+function omitColumns(payload: Record<string, unknown>, columns: string[]) {
+  const next = { ...payload };
+  for (const column of columns) {
+    delete next[column];
+  }
+  return next;
+}
+
+function getDatabaseErrorMessage(error: DatabaseError | null, fallback: string) {
+  if (!error?.message) {
+    return fallback;
+  }
+
+  if (error.message.toLowerCase().includes("column")) {
+    return "A database field is missing for this request. Please contact Grubel Property Services or try again shortly.";
+  }
+
+  if (error.message.toLowerCase().includes("violates")) {
+    return "One of the submitted fields did not match the database requirements. Please review the highlighted fields and try again.";
+  }
+
+  return fallback;
 }
 
 function getSafeErrorMessage(error: unknown) {
