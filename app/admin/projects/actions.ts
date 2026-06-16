@@ -4,6 +4,12 @@ import { revalidatePath } from "next/cache";
 import { queueOperationalEmail } from "@/lib/email";
 import { isProjectStatus, type ProjectStatus } from "@/lib/operations-workflow";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
+import {
+  sendAwaitingCustomerApprovalEmail,
+  sendScheduledCustomerEmail,
+  sendScheduledVendorEmail,
+  sendVendorPricingInternalEmail,
+} from "@/lib/workflow-email-automation";
 
 export async function updateProjectStatus(formData: FormData) {
   const projectId = String(formData.get("projectId") ?? "");
@@ -92,61 +98,39 @@ async function sendStatusAutomation({
   const customerName = read(project.customer_name, "Customer");
   const serviceType = read(project.service_type, "Project");
   const propertyAddress = read(project.property_address, "Property address not listed");
+  const projectContext = {
+    projectId: read(project.id, ""),
+    customerName,
+    customerEmail,
+    serviceType,
+    propertyAddress,
+    assignedVendorName: read(project.assigned_team, ""),
+    scheduledDate: read(project.scheduled_date, ""),
+    status,
+  };
 
   if (status === "Vendor Pricing") {
-    await queueOperationalEmail({
-      type: "internal_project_update",
-      to: process.env.BUSINESS_EMAIL ?? "info@grubelps.com",
-      subject: "Project Entered Vendor Pricing - Grubel Property Services",
-      text: [
-        "A project is ready for vendor pricing.",
-        "",
-        `Customer: ${customerName}`,
-        `Service: ${serviceType}`,
-        `Property: ${propertyAddress}`,
-      ].join("\n"),
-      data: { projectId: project.id, status },
-    });
+    await sendVendorPricingInternalEmail(projectContext);
     return;
   }
 
   if (status === "Scheduled") {
-    await sendCustomerEmail({
-      customerEmail,
-      subject: "Your Project Has Been Scheduled - Grubel Property Services",
-      text: [
-        `Hi ${customerName},`,
-        "",
-        "Your project has been scheduled. Grubel Property Services will keep you updated as work begins.",
-        "",
-        `Service: ${serviceType}`,
-        `Property: ${propertyAddress}`,
-      ].join("\n"),
-      status,
-    });
+    const assignedVendorEmail = await getAssignedVendorEmail(project);
 
-    await queueOperationalEmail({
-      type: "vendor_assignment_notification",
-      to: process.env.BUSINESS_EMAIL ?? "info@grubelps.com",
-      subject: "Vendor Assignment Needed - Grubel Property Services",
-      text: [
-        "A project has been scheduled. Confirm vendor assignment details.",
-        "",
-        `Customer: ${customerName}`,
-        `Service: ${serviceType}`,
-        `Property: ${propertyAddress}`,
-        `Assigned Vendor: ${read(project.assigned_team, "Not assigned")}`,
-      ].join("\n"),
-      data: { projectId: project.id, status },
+    await sendScheduledCustomerEmail(projectContext);
+    await sendScheduledVendorEmail({
+      ...projectContext,
+      assignedVendorEmail,
     });
     return;
   }
 
+  if (status === "Awaiting Customer Approval") {
+    await sendAwaitingCustomerApprovalEmail(projectContext);
+    return;
+  }
+
   const customerMessages: Partial<Record<ProjectStatus, { subject: string; body: string }>> = {
-    "Awaiting Customer Approval": {
-      subject: "Project Pricing Ready for Approval - Grubel Property Services",
-      body: "Your project pricing is ready for review. Please review the scope and cost details from Grubel Property Services.",
-    },
     "In Progress": {
       subject: "Your Project Has Started - Grubel Property Services",
       body: "Work has started on your project. We will continue to keep you updated.",
@@ -208,4 +192,40 @@ async function sendCustomerEmail({
 
 function read(value: unknown, fallback: string) {
   return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+async function getAssignedVendorEmail(project: Record<string, unknown>) {
+  const directEmail = read(project.assigned_vendor_email, "");
+  if (directEmail.includes("@")) {
+    return directEmail;
+  }
+
+  const assignedVendorName = read(project.assigned_team, "");
+  if (!assignedVendorName) {
+    return "";
+  }
+
+  const supabase = createServiceSupabaseClient();
+  if (!supabase) {
+    return "";
+  }
+
+  const { data, error } = await supabase
+    .from("subcontractors")
+    .select("email,full_name,business_name");
+
+  if (error) {
+    console.error("[admin-projects] Assigned vendor lookup failed", error);
+    return "";
+  }
+
+  const needle = assignedVendorName.trim().toLowerCase();
+  const vendor = data?.find((subcontractor) => {
+    const email = read(subcontractor.email, "").toLowerCase();
+    const fullName = read(subcontractor.full_name, "").toLowerCase();
+    const businessName = read(subcontractor.business_name, "").toLowerCase();
+    return email === needle || fullName === needle || businessName === needle;
+  });
+
+  return read(vendor?.email, "");
 }

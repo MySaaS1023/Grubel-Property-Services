@@ -1,8 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { queueOperationalEmail } from "@/lib/email";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
+import {
+  sendReviewingStatusEmail,
+  sendVendorPricingInternalEmail,
+} from "@/lib/workflow-email-automation";
 
 const allowedRequestActions = ["Reviewing", "Create Project"] as const;
 
@@ -48,18 +51,13 @@ export async function updateRequestAction(formData: FormData) {
       return;
     }
 
-    await sendCustomerEmail({
-      email: request.customer_email,
-      fullName: request.customer_name,
-      subject: "Your Request Is Being Reviewed - Grubel Property Services",
-      text: [
-        `Hi ${request.customer_name},`,
-        "",
-        "Your project request is now being reviewed by Grubel Property Services.",
-        "Our team is reviewing your property details, notes, and uploaded media to determine next steps.",
-        "",
-        "Grubel Property Services",
-      ].join("\n"),
+    await sendReviewingStatusEmail({
+      serviceRequestId: requestId,
+      customerEmail: read(request.customer_email),
+      customerName: read(request.customer_name),
+      serviceType: read(request.service_type),
+      propertyAddress: read(request.property_address),
+      projectDescription: read(request.project_description),
     });
   }
 
@@ -93,23 +91,10 @@ export async function updateRequestAction(formData: FormData) {
       return;
     }
 
-    await queueOperationalEmail({
-      type: "internal_project_update",
-      to: process.env.BUSINESS_EMAIL ?? "info@grubelps.com",
-      subject: "Project Moved to Vendor Pricing - Grubel Property Services",
-      text: [
-        "A project has moved to Vendor Pricing.",
-        "",
-        `Customer: ${request.customer_name}`,
-        `Service: ${request.service_type}`,
-        `Property: ${request.property_address || "Not provided"}`,
-      ].join("\n"),
-      data: {
-        requestId,
-        customerName: request.customer_name,
-        serviceType: request.service_type,
-        status: "Vendor Pricing",
-      },
+    await sendVendorPricingInternalEmail({
+      customerName: read(request.customer_name),
+      serviceType: read(request.service_type),
+      propertyAddress: read(request.property_address),
     });
   }
 
@@ -118,29 +103,6 @@ export async function updateRequestAction(formData: FormData) {
   revalidatePath("/admin/projects");
 }
 
-async function sendCustomerEmail({
-  email,
-  fullName,
-  subject,
-  text,
-}: {
-  email?: string;
-  fullName?: string;
-  subject: string;
-  text: string;
-}) {
-  if (!email) {
-    return;
-  }
-
-  await queueOperationalEmail({
-    type: "customer_status_update",
-    to: email,
-    subject,
-    text,
-    data: {
-      customerName: fullName ?? "Customer",
-      statusEmail: subject,
-    },
-  });
+function read(value: unknown) {
+  return typeof value === "string" ? value : undefined;
 }

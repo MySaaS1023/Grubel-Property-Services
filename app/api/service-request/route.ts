@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { queueOperationalEmail } from "@/lib/email";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import {
   prepareUploadRecord,
@@ -8,6 +7,10 @@ import {
   validateUploadFile,
 } from "@/lib/uploads";
 import { validateServiceRequest } from "@/lib/validation";
+import {
+  sendNewRequestAdminNotificationEmail,
+  sendNewRequestCustomerConfirmationEmail,
+} from "@/lib/workflow-email-automation";
 
 export async function POST(request: Request) {
   console.log("[service-request] request received");
@@ -349,33 +352,28 @@ export async function POST(request: Request) {
     });
   }
 
+  const requestEmailContext = {
+    serviceRequestId,
+    customerName: validation.data.fullName,
+    customerEmail: validation.data.email,
+    customerPhone: validation.data.phone,
+    serviceType: validation.data.serviceNeeded,
+    propertyAddress: validation.data.propertyAddress,
+    propertyType: validation.data.propertyType,
+    occupancyStatus: validation.data.occupancyStatus,
+    preferredDays: validation.data.preferredDays,
+    preferredTimeWindow: validation.data.preferredTimeWindow,
+    preferredContactMethod: validation.data.preferredContactMethod,
+    walkthroughOption: validation.data.walkthroughOption,
+    projectDescription: validation.data.projectDescription || validation.data.message,
+    uploadedFileNames,
+  };
+
   try {
-    const emailResult = await queueOperationalEmail({
-      type: "new_service_request",
-      to: process.env.BUSINESS_EMAIL ?? "info@grubelps.com",
-      from:
-        process.env.FROM_EMAIL ??
-        "Grubel Property Services <onboarding@resend.dev>",
-      subject: "New Project Request - Grubel Property Services",
-      text: formatServiceRequestEmail({
-        fullName: validation.data.fullName,
-        email: validation.data.email,
-        phone: validation.data.phone,
-        serviceNeeded: validation.data.serviceNeeded,
-        propertyAddress: validation.data.propertyAddress,
-        propertyType: validation.data.propertyType,
-        occupancyStatus: validation.data.occupancyStatus,
-        preferredDays: validation.data.preferredDays,
-        preferredTimeWindow: validation.data.preferredTimeWindow,
-        preferredContactMethod: validation.data.preferredContactMethod,
-        walkthroughOption: validation.data.walkthroughOption,
-        projectDescription:
-          validation.data.projectDescription || validation.data.message,
-        uploadedFileNames,
-      }),
-      data: serviceRequestPayload,
-    });
-    console.log("[service-request] resend result", emailResult);
+    const emailResult = await sendNewRequestAdminNotificationEmail(
+      requestEmailContext,
+    );
+    console.log("[service-request] admin notification email result", emailResult);
     if (!emailResult.sent) {
       postSaveWarnings.push("email_failed");
     }
@@ -383,28 +381,14 @@ export async function POST(request: Request) {
     const message =
       error instanceof Error ? error.message : "Unknown email notification error.";
     postSaveWarnings.push("Email notification could not be sent.");
-    console.error("[service-request] resend result failed", { error: message });
+    console.error("[service-request] admin notification email failed", {
+      error: message,
+    });
   }
 
   try {
-    const confirmationResult = await queueOperationalEmail({
-      type: "new_service_request",
-      to: validation.data.email,
-      from:
-        process.env.FROM_EMAIL ??
-        "Grubel Property Services <onboarding@resend.dev>",
-      subject: "Project Request Received - Grubel Property Services",
-      text: formatCustomerConfirmationEmail({
-        fullName: validation.data.fullName,
-        serviceNeeded: validation.data.serviceNeeded,
-      }),
-      data: {
-        fullName: validation.data.fullName,
-        email: validation.data.email,
-        serviceNeeded: validation.data.serviceNeeded,
-        serviceRequestId,
-      },
-    });
+    const confirmationResult =
+      await sendNewRequestCustomerConfirmationEmail(requestEmailContext);
     console.log("[service-request] confirmation email result", confirmationResult);
   } catch (error) {
     const message =
@@ -429,80 +413,6 @@ export async function POST(request: Request) {
   console.log("[service-request] final response returned", responseBody);
 
   return NextResponse.json(responseBody);
-}
-
-function formatServiceRequestEmail({
-  fullName,
-  email,
-  phone,
-  serviceNeeded,
-  propertyAddress,
-  propertyType,
-  occupancyStatus,
-  preferredDays,
-  preferredTimeWindow,
-  preferredContactMethod,
-  walkthroughOption,
-  projectDescription,
-  uploadedFileNames,
-}: {
-  fullName: string;
-  email: string;
-  phone: string;
-  serviceNeeded?: string;
-  propertyAddress?: string;
-  propertyType?: string;
-  occupancyStatus?: string;
-  preferredDays?: string;
-  preferredTimeWindow?: string;
-  preferredContactMethod?: string;
-  walkthroughOption?: string;
-  projectDescription?: string;
-  uploadedFileNames: string[];
-}) {
-  return [
-    "New Project Request - Grubel Property Services",
-    "",
-    `Full Name: ${fullName}`,
-    `Email: ${email}`,
-    `Phone: ${phone}`,
-    `Service Needed: ${serviceNeeded || "Not provided"}`,
-    `Property Address: ${propertyAddress || "Not provided"}`,
-    `Property Type: ${propertyType || "Not provided"}`,
-    `Occupied/Vacant: ${occupancyStatus || "Not provided"}`,
-    `Preferred Days: ${preferredDays || "Not provided"}`,
-    `Preferred Time Range: ${preferredTimeWindow || "Not provided"}`,
-    `Preferred Contact Method: ${preferredContactMethod || "Not provided"}`,
-    `Walkthrough Option: ${walkthroughOption || "Not provided"}`,
-    "",
-    "Project Description:",
-    projectDescription || "Not provided",
-    "",
-    "Uploaded Files:",
-    uploadedFileNames.length ? uploadedFileNames.join(", ") : "None",
-  ].join("\n");
-}
-
-function formatCustomerConfirmationEmail({
-  fullName,
-  serviceNeeded,
-}: {
-  fullName: string;
-  serviceNeeded?: string;
-}) {
-  return [
-    `Hi ${fullName},`,
-    "",
-    "Thank you. Grubel Property Services received your project request.",
-    "",
-    `Service Requested: ${serviceNeeded || "Not provided"}`,
-    "",
-    "Our team will review the details and follow up with next steps.",
-    "",
-    "Grubel Property Services",
-    "info@grubelps.com",
-    "(480) 420-7398",
-  ].join("\n");
 }
 
 type DatabaseError = {
