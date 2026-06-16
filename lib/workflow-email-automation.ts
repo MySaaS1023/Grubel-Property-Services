@@ -107,11 +107,23 @@ export async function sendNewRequestAdminNotificationEmail(
 
 export async function sendReviewingStatusEmail(context: RequestEmailContext) {
   if (!context.customerEmail) {
-    console.error("[workflow-email] Reviewing email skipped: missing email");
+    console.error("[workflow-email][reviewing-debug] Reviewing email skipped", {
+      template: "Reviewing",
+      requestId: context.serviceRequestId,
+      recipientEmail: context.customerEmail,
+      reason: "missing customer email",
+    });
     return { queued: false, sent: false, skipped: true };
   }
 
-  return queueOperationalEmail({
+  console.info("[workflow-email][reviewing-debug] Sending Reviewing email", {
+    template: "Reviewing",
+    requestId: context.serviceRequestId,
+    recipientEmail: context.customerEmail,
+    customerName: context.customerName,
+  });
+
+  const result = await queueOperationalEmail({
     type: "customer_status_update",
     to: context.customerEmail,
     subject: "Your Request Is Being Reviewed - Grubel Property Services",
@@ -128,6 +140,19 @@ export async function sendReviewingStatusEmail(context: RequestEmailContext) {
     ]),
     data: { ...context, status: "Reviewing" },
   });
+
+  console.info("[workflow-email][reviewing-debug] Reviewing email provider result", {
+    template: "Reviewing",
+    requestId: context.serviceRequestId,
+    recipientEmail: context.customerEmail,
+    sent: result.sent,
+    providerResponseId: "id" in result ? result.id : undefined,
+    providerStatus: "providerStatus" in result ? result.providerStatus : undefined,
+    safeError: "errorMessage" in result ? result.errorMessage : undefined,
+    skippedReason: "skippedReason" in result ? result.skippedReason : undefined,
+  });
+
+  return result;
 }
 
 export async function sendVendorPricingInternalEmail(
