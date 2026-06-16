@@ -1,5 +1,6 @@
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
 import { AdminDeleteButton } from "@/components/AdminDeleteButton";
+import { AdminScheduleLiveCallButton } from "@/components/AdminScheduleLiveCallButton";
 import { AdminEmptyState } from "@/components/AdminTable";
 import { AdminGuard } from "@/components/AuthGuards";
 import { getAdminData, readDate, readText } from "@/lib/admin-data";
@@ -50,6 +51,7 @@ export default async function AdminRequestsPage() {
                   <tbody>
                     {activeRequests.map((request) => {
                       const requestId = readText(request, "id");
+                      const status = readText(request, "status", "New Request");
                       const requestUploads = uploads.filter(
                         (upload) =>
                           readText(upload, "related_type", "") === "service_request" &&
@@ -102,17 +104,25 @@ export default async function AdminRequestsPage() {
                             )}
                           </td>
                           <td className="py-3 pr-4 font-semibold text-charcoal">
-                            {readText(request, "status")}
+                            {status}
                           </td>
                           <td className="py-3 pr-4 font-semibold text-charcoal">
                             {readDate(request, "created_at", "Not listed")}
                           </td>
                           <td className="py-3 pr-4">
                             <div className="flex flex-wrap gap-2">
-                              <RequestActionButton
-                                action="Start Vendor Pricing"
-                                requestId={requestId}
-                              />
+                              {status === "New Request" ? (
+                                <AdminScheduleLiveCallButton
+                                  customerEmail={readText(request, "customer_email")}
+                                  requestId={requestId}
+                                />
+                              ) : null}
+                              {status === "Consultation Scheduled" ? (
+                                <RequestActionButton
+                                  action="Start Vendor Pricing"
+                                  requestId={requestId}
+                                />
+                              ) : null}
                               <AdminDeleteButton
                                 recordId={requestId}
                                 tableName="service_requests"

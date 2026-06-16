@@ -39,7 +39,10 @@ export function AdminShell({
             <LogoutButton role="admin" />
           </div>
 
-          <nav className="mt-6 flex flex-wrap gap-2" aria-label="Admin navigation">
+          <nav
+            className="mt-6 flex flex-wrap justify-center gap-2"
+            aria-label="Admin navigation"
+          >
             {adminTabs.map((tab) => (
               <Link
                 className="rounded-md bg-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-accentDark"

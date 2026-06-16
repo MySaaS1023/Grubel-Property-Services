@@ -40,7 +40,9 @@ export default async function AdminFinancePage() {
             <div className="mt-5">
               <AdminTable
                 columns={["Quote", "Customer", "Service", "Balance Due", "Payment Status"]}
+                deleteTableName="quotes"
                 minWidth="900px"
+                rowIds={quotes.map((quote) => readText(quote, "id"))}
                 rows={quotes.map((quote) => [
                   readText(quote, "quote_number"),
                   readText(quote, "customer_name"),

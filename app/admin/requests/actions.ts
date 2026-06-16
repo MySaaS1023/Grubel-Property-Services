@@ -34,6 +34,15 @@ export async function updateRequestAction(formData: FormData) {
     return;
   }
 
+  if (read(request.status) !== "Consultation Scheduled") {
+    console.warn("[admin-requests] Vendor Pricing action blocked", {
+      requestId,
+      currentStatus: read(request.status),
+      requiredStatus: "Consultation Scheduled",
+    });
+    return;
+  }
+
   const { error: projectError } = await supabase.from("projects").insert({
     customer_id: request.customer_id,
     customer_name: request.customer_name,
