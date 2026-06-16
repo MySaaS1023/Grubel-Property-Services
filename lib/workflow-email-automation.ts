@@ -228,3 +228,75 @@ export async function sendScheduledVendorEmail(context: ProjectEmailContext) {
     },
   });
 }
+
+export async function sendInProgressCustomerEmail(context: ProjectEmailContext) {
+  if (!context.customerEmail) {
+    console.error("[workflow-email] In Progress email skipped: missing customer email");
+    return { queued: false, sent: false, skipped: true };
+  }
+
+  return queueOperationalEmail({
+    type: "customer_status_update",
+    to: context.customerEmail,
+    subject: "Your Project Has Started - Grubel Property Services",
+    text: lines([
+      `Hi ${value(context.customerName, "there")},`,
+      "",
+      "Work has started on your project. We will continue to keep you updated.",
+      "",
+      `Service: ${value(context.serviceType)}`,
+      `Property: ${value(context.propertyAddress)}`,
+      "",
+      "Grubel Property Services",
+    ]),
+    data: { ...context, status: "In Progress" },
+  });
+}
+
+export async function sendCompletedCustomerEmail(context: ProjectEmailContext) {
+  if (!context.customerEmail) {
+    console.error("[workflow-email] Completed email skipped: missing customer email");
+    return { queued: false, sent: false, skipped: true };
+  }
+
+  return queueOperationalEmail({
+    type: "customer_status_update",
+    to: context.customerEmail,
+    subject: "Your Project Is Complete - Grubel Property Services",
+    text: lines([
+      `Hi ${value(context.customerName, "there")},`,
+      "",
+      "Your project work has been completed. Grubel Property Services will follow up with any final closeout details.",
+      "",
+      `Service: ${value(context.serviceType)}`,
+      `Property: ${value(context.propertyAddress)}`,
+      "",
+      "Grubel Property Services",
+    ]),
+    data: { ...context, status: "Completed" },
+  });
+}
+
+export async function sendClosedCustomerEmail(context: ProjectEmailContext) {
+  if (!context.customerEmail) {
+    console.error("[workflow-email] Closed email skipped: missing customer email");
+    return { queued: false, sent: false, skipped: true };
+  }
+
+  return queueOperationalEmail({
+    type: "customer_status_update",
+    to: context.customerEmail,
+    subject: "Thank You - Grubel Property Services",
+    text: lines([
+      `Hi ${value(context.customerName, "there")},`,
+      "",
+      "Thank you for working with Grubel Property Services. Your project has been closed.",
+      "",
+      `Service: ${value(context.serviceType)}`,
+      `Property: ${value(context.propertyAddress)}`,
+      "",
+      "Grubel Property Services",
+    ]),
+    data: { ...context, status: "Closed" },
+  });
+}

@@ -51,14 +51,33 @@ export async function updateRequestAction(formData: FormData) {
       return;
     }
 
-    await sendReviewingStatusEmail({
+    const customerEmail =
+      read(request.customer_email) ?? (await getCustomerEmail(request.customer_id));
+    const emailResult = await sendReviewingStatusEmail({
       serviceRequestId: requestId,
-      customerEmail: read(request.customer_email),
+      customerEmail,
       customerName: read(request.customer_name),
       serviceType: read(request.service_type),
       propertyAddress: read(request.property_address),
       projectDescription: read(request.project_description),
     });
+    console.info("[admin-requests] Reviewing email automation result", {
+      status: "Reviewing",
+      templateName: "customer_status_update",
+      recipientEmail: customerEmail,
+      requestId,
+      providerResponseId: "id" in emailResult ? emailResult.id : undefined,
+      providerStatus:
+        "providerStatus" in emailResult ? emailResult.providerStatus : undefined,
+      sent: emailResult.sent,
+      warning: emailResult.sent ? undefined : "reviewing_email_not_sent",
+    });
+
+    if (!emailResult.sent) {
+      console.warn(
+        "[admin-requests] Reviewing status was saved, but the customer email was not sent.",
+      );
+    }
   }
 
   if (action === "Create Project") {
@@ -105,4 +124,28 @@ export async function updateRequestAction(formData: FormData) {
 
 function read(value: unknown) {
   return typeof value === "string" ? value : undefined;
+}
+
+async function getCustomerEmail(customerId: unknown) {
+  if (typeof customerId !== "string" || !customerId) {
+    return undefined;
+  }
+
+  const supabase = createServiceSupabaseClient();
+  if (!supabase) {
+    return undefined;
+  }
+
+  const { data, error } = await supabase
+    .from("customers")
+    .select("email")
+    .eq("id", customerId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[admin-requests] Customer email fallback lookup failed", error);
+    return undefined;
+  }
+
+  return read(data?.email);
 }

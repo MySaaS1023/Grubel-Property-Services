@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { queueOperationalEmail } from "@/lib/email";
 import { isProjectStatus, type ProjectStatus } from "@/lib/operations-workflow";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import {
   sendAwaitingCustomerApprovalEmail,
+  sendClosedCustomerEmail,
+  sendCompletedCustomerEmail,
+  sendInProgressCustomerEmail,
   sendScheduledCustomerEmail,
   sendScheduledVendorEmail,
   sendVendorPricingInternalEmail,
@@ -50,7 +52,7 @@ export async function updateProjectStatus(formData: FormData) {
     return;
   }
 
-  const customerEmail = await getCustomerEmail(project.customer_id);
+  const customerEmail = read(project.customer_email, "") || await getCustomerEmail(project.customer_id);
   await sendStatusAutomation({
     customerEmail,
     project,
@@ -130,64 +132,19 @@ async function sendStatusAutomation({
     return;
   }
 
-  const customerMessages: Partial<Record<ProjectStatus, { subject: string; body: string }>> = {
-    "In Progress": {
-      subject: "Your Project Has Started - Grubel Property Services",
-      body: "Work has started on your project. We will continue to keep you updated.",
-    },
-    Completed: {
-      subject: "Your Project Is Complete - Grubel Property Services",
-      body: "Your project work has been completed. Grubel Property Services will follow up with any final closeout details.",
-    },
-    Closed: {
-      subject: "Thank You - Grubel Property Services",
-      body: "Thank you for working with Grubel Property Services. Your project has been closed.",
-    },
-  };
-  const message = customerMessages[status];
-
-  if (message) {
-    await sendCustomerEmail({
-      customerEmail,
-      subject: message.subject,
-      text: [
-        `Hi ${customerName},`,
-        "",
-        message.body,
-        "",
-        `Service: ${serviceType}`,
-        `Property: ${propertyAddress}`,
-      ].join("\n"),
-      status,
-    });
-  }
-}
-
-async function sendCustomerEmail({
-  customerEmail,
-  subject,
-  text,
-  status,
-}: {
-  customerEmail: string;
-  subject: string;
-  text: string;
-  status: ProjectStatus;
-}) {
-  if (!customerEmail) {
-    console.error("[admin-projects] Customer status email skipped: missing email", {
-      status,
-    });
+  if (status === "In Progress") {
+    await sendInProgressCustomerEmail(projectContext);
     return;
   }
 
-  await queueOperationalEmail({
-    type: "customer_status_update",
-    to: customerEmail,
-    subject,
-    text,
-    data: { status },
-  });
+  if (status === "Completed") {
+    await sendCompletedCustomerEmail(projectContext);
+    return;
+  }
+
+  if (status === "Closed") {
+    await sendClosedCustomerEmail(projectContext);
+  }
 }
 
 function read(value: unknown, fallback: string) {
