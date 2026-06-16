@@ -10,6 +10,7 @@ type AdminData = {
   quotes: AdminRow[];
   serviceRequests: AdminRow[];
   subcontractors: AdminRow[];
+  uploads: AdminRow[];
 };
 
 const emptyAdminData: AdminData = {
@@ -20,6 +21,7 @@ const emptyAdminData: AdminData = {
   quotes: [],
   serviceRequests: [],
   subcontractors: [],
+  uploads: [],
 };
 
 const tableMap = {
@@ -30,6 +32,7 @@ const tableMap = {
   quotes: "quotes",
   serviceRequests: "service_requests",
   subcontractors: "subcontractors",
+  uploads: "uploads",
 } satisfies Record<keyof AdminData, string>;
 
 export async function getAdminData(): Promise<AdminData> {

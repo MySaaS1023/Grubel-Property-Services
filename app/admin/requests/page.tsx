@@ -9,7 +9,7 @@ import { updateRequestAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function AdminRequestsPage() {
-  const { serviceRequests } = await getAdminData();
+  const { serviceRequests, uploads } = await getAdminData();
   const activeRequests = serviceRequests.filter((request) =>
     requestStatuses.includes(readText(request, "status", "New Request") as never),
   );
@@ -36,6 +36,7 @@ export default async function AdminRequestsPage() {
                         "Property",
                         "Walkthrough",
                         "Availability",
+                        "Uploads",
                         "Status",
                         "Submitted",
                         "Actions",
@@ -49,6 +50,11 @@ export default async function AdminRequestsPage() {
                   <tbody>
                     {activeRequests.map((request) => {
                       const requestId = readText(request, "id");
+                      const requestUploads = uploads.filter(
+                        (upload) =>
+                          readText(upload, "related_type", "") === "service_request" &&
+                          readText(upload, "related_id", "") === requestId,
+                      );
 
                       return (
                         <tr className="border-b border-slate-100 last:border-b-0" key={requestId}>
@@ -81,6 +87,19 @@ export default async function AdminRequestsPage() {
                             <div className="text-xs text-charcoal/60">
                               {readText(request, "preferred_time_window")}
                             </div>
+                          </td>
+                          <td className="py-3 pr-4 font-semibold text-charcoal">
+                            {requestUploads.length ? (
+                              <ul className="grid gap-1">
+                                {requestUploads.map((upload) => (
+                                  <li key={readText(upload, "id")}>
+                                    {readText(upload, "file_name")}
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              "No uploads"
+                            )}
                           </td>
                           <td className="py-3 pr-4 font-semibold text-charcoal">
                             {readText(request, "status")}
