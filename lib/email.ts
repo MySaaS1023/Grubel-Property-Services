@@ -22,6 +22,21 @@ type EmailPayload = {
   data: Record<string, unknown>;
 };
 
+export type EmailSendResult = {
+  queued: boolean;
+  sent: boolean;
+  id?: string;
+  provider: "resend";
+  templateName: EmailType;
+  recipientEmail: string;
+  fromEmail: string;
+  requestId?: string;
+  projectId?: string;
+  skippedReason?: string;
+  errorMessage?: string;
+  providerStatus?: string;
+};
+
 export async function queueOperationalEmail(payload: EmailPayload) {
   const businessEmail = process.env.BUSINESS_EMAIL ?? "info@grubelps.com";
   const resendApiKey = process.env.RESEND_API_KEY;
@@ -30,11 +45,19 @@ export async function queueOperationalEmail(payload: EmailPayload) {
     process.env.FROM_EMAIL ??
     "Grubel Property Services <onboarding@resend.dev>";
   const to = payload.to ?? businessEmail;
+  const requestId = getString(payload.data.serviceRequestId ?? payload.data.requestId);
+  const projectId = getString(payload.data.projectId);
 
-  console.info("Resend email configuration", {
+  console.info("[email] send attempt", {
+    provider: "resend",
+    templateName: payload.type,
+    recipientEmail: to,
+    fromEmail,
+    requestId,
+    projectId,
     resendApiKeyExists: Boolean(resendApiKey),
     businessEmail,
-    fromEmail,
+    fromEmailUsesResendSandbox: fromEmail.includes("onboarding@resend.dev"),
   });
 
   if (resendApiKey) {
@@ -48,23 +71,78 @@ export async function queueOperationalEmail(payload: EmailPayload) {
     });
 
     if (result.error) {
-      console.error("Resend email failed", result.error);
-      return { queued: true, sent: false, error: result.error };
+      const errorMessage = getProviderErrorMessage(result.error);
+      console.error("[email] send failed", {
+        provider: "resend",
+        templateName: payload.type,
+        recipientEmail: to,
+        fromEmail,
+        requestId,
+        projectId,
+        errorMessage,
+      });
+      return {
+        queued: true,
+        sent: false,
+        provider: "resend",
+        templateName: payload.type,
+        recipientEmail: to,
+        fromEmail,
+        requestId,
+        projectId,
+        providerStatus: "error",
+        errorMessage,
+      } satisfies EmailSendResult;
     }
 
-    console.info("Resend email sent", { id: result.data?.id });
-    return { queued: true, sent: true, id: result.data?.id };
+    console.info("[email] send accepted", {
+      provider: "resend",
+      templateName: payload.type,
+      recipientEmail: to,
+      fromEmail,
+      requestId,
+      projectId,
+      providerResponseId: result.data?.id,
+      providerStatus: "accepted",
+    });
+    return {
+      queued: true,
+      sent: true,
+      id: result.data?.id,
+      provider: "resend",
+      templateName: payload.type,
+      recipientEmail: to,
+      fromEmail,
+      requestId,
+      projectId,
+      providerStatus: "accepted",
+    } satisfies EmailSendResult;
   }
 
-  console.info("email skipped: RESEND_API_KEY is not configured", {
+  console.info("[email] send skipped", {
+    provider: "resend",
     type: payload.type,
-    to,
+    templateName: payload.type,
+    recipientEmail: to,
+    fromEmail,
+    requestId,
+    projectId,
     subject: payload.subject,
-    configured: false,
-    data: payload.data,
+    skippedReason: "RESEND_API_KEY is not configured",
   });
 
-  return { queued: true, sent: false };
+  return {
+    queued: true,
+    sent: false,
+    provider: "resend",
+    templateName: payload.type,
+    recipientEmail: to,
+    fromEmail,
+    requestId,
+    projectId,
+    skippedReason: "RESEND_API_KEY is not configured",
+    providerStatus: "skipped",
+  } satisfies EmailSendResult;
 }
 
 function formatEmailText(payload: EmailPayload) {
@@ -75,4 +153,23 @@ function formatEmailText(payload: EmailPayload) {
     "",
     JSON.stringify(payload.data, null, 2),
   ].join("\n");
+}
+
+function getString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function getProviderErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "object" && error) {
+    const maybeMessage = "message" in error ? error.message : undefined;
+    if (typeof maybeMessage === "string") {
+      return maybeMessage;
+    }
+  }
+
+  return String(error);
 }

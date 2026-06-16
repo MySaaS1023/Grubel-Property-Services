@@ -103,6 +103,7 @@ export async function POST(request: Request) {
   let supabaseConfigured = false;
   let requestSaved = false;
   const postSaveWarnings: string[] = [];
+  const emailWarnings: string[] = [];
   let uploadedFiles = files.map((file) =>
     prepareUploadRecord({
       category: "customer_project_photo",
@@ -375,12 +376,14 @@ export async function POST(request: Request) {
     );
     console.log("[service-request] admin notification email result", emailResult);
     if (!emailResult.sent) {
-      postSaveWarnings.push("email_failed");
+      postSaveWarnings.push("admin_email_failed");
+      emailWarnings.push("admin_notification_failed");
     }
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown email notification error.";
-    postSaveWarnings.push("Email notification could not be sent.");
+    postSaveWarnings.push("admin_email_failed");
+    emailWarnings.push("admin_notification_failed");
     console.error("[service-request] admin notification email failed", {
       error: message,
     });
@@ -390,10 +393,15 @@ export async function POST(request: Request) {
     const confirmationResult =
       await sendNewRequestCustomerConfirmationEmail(requestEmailContext);
     console.log("[service-request] confirmation email result", confirmationResult);
+    if (!confirmationResult.sent) {
+      postSaveWarnings.push("customer_confirmation_email_failed");
+      emailWarnings.push("customer_confirmation_failed");
+    }
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown confirmation email error.";
-    postSaveWarnings.push("Confirmation email could not be sent.");
+    postSaveWarnings.push("customer_confirmation_email_failed");
+    emailWarnings.push("customer_confirmation_failed");
     console.error("[service-request] confirmation email failed", { error: message });
   }
 
@@ -403,6 +411,7 @@ export async function POST(request: Request) {
     serviceRequestId,
     supabaseConfigured,
     warning: postSaveWarnings.length ? postSaveWarnings.join(" ") : undefined,
+    emailWarning: emailWarnings.length ? emailWarnings.join(" ") : undefined,
     uploadedFiles: uploadedFiles.map((file) => ({
       fileName: file.fileName,
       fileType: file.fileType,
