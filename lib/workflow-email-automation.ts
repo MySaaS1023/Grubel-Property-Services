@@ -15,6 +15,7 @@ type RequestEmailContext = {
   walkthroughOption?: string;
   projectDescription?: string;
   uploadedFileNames?: string[];
+  scheduleUrl?: string;
 };
 
 type ProjectEmailContext = {
@@ -27,6 +28,19 @@ type ProjectEmailContext = {
   assignedVendorEmail?: string;
   scheduledDate?: string;
   status?: string;
+};
+
+type ConsultationEmailContext = {
+  serviceRequestId?: string;
+  appointmentId?: string;
+  customerName?: string;
+  customerEmail?: string;
+  serviceType?: string;
+  propertyAddress?: string;
+  appointmentDate?: string;
+  timeWindow?: string;
+  projectManagerName?: string;
+  zoomLink?: string;
 };
 
 function businessEmail() {
@@ -61,7 +75,8 @@ export async function sendNewRequestCustomerConfirmationEmail(
       `Service Requested: ${value(context.serviceType)}`,
       `Property: ${value(context.propertyAddress)}`,
       "",
-      "Our team will review the details and follow up with next steps.",
+      "Next step: schedule your live project consultation with a Grubel Project Manager.",
+      context.scheduleUrl ? `Schedule Project Consultation: ${context.scheduleUrl}` : "",
       "",
       "Grubel Property Services",
       "info@grubelps.com",
@@ -92,6 +107,9 @@ export async function sendNewRequestAdminNotificationEmail(
       `Preferred Time Range: ${value(context.preferredTimeWindow)}`,
       `Preferred Contact Method: ${value(context.preferredContactMethod)}`,
       `Walkthrough Option: ${value(context.walkthroughOption)}`,
+      context.scheduleUrl
+        ? `Schedule Project Consultation: ${context.scheduleUrl}`
+        : "Schedule Project Consultation: Not available",
       "",
       "Project Description:",
       value(context.projectDescription),
@@ -103,56 +121,6 @@ export async function sendNewRequestAdminNotificationEmail(
     ]),
     data: context,
   });
-}
-
-export async function sendReviewingStatusEmail(context: RequestEmailContext) {
-  if (!context.customerEmail) {
-    console.error("[workflow-email][reviewing-debug] Reviewing email skipped", {
-      template: "Reviewing",
-      requestId: context.serviceRequestId,
-      recipientEmail: context.customerEmail,
-      reason: "missing customer email",
-    });
-    return { queued: false, sent: false, skipped: true };
-  }
-
-  console.info("[workflow-email][reviewing-debug] Sending Reviewing email", {
-    template: "Reviewing",
-    requestId: context.serviceRequestId,
-    recipientEmail: context.customerEmail,
-    customerName: context.customerName,
-  });
-
-  const result = await queueOperationalEmail({
-    type: "customer_status_update",
-    to: context.customerEmail,
-    subject: "Your Request Is Being Reviewed - Grubel Property Services",
-    text: lines([
-      `Hi ${value(context.customerName, "there")},`,
-      "",
-      "Your project request is now being reviewed by Grubel Property Services.",
-      "Our team is reviewing your property details, notes, and uploaded media to determine next steps.",
-      "",
-      `Service: ${value(context.serviceType)}`,
-      `Property: ${value(context.propertyAddress)}`,
-      "",
-      "Grubel Property Services",
-    ]),
-    data: { ...context, status: "Reviewing" },
-  });
-
-  console.info("[workflow-email][reviewing-debug] Reviewing email provider result", {
-    template: "Reviewing",
-    requestId: context.serviceRequestId,
-    recipientEmail: context.customerEmail,
-    sent: result.sent,
-    providerResponseId: "id" in result ? result.id : undefined,
-    providerStatus: "providerStatus" in result ? result.providerStatus : undefined,
-    safeError: "errorMessage" in result ? result.errorMessage : undefined,
-    skippedReason: "skippedReason" in result ? result.skippedReason : undefined,
-  });
-
-  return result;
 }
 
 export async function sendVendorPricingInternalEmail(
@@ -171,6 +139,63 @@ export async function sendVendorPricingInternalEmail(
       `Project ID: ${value(context.projectId)}`,
     ]),
     data: { ...context, status: "Vendor Pricing" },
+  });
+}
+
+export async function sendConsultationScheduledCustomerEmail(
+  context: ConsultationEmailContext,
+) {
+  if (!context.customerEmail) {
+    console.error(
+      "[workflow-email] Consultation Scheduled customer email skipped: missing email",
+    );
+    return { queued: false, sent: false, skipped: true };
+  }
+
+  return queueOperationalEmail({
+    type: "appointment_scheduled",
+    to: context.customerEmail,
+    subject: "Project Consultation Scheduled - Grubel Property Services",
+    text: lines([
+      `Hi ${value(context.customerName, "there")},`,
+      "",
+      "Your live project consultation has been scheduled.",
+      "",
+      `Date: ${value(context.appointmentDate)}`,
+      `Time Window: ${value(context.timeWindow)}`,
+      `Project Manager: ${value(context.projectManagerName)}`,
+      `Service: ${value(context.serviceType)}`,
+      `Property: ${value(context.propertyAddress)}`,
+      context.zoomLink ? `Zoom Link: ${context.zoomLink}` : "Zoom Link: To be provided",
+      "",
+      "Grubel Property Services",
+    ]),
+    data: { ...context, status: "Consultation Scheduled" },
+  });
+}
+
+export async function sendConsultationScheduledAdminEmail(
+  context: ConsultationEmailContext,
+) {
+  return queueOperationalEmail({
+    type: "appointment_scheduled",
+    to: businessEmail(),
+    subject: "Consultation Scheduled - Grubel Property Services",
+    text: lines([
+      "A customer scheduled a project consultation.",
+      "",
+      `Customer: ${value(context.customerName)}`,
+      `Email: ${value(context.customerEmail)}`,
+      `Service: ${value(context.serviceType)}`,
+      `Property: ${value(context.propertyAddress)}`,
+      `Date: ${value(context.appointmentDate)}`,
+      `Time Window: ${value(context.timeWindow)}`,
+      `Project Manager: ${value(context.projectManagerName)}`,
+      `Zoom Link: ${value(context.zoomLink)}`,
+      `Request ID: ${value(context.serviceRequestId)}`,
+      `Appointment ID: ${value(context.appointmentId)}`,
+    ]),
+    data: { ...context, status: "Consultation Scheduled" },
   });
 }
 

@@ -368,6 +368,7 @@ export async function POST(request: Request) {
     walkthroughOption: validation.data.walkthroughOption,
     projectDescription: validation.data.projectDescription || validation.data.message,
     uploadedFileNames,
+    scheduleUrl: getScheduleUrl(serviceRequestId),
   };
 
   try {
@@ -412,6 +413,7 @@ export async function POST(request: Request) {
     supabaseConfigured,
     warning: postSaveWarnings.length ? postSaveWarnings.join(" ") : undefined,
     emailWarning: emailWarnings.length ? emailWarnings.join(" ") : undefined,
+    scheduleUrl: getScheduleUrl(serviceRequestId, false),
     uploadedFiles: uploadedFiles.map((file) => ({
       fileName: file.fileName,
       fileType: file.fileType,
@@ -539,4 +541,17 @@ function getSafeErrorMessage(error: unknown) {
   }
 
   return { message: String(error) };
+}
+
+function getScheduleUrl(serviceRequestId: string, absolute = true) {
+  const path = `/schedule-consultation?request=${encodeURIComponent(serviceRequestId)}`;
+
+  if (!absolute) {
+    return path;
+  }
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://grubelps.com";
+
+  return `${siteUrl}${path}`;
 }

@@ -54,6 +54,7 @@ export function RequestServiceForm() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [scheduleUrl, setScheduleUrl] = useState("");
 
   function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.currentTarget.files ?? []);
@@ -83,6 +84,7 @@ export function RequestServiceForm() {
     const validationErrors = getClientValidationErrors(form, selectedFiles);
     setFieldErrors(validationErrors);
     setMessage("");
+    setScheduleUrl("");
 
     if (Object.keys(validationErrors).length) {
       setState("error");
@@ -146,8 +148,11 @@ export function RequestServiceForm() {
       setSelectedFiles([]);
       setFileError("");
       setState("success");
+      setScheduleUrl(
+        typeof data?.scheduleUrl === "string" ? data.scheduleUrl : "/schedule-consultation",
+      );
       setMessage(
-        "Your request was submitted successfully. Our team will review your information and follow up soon.",
+        "Your request was submitted successfully. Schedule your live project consultation to choose the next available time with a Project Manager.",
       );
     } catch (error) {
       console.error("Request service submit failed", error);
@@ -289,13 +294,21 @@ export function RequestServiceForm() {
         so the team can coordinate next steps.
       </p>
       {message ? (
-        <p
-          className={`rounded-md px-4 py-3 text-sm font-semibold ${
+        <div
+          className={`grid gap-3 rounded-md px-4 py-3 text-sm font-semibold ${
             state === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
           }`}
         >
-          {message}
-        </p>
+          <p>{message}</p>
+          {state === "success" && scheduleUrl ? (
+            <a
+              className="inline-flex w-fit items-center justify-center rounded-md bg-accent px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-navy transition hover:bg-accentDark hover:text-white"
+              href={scheduleUrl}
+            >
+              Schedule Project Consultation
+            </a>
+          ) : null}
+        </div>
       ) : null}
       <Button disabled={state === "submitting"} type="submit">
         {state === "submitting" ? "Submitting..." : "Submit Project Request"}

@@ -110,11 +110,7 @@ export default async function AdminRequestsPage() {
                           <td className="py-3 pr-4">
                             <div className="flex flex-wrap gap-2">
                               <RequestActionButton
-                                action="Reviewing"
-                                requestId={requestId}
-                              />
-                              <RequestActionButton
-                                action="Create Project"
+                                action="Start Vendor Pricing"
                                 requestId={requestId}
                               />
                               <AdminDeleteButton
@@ -141,7 +137,7 @@ function RequestActionButton({
   action,
   requestId,
 }: {
-  action: "Reviewing" | "Create Project";
+  action: "Start Vendor Pricing";
   requestId: string;
 }) {
   return (

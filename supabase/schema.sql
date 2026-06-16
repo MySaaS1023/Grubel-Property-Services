@@ -210,6 +210,9 @@ alter table if exists service_requests add column if not exists preferred_days t
 alter table if exists appointments add column if not exists appointment_type text;
 alter table if exists appointments add column if not exists contact_method text;
 alter table if exists appointments add column if not exists confirmation_status text;
+alter table if exists appointments add column if not exists customer_email text;
+alter table if exists appointments add column if not exists project_manager_name text;
+alter table if exists appointments add column if not exists zoom_link text;
 
 alter table if exists uploads add column if not exists storage_bucket text;
 alter table if exists uploads add column if not exists storage_path text;

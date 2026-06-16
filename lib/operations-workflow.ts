@@ -1,4 +1,4 @@
-export const requestStatuses = ["New Request", "Reviewing"] as const;
+export const requestStatuses = ["New Request", "Consultation Scheduled"] as const;
 
 export const projectStatuses = [
   "Vendor Pricing",
