@@ -43,6 +43,14 @@ type ConsultationEmailContext = {
   zoomLink?: string;
 };
 
+type SchedulingLinkEmailContext = {
+  serviceRequestId?: string;
+  customerName?: string;
+  customerEmail?: string;
+  propertyAddress?: string;
+  scheduleLink: string;
+};
+
 function businessEmail() {
   return process.env.BUSINESS_EMAIL ?? "info@grubelps.com";
 }
@@ -53,6 +61,14 @@ function value(text: string | undefined, fallback = "Not provided") {
 
 function lines(parts: string[]) {
   return parts.join("\n");
+}
+
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 export async function sendNewRequestCustomerConfirmationEmail(
@@ -196,6 +212,72 @@ export async function sendConsultationScheduledAdminEmail(
       `Appointment ID: ${value(context.appointmentId)}`,
     ]),
     data: { ...context, status: "Consultation Scheduled" },
+  });
+}
+
+export async function sendSchedulingLinkEmail(context: SchedulingLinkEmailContext) {
+  if (!context.customerEmail) {
+    console.error("[workflow-email] Scheduling link email skipped: missing email", {
+      requestId: context.serviceRequestId,
+    });
+    return { queued: false, sent: false, skipped: true };
+  }
+
+  const text = lines([
+    `Hi ${value(context.customerName, "there")},`,
+    "",
+    "Thank you for contacting Grubel Property Services.",
+    "",
+    "We have successfully received your project request and our team is ready to get started.",
+    "",
+    "The next step is to schedule a brief consultation with one of our Project Managers so we can review your project, discuss your goals, and determine the best path forward.",
+    "",
+    "Please use the link below to choose a convenient time:",
+    "",
+    context.scheduleLink,
+    "",
+    "During the consultation we can:",
+    "- Review your project details",
+    "- Discuss photos, videos, or property concerns",
+    "- Answer questions",
+    "- Determine next steps and vendor requirements",
+    "",
+    "We look forward to speaking with you and helping with your project.",
+    "",
+    "Thank you,",
+    "",
+    "Grubel Property Services",
+    "Phone: (480) 420-7398",
+    "Email: info@grubelps.com",
+  ]);
+  const safeLink = escapeHtml(context.scheduleLink);
+  const html = [
+    '<div style="font-family:Arial,sans-serif;color:#1f2933;line-height:1.6;">',
+    `<p>Hi ${escapeHtml(value(context.customerName, "there"))},</p>`,
+    "<p>Thank you for contacting Grubel Property Services.</p>",
+    "<p>We have successfully received your project request and our team is ready to get started.</p>",
+    "<p>The next step is to schedule a brief consultation with one of our Project Managers so we can review your project, discuss your goals, and determine the best path forward.</p>",
+    `<p><a href="${safeLink}" style="display:inline-block;background:#c98f43;color:#08213d;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:6px;">Schedule Live Call</a></p>`,
+    `<p>Or copy and paste this link:<br><a href="${safeLink}">${safeLink}</a></p>`,
+    "<p>During the consultation we can:</p>",
+    "<ul><li>Review your project details</li><li>Discuss photos, videos, or property concerns</li><li>Answer questions</li><li>Determine next steps and vendor requirements</li></ul>",
+    "<p>We look forward to speaking with you and helping with your project.</p>",
+    "<p>Thank you,<br>Grubel Property Services</p>",
+    '<p>Phone: (480) 420-7398<br>Email: <a href="mailto:info@grubelps.com">info@grubelps.com</a></p>',
+    "</div>",
+  ].join("");
+
+  return queueOperationalEmail({
+    type: "appointment_scheduled",
+    to: context.customerEmail,
+    subject: "Schedule Your Project Consultation - Grubel Property Services",
+    text,
+    html,
+    data: {
+      ...context,
+      template: "scheduling_link",
+      propertyAddress: context.propertyAddress,
+    },
   });
 }
 

@@ -19,6 +19,7 @@ type EmailPayload = {
   from?: string;
   subject: string;
   text?: string;
+  html?: string;
   data: Record<string, unknown>;
 };
 
@@ -67,6 +68,7 @@ export async function queueOperationalEmail(payload: EmailPayload) {
       from: fromEmail,
       to,
       subject: payload.subject,
+      html: payload.html,
       text: payload.text ?? formatEmailText(payload),
     });
 

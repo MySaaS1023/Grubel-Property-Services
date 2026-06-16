@@ -544,7 +544,7 @@ function getSafeErrorMessage(error: unknown) {
 }
 
 function getScheduleUrl(serviceRequestId: string, absolute = true) {
-  const path = `/schedule-consultation?request=${encodeURIComponent(serviceRequestId)}`;
+  const path = `/schedule-consultation?requestId=${encodeURIComponent(serviceRequestId)}`;
 
   if (!absolute) {
     return path;

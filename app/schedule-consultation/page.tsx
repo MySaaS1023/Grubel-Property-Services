@@ -3,10 +3,15 @@ import { ConsultationScheduler } from "@/components/ConsultationScheduler";
 export default async function ScheduleConsultationPage({
   searchParams,
 }: {
-  searchParams: Promise<{ request?: string }>;
+  searchParams: Promise<{ requestId?: string; request?: string }>;
 }) {
-  const { request } = await searchParams;
-  const requestId = typeof request === "string" ? request : "";
+  const { requestId: requestIdParam, request } = await searchParams;
+  const requestId =
+    typeof requestIdParam === "string"
+      ? requestIdParam
+      : typeof request === "string"
+        ? request
+        : "";
 
   return (
     <main>

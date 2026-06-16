@@ -36,7 +36,6 @@ export default async function AdminRequestsPage() {
                         "Service",
                         "Property",
                         "Walkthrough",
-                        "Availability",
                         "Uploads",
                         "Status",
                         "Submitted",
@@ -79,18 +78,6 @@ export default async function AdminRequestsPage() {
                             {readText(request, "walkthrough_option")}
                           </td>
                           <td className="py-3 pr-4 font-semibold text-charcoal">
-                            <div>
-                              {readText(
-                                request,
-                                ["preferred_days", "additional_notes"],
-                                "No preferred days",
-                              )}
-                            </div>
-                            <div className="text-xs text-charcoal/60">
-                              {readText(request, "preferred_time_window")}
-                            </div>
-                          </td>
-                          <td className="py-3 pr-4 font-semibold text-charcoal">
                             {requestUploads.length ? (
                               <ul className="grid gap-1">
                                 {requestUploads.map((upload) => (
@@ -112,10 +99,7 @@ export default async function AdminRequestsPage() {
                           <td className="py-3 pr-4">
                             <div className="flex flex-wrap gap-2">
                               {status === "New Request" ? (
-                                <AdminScheduleLiveCallButton
-                                  customerEmail={readText(request, "customer_email")}
-                                  requestId={requestId}
-                                />
+                                <AdminScheduleLiveCallButton requestId={requestId} />
                               ) : null}
                               {status === "Consultation Scheduled" ? (
                                 <RequestActionButton
