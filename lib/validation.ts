@@ -9,12 +9,9 @@ export type ServiceRequestInput = {
   serviceNeeded?: string;
   walkthroughOption?: string;
   preferredDate?: string;
-  preferredDays?: string;
-  preferredTimeWindow?: string;
   propertyType?: string;
   occupancyStatus?: string;
   projectDescription?: string;
-  preferredContactMethod?: string;
   additionalNotes?: string;
 };
 
@@ -29,8 +26,9 @@ const allowedServices = new Set([
 ]);
 
 const allowedWalkthroughOptions = new Set([
-  "Live Virtual Walkthrough",
-  "Uploaded Photos/Videos Only",
+  "Live Zoom Consultation",
+  "Photos/Videos Only",
+  "Not Sure Yet",
 ]);
 
 export function validateServiceRequest(input: unknown): ValidationResult {
@@ -45,7 +43,6 @@ export function validateServiceRequest(input: unknown): ValidationResult {
   const subject = toCleanString(body.subject);
   const serviceNeeded = toCleanString(body.serviceNeeded);
   const walkthroughOption = toCleanString(body.walkthroughOption);
-  const preferredContactMethod = toCleanString(body.preferredContactMethod);
   const propertyAddress = toCleanString(body.propertyAddress);
   const propertyType = toCleanString(body.propertyType);
   const occupancyStatus =
@@ -62,10 +59,6 @@ export function validateServiceRequest(input: unknown): ValidationResult {
 
   if (!phone) {
     return { success: false, error: "Phone is required." };
-  }
-
-  if (!preferredContactMethod) {
-    return { success: false, error: "Preferred contact method is required." };
   }
 
   if (!serviceNeeded) {
@@ -112,12 +105,9 @@ export function validateServiceRequest(input: unknown): ValidationResult {
       serviceNeeded,
       walkthroughOption,
       preferredDate: toCleanString(body.preferredDate),
-      preferredDays: toCleanString(body.preferredDays),
-      preferredTimeWindow: toCleanString(body.preferredTimeWindow),
       propertyType,
       occupancyStatus,
       projectDescription: toCleanString(body.projectDescription),
-      preferredContactMethod,
       additionalNotes: toCleanString(body.additionalNotes),
       message,
     },

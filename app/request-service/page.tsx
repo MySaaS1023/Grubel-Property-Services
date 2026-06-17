@@ -10,9 +10,9 @@ export default function RequestServicePage() {
               Start a Project Request
             </h1>
             <p className="mt-5 text-lg leading-8 text-charcoal/75">
-              Tell us what your property needs. Our team will review your
-              request, collect walkthrough details or media, and follow up with
-              next steps.
+              Tell us about your project and upload any photos or videos you
+              would like us to review. Once submitted, you&apos;ll be able to
+              schedule a consultation with one of our Project Managers.
             </p>
           </div>
         </div>

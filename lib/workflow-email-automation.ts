@@ -9,9 +9,6 @@ type RequestEmailContext = {
   propertyAddress?: string;
   propertyType?: string;
   occupancyStatus?: string;
-  preferredDays?: string;
-  preferredTimeWindow?: string;
-  preferredContactMethod?: string;
   walkthroughOption?: string;
   projectDescription?: string;
   uploadedFileNames?: string[];
@@ -119,9 +116,6 @@ export async function sendNewRequestAdminNotificationEmail(
       `Property Address: ${value(context.propertyAddress)}`,
       `Property Type: ${value(context.propertyType)}`,
       `Occupancy Status: ${value(context.occupancyStatus)}`,
-      `Preferred Days: ${value(context.preferredDays)}`,
-      `Preferred Time Range: ${value(context.preferredTimeWindow)}`,
-      `Preferred Contact Method: ${value(context.preferredContactMethod)}`,
       `Walkthrough Option: ${value(context.walkthroughOption)}`,
       context.scheduleUrl
         ? `Schedule Project Consultation: ${context.scheduleUrl}`

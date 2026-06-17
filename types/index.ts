@@ -78,8 +78,6 @@ export interface ServiceRequest {
   propertyType: string;
   occupancyStatus: string;
   preferredDate?: string;
-  preferredTimeWindow?: string;
-  preferredContactMethod: ContactMethod;
   projectDescription: string;
   additionalNotes?: string;
   status: "New" | "Reviewing" | "Quote Needed" | "Converted" | "Closed";

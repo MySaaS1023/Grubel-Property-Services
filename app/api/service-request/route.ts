@@ -48,8 +48,6 @@ export async function POST(request: Request) {
     serviceNeeded: fields.serviceNeeded,
     walkthroughOption: fields.walkthroughOption,
     propertyAddress: fields.propertyAddress ? "present" : "missing",
-    preferredContactMethod: fields.preferredContactMethod,
-    preferredDays: fields.preferredDays,
     projectDescription: fields.projectDescription ? "present" : "missing",
     message: fields.message ? "present" : "missing",
   });
@@ -57,7 +55,6 @@ export async function POST(request: Request) {
     fieldNames: Object.keys(fields),
     serviceNeeded: fields.serviceNeeded,
     propertyType: fields.propertyType,
-    preferredDays: fields.preferredDays,
     walkthroughOption: fields.walkthroughOption,
   });
 
@@ -125,9 +122,6 @@ export async function POST(request: Request) {
       propertyAddress: validation.data.propertyAddress,
       propertyType: validation.data.propertyType,
       occupancyStatus: validation.data.occupancyStatus,
-      preferredDays: validation.data.preferredDays,
-      preferredTimeWindow: validation.data.preferredTimeWindow,
-      preferredContactMethod: validation.data.preferredContactMethod,
       walkthroughOption: validation.data.walkthroughOption,
     },
     projectDescription: validation.data.projectDescription || validation.data.message,
@@ -200,15 +194,10 @@ export async function POST(request: Request) {
       property_address: validation.data.propertyAddress || null,
       property_type: validation.data.propertyType || null,
       occupancy_status: validation.data.occupancyStatus || null,
-      preferred_days: validation.data.preferredDays || null,
       preferred_date: validation.data.preferredDate || null,
-      preferred_time_window: validation.data.preferredTimeWindow || null,
-      preferred_contact_method: validation.data.preferredContactMethod || null,
       project_description:
         validation.data.projectDescription || validation.data.message,
-      additional_notes: validation.data.preferredDays
-        ? `Preferred Days: ${validation.data.preferredDays}`
-        : validation.data.additionalNotes || null,
+      additional_notes: validation.data.additionalNotes || null,
       status: "New Request",
       walkthrough_option: validation.data.walkthroughOption || null,
       media_status: files.length ? "Media Received" : "No Media Uploaded",
@@ -219,7 +208,7 @@ export async function POST(request: Request) {
         supabase,
         table: "service_requests",
         payload: serviceRequestInsert,
-        optionalColumns: ["preferred_days", "walkthrough_option", "media_status"],
+        optionalColumns: ["walkthrough_option", "media_status"],
       });
     } catch (error) {
       console.error("[service-request] service request insert threw", {
@@ -362,9 +351,6 @@ export async function POST(request: Request) {
     propertyAddress: validation.data.propertyAddress,
     propertyType: validation.data.propertyType,
     occupancyStatus: validation.data.occupancyStatus,
-    preferredDays: validation.data.preferredDays,
-    preferredTimeWindow: validation.data.preferredTimeWindow,
-    preferredContactMethod: validation.data.preferredContactMethod,
     walkthroughOption: validation.data.walkthroughOption,
     projectDescription: validation.data.projectDescription || validation.data.message,
     uploadedFileNames,

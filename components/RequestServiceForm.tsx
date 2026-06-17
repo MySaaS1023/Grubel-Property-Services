@@ -9,8 +9,9 @@ const services = [
   "Builds & Remodels",
 ];
 const walkthroughOptions = [
-  "Live Virtual Walkthrough",
-  "Uploaded Photos/Videos Only",
+  "Live Zoom Consultation",
+  "Photos/Videos Only",
+  "Not Sure Yet",
 ];
 const propertyTypes = ["Residential", "Commercial", "Rental / Investment Property", "Other"];
 const occupancyOptions = [
@@ -20,8 +21,6 @@ const occupancyOptions = [
   "Move-Out / Turnover",
   "Unknown",
 ];
-const contactMethods = ["Phone", "Video Call"];
-const timeWindows = ["Morning", "Afternoon", "Evening"];
 const acceptedFileTypes = new Set([
   "image/jpeg",
   "image/png",
@@ -39,7 +38,6 @@ const requiredFields = [
   { name: "fullName", label: "Full Name" },
   { name: "email", label: "Email" },
   { name: "phone", label: "Phone" },
-  { name: "preferredContactMethod", label: "Preferred Contact Method" },
   { name: "propertyAddress", label: "Property Address" },
   { name: "serviceNeeded", label: "Service Needed" },
   { name: "walkthroughOption", label: "Walkthrough Option" },
@@ -170,13 +168,6 @@ export function RequestServiceForm() {
           <Field error={fieldErrors.fullName} label="Full Name" name="fullName" required />
           <Field error={fieldErrors.email} label="Email" name="email" required type="email" />
           <Field error={fieldErrors.phone} label="Phone Number" name="phone" required type="tel" />
-          <SelectField
-            error={fieldErrors.preferredContactMethod}
-            label="Preferred Contact Method"
-            name="preferredContactMethod"
-            options={contactMethods}
-            required
-          />
         </div>
       </FormSection>
 
@@ -278,21 +269,6 @@ export function RequestServiceForm() {
           required
         />
       </FormSection>
-
-      <FormSection title="Availability">
-        <div className="grid gap-5 md:grid-cols-2">
-          <Field label="Preferred Days" name="preferredDays" />
-          <SelectField
-            label="Preferred Time Range"
-            name="preferredTimeWindow"
-            options={timeWindows}
-          />
-        </div>
-      </FormSection>
-      <p className="text-sm leading-6 text-charcoal/65">
-        For live virtual walkthroughs, share your preferred days and time range
-        so the team can coordinate next steps.
-      </p>
       {message ? (
         <div
           className={`grid gap-3 rounded-md px-4 py-3 text-sm font-semibold ${
