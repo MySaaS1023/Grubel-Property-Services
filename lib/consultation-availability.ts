@@ -6,35 +6,60 @@ export type ConsultationSlot = {
   zoomLink?: string;
 };
 
+export const consultationTimeSlots = [
+  "ASAP",
+  "6:00 AM",
+  "7:00 AM",
+  "8:00 AM",
+  "9:00 AM",
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "1:00 PM",
+  "2:00 PM",
+  "3:00 PM",
+  "4:00 PM",
+  "5:00 PM",
+  "6:00 PM",
+  "7:00 PM",
+  "8:00 PM",
+];
+
 export const consultationSlots: ConsultationSlot[] = [
   {
-    id: "pm-tue-morning",
+    id: "pm-asap",
     date: "2026-06-23",
-    timeWindow: "Morning",
+    timeWindow: "ASAP",
     projectManagerName: "Grubel Project Manager",
   },
   {
-    id: "pm-tue-afternoon",
+    id: "pm-tue-9am",
     date: "2026-06-23",
-    timeWindow: "Afternoon",
+    timeWindow: "9:00 AM",
     projectManagerName: "Grubel Project Manager",
   },
   {
-    id: "pm-wed-morning",
+    id: "pm-tue-1pm",
+    date: "2026-06-23",
+    timeWindow: "1:00 PM",
+    projectManagerName: "Grubel Project Manager",
+  },
+  {
+    id: "pm-wed-10am",
     date: "2026-06-24",
-    timeWindow: "Morning",
+    timeWindow: "10:00 AM",
     projectManagerName: "Grubel Project Manager",
   },
   {
-    id: "pm-wed-evening",
+    id: "pm-wed-6pm",
     date: "2026-06-24",
-    timeWindow: "Evening",
+    timeWindow: "6:00 PM",
     projectManagerName: "Grubel Project Manager",
   },
   {
-    id: "pm-thu-afternoon",
+    id: "pm-thu-2pm",
     date: "2026-06-25",
-    timeWindow: "Afternoon",
+    timeWindow: "2:00 PM",
     projectManagerName: "Grubel Project Manager",
   },
 ];

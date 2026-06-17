@@ -1,6 +1,7 @@
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
 import { AdminEmptyState } from "@/components/AdminTable";
 import { AdminGuard } from "@/components/AuthGuards";
+import { consultationTimeSlots } from "@/lib/consultation-availability";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import {
   addAvailabilitySlot,
@@ -19,7 +20,6 @@ type AvailabilitySlot = {
   status: string | null;
 };
 
-const timeWindows = ["Morning", "Afternoon", "Evening"];
 const statuses = ["Available", "Unavailable", "Booked"];
 
 export default async function AdminAvailabilityPage() {
@@ -53,7 +53,12 @@ export default async function AdminAvailabilityPage() {
                   type="date"
                 />
               </label>
-              <Select name="timeWindow" options={timeWindows} required title="Time Window" />
+              <Select
+                name="timeWindow"
+                options={consultationTimeSlots}
+                required
+                title="Time Slot"
+              />
               <label className="grid gap-2 text-sm font-bold text-navy">
                 Project Manager
                 <input
@@ -93,7 +98,7 @@ export default async function AdminAvailabilityPage() {
                     <tr className="border-b border-slate-200 text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
                       {[
                         "Date",
-                        "Time Window",
+                        "Time Slot",
                         "Project Manager",
                         "Zoom Override",
                         "Status",
@@ -126,7 +131,7 @@ export default async function AdminAvailabilityPage() {
                               defaultValue={slot.time_window}
                               form={formId}
                               name="timeWindow"
-                              options={timeWindows}
+                              options={consultationTimeSlots}
                               required
                             />
                           </td>
