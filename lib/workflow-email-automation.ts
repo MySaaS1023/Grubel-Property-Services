@@ -68,6 +68,26 @@ function escapeHtml(text: string) {
     .replace(/"/g, "&quot;");
 }
 
+function formatScheduledDayDateTime(date: string | undefined, timeSlot: string | undefined) {
+  const rawDate = value(date, "Scheduled date to be confirmed");
+
+  if (!date) {
+    return timeSlot === "ASAP" ? `${rawDate} - ASAP` : `${rawDate} at ${value(timeSlot)}`;
+  }
+
+  const parsedDate = new Date(`${date}T12:00:00`);
+  const dayDate = Number.isNaN(parsedDate.getTime())
+    ? rawDate
+    : parsedDate.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
+        weekday: "long",
+        year: "numeric",
+      });
+
+  return timeSlot === "ASAP" ? `${dayDate} - ASAP` : `${dayDate} at ${value(timeSlot)}`;
+}
+
 export async function sendNewRequestCustomerConfirmationEmail(
   context: RequestEmailContext,
 ) {
@@ -162,24 +182,58 @@ export async function sendConsultationScheduledCustomerEmail(
     return { queued: false, sent: false, skipped: true };
   }
 
+  const scheduledDayDateTime = formatScheduledDayDateTime(
+    context.appointmentDate,
+    context.timeWindow,
+  );
+  const zoomLine = context.zoomLink
+    ? context.zoomLink
+    : "Not configured. Grubel Property Services will provide the meeting link.";
+  const safeZoomLine = escapeHtml(zoomLine);
+  const html = [
+    '<div style="font-family:Arial,sans-serif;color:#1f2933;line-height:1.6;">',
+    `<p>Hi ${escapeHtml(value(context.customerName, "there"))},</p>`,
+    "<p>Your consultation with Grubel Property Services has been booked.</p>",
+    "<p>We will speak with you on:</p>",
+    `<p><strong>${escapeHtml(scheduledDayDateTime)}</strong></p>`,
+    "<p><strong>Zoom Link:</strong><br>",
+    context.zoomLink
+      ? `<a href="${safeZoomLine}">${safeZoomLine}</a></p>`
+      : `${safeZoomLine}</p>`,
+    "<p>During the consultation, we will review your project request, discuss your property details, and go over the next steps.</p>",
+    '<p>If you have any questions before your appointment, please contact us at (480) 420-7398 or <a href="mailto:info@grubelps.com">info@grubelps.com</a>.</p>',
+    "<p>Thank you,</p>",
+    "<p>Grubel Property Services<br>(480) 420-7398<br>info@grubelps.com</p>",
+    "</div>",
+  ].join("");
+
   return queueOperationalEmail({
     type: "appointment_scheduled",
     to: context.customerEmail,
-    subject: "Project Consultation Scheduled - Grubel Property Services",
+    subject: "Your Grubel Consultation Has Been Booked",
     text: lines([
       `Hi ${value(context.customerName, "there")},`,
       "",
-      "Your live project consultation has been scheduled.",
+      "Your consultation with Grubel Property Services has been booked.",
       "",
-      `Date: ${value(context.appointmentDate)}`,
-      `Time Slot: ${value(context.timeWindow)}`,
-      `Project Manager: ${value(context.projectManagerName)}`,
-      `Service: ${value(context.serviceType)}`,
-      `Property: ${value(context.propertyAddress)}`,
-      context.zoomLink ? `Zoom Link: ${context.zoomLink}` : "Zoom Link: To be provided",
+      "We will speak with you on:",
+      "",
+      scheduledDayDateTime,
+      "",
+      "Zoom Link:",
+      zoomLine,
+      "",
+      "During the consultation, we will review your project request, discuss your property details, and go over the next steps.",
+      "",
+      "If you have any questions before your appointment, please contact us at (480) 420-7398 or info@grubelps.com.",
+      "",
+      "Thank you,",
       "",
       "Grubel Property Services",
+      "(480) 420-7398",
+      "info@grubelps.com",
     ]),
+    html,
     data: { ...context, status: "Consultation Scheduled" },
   });
 }

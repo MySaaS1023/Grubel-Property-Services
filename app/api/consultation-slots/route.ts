@@ -105,6 +105,18 @@ export async function POST(request: Request) {
   }
 
   const zoomLink = slot.zoomLink || process.env.ZOOM_CONSULTATION_LINK || "";
+  const warnings: string[] = [];
+
+  if (!zoomLink) {
+    warnings.push("zoom_link_missing");
+    console.warn("[consultation-slots] Zoom link missing for booked consultation", {
+      requestId,
+      slotId: slot.id,
+      date: slot.date,
+      timeSlot: slot.timeWindow,
+    });
+  }
+
   const appointmentPayload = {
     customer_id: serviceRequest.customer_id,
     service_request_id: requestId,
@@ -183,8 +195,6 @@ export async function POST(request: Request) {
     projectManagerName: slot.projectManagerName,
     zoomLink,
   };
-  const warnings: string[] = [];
-
   try {
     const customerEmailResult =
       await sendConsultationScheduledCustomerEmail(emailContext);

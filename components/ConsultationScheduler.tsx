@@ -98,11 +98,7 @@ export function ConsultationScheduler({ requestId }: { requestId: string }) {
 
       setState("success");
       setZoomLink(data.zoomLink ?? "");
-      setMessage(
-        data.warning
-          ? "Your consultation was scheduled. One email notification may need manual follow-up."
-          : "Your consultation was scheduled. A confirmation email has been sent.",
-      );
+      setMessage("Your consultation has been booked successfully.");
       setSlots((current) =>
         current.map((slot) =>
           slot.id === selectedSlotId ? { ...slot, available: false } : slot,
@@ -172,7 +168,7 @@ export function ConsultationScheduler({ requestId }: { requestId: string }) {
           <p>{message}</p>
           {state === "success" && selectedSlot ? (
             <p>
-              Confirmed: {formatDate(selectedSlot.date)} - {selectedSlot.timeWindow}
+              {formatConfirmedSlot(selectedSlot.date, selectedSlot.timeWindow)}
             </p>
           ) : null}
           {state === "success" && zoomLink ? (
@@ -201,4 +197,14 @@ function formatDate(date: string) {
     month: "long",
     day: "numeric",
   });
+}
+
+function formatConfirmedSlot(date: string, timeSlot: string) {
+  const formattedDate = formatDate(date);
+
+  if (timeSlot === "ASAP") {
+    return `Confirmed: ${formattedDate} - ASAP`;
+  }
+
+  return `Confirmed: ${formattedDate} at ${timeSlot}`;
 }
