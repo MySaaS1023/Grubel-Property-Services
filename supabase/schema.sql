@@ -101,6 +101,18 @@ create table if not exists appointments (
   notes text
 );
 
+create table if not exists consultation_availability (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  slot_date date not null,
+  time_window text not null,
+  project_manager_name text not null default 'Grubel Project Manager',
+  zoom_link text,
+  status text not null default 'Available'
+    check (status in ('Available', 'Unavailable', 'Booked'))
+);
+
 create table if not exists uploads (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -236,6 +248,7 @@ alter table quotes enable row level security;
 alter table projects enable row level security;
 alter table payments enable row level security;
 alter table appointments enable row level security;
+alter table consultation_availability enable row level security;
 alter table uploads enable row level security;
 alter table subcontractors enable row level security;
 alter table subcontractor_applications enable row level security;
@@ -256,6 +269,8 @@ create policy "service role can manage payments"
   on payments for all to service_role using (true) with check (true);
 create policy "service role can manage appointments"
   on appointments for all to service_role using (true) with check (true);
+create policy "service role can manage consultation availability"
+  on consultation_availability for all to service_role using (true) with check (true);
 create policy "service role can manage uploads"
   on uploads for all to service_role using (true) with check (true);
 create policy "service role can manage subcontractors"

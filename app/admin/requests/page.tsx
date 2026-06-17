@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
 import { AdminDeleteButton } from "@/components/AdminDeleteButton";
 import { AdminScheduleLiveCallButton } from "@/components/AdminScheduleLiveCallButton";
@@ -22,7 +23,15 @@ export default async function AdminRequestsPage() {
         title="Requests"
       >
         <div className="grid gap-6">
-          <AdminBackLink />
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <AdminBackLink />
+            <Link
+              className="rounded-md bg-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-accentDark"
+              href="/admin/availability"
+            >
+              Manage Consultation Availability
+            </Link>
+          </div>
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             {activeRequests.length === 0 ? <AdminEmptyState /> : null}
             {activeRequests.length ? (

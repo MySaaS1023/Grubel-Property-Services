@@ -3,6 +3,7 @@ export type ConsultationSlot = {
   date: string;
   timeWindow: string;
   projectManagerName: string;
+  zoomLink?: string;
 };
 
 export const consultationSlots: ConsultationSlot[] = [
@@ -40,4 +41,8 @@ export const consultationSlots: ConsultationSlot[] = [
 
 export function getConsultationSlot(slotId: string) {
   return consultationSlots.find((slot) => slot.id === slotId);
+}
+
+export function getSlotKey(date: string, timeWindow: string) {
+  return `${date}::${timeWindow}`.toLowerCase();
 }
