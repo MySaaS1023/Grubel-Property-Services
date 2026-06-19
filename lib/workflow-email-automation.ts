@@ -48,6 +48,17 @@ type SchedulingLinkEmailContext = {
   scheduleLink: string;
 };
 
+type ZoomLinkEmailContext = {
+  serviceRequestId?: string;
+  appointmentId?: string;
+  customerName?: string;
+  customerEmail?: string;
+  appointmentDate?: string;
+  timeWindow?: string;
+  zoomLink: string;
+  optionalMessage?: string;
+};
+
 function businessEmail() {
   return process.env.BUSINESS_EMAIL ?? "info@grubelps.com";
 }
@@ -260,6 +271,75 @@ export async function sendConsultationScheduledAdminEmail(
       `Appointment ID: ${value(context.appointmentId)}`,
     ]),
     data: { ...context, status: "Consultation Scheduled" },
+  });
+}
+
+export async function sendConsultationZoomLinkEmail(context: ZoomLinkEmailContext) {
+  if (!context.customerEmail) {
+    console.error("[workflow-email] Zoom link email skipped: missing customer email", {
+      requestId: context.serviceRequestId,
+      appointmentId: context.appointmentId,
+    });
+    return { queued: false, sent: false, skipped: true };
+  }
+
+  const scheduledDayDateTime = formatScheduledDayDateTime(
+    context.appointmentDate,
+    context.timeWindow,
+  );
+  const safeZoomLink = escapeHtml(context.zoomLink);
+  const optionalText = context.optionalMessage?.trim() ?? "";
+  const optionalHtml = optionalText
+    ? `<p>${escapeHtml(optionalText).replace(/\n/g, "<br>")}</p>`
+    : "";
+  const html = [
+    '<div style="font-family:Arial,sans-serif;color:#1f2933;line-height:1.6;">',
+    `<p>Hi ${escapeHtml(value(context.customerName, "there"))},</p>`,
+    "<p>Your live consultation with Grubel Property Services has been scheduled for:</p>",
+    `<p><strong>${escapeHtml(scheduledDayDateTime)}</strong></p>`,
+    "<p>Please use the Zoom link below to join your consultation:</p>",
+    `<p><a href="${safeZoomLink}" style="display:inline-block;background:#c98f43;color:#08213d;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:6px;">Join Zoom Consultation</a></p>`,
+    `<p><a href="${safeZoomLink}">${safeZoomLink}</a></p>`,
+    optionalHtml,
+    "<p>During the consultation, we will review your project request, discuss your property details, and go over the next steps.</p>",
+    '<p>If you have any questions before your appointment, please contact us at (480) 420-7398 or <a href="mailto:info@grubelps.com">info@grubelps.com</a>.</p>',
+    "<p>Thank you,</p>",
+    "<p>Grubel Property Services<br>(480) 420-7398<br>info@grubelps.com</p>",
+    "</div>",
+  ].join("");
+
+  return queueOperationalEmail({
+    type: "appointment_scheduled",
+    to: context.customerEmail,
+    subject: "Your Grubel Consultation Zoom Link",
+    text: lines([
+      `Hi ${value(context.customerName, "there")},`,
+      "",
+      "Your live consultation with Grubel Property Services has been scheduled for:",
+      "",
+      scheduledDayDateTime,
+      "",
+      "Please use the Zoom link below to join your consultation:",
+      "",
+      context.zoomLink,
+      "",
+      ...(optionalText ? [optionalText, ""] : []),
+      "During the consultation, we will review your project request, discuss your property details, and go over the next steps.",
+      "",
+      "If you have any questions before your appointment, please contact us at (480) 420-7398 or info@grubelps.com.",
+      "",
+      "Thank you,",
+      "",
+      "Grubel Property Services",
+      "(480) 420-7398",
+      "info@grubelps.com",
+    ]),
+    html,
+    data: {
+      ...context,
+      status: "Consultation Scheduled",
+      template: "consultation_zoom_link",
+    },
   });
 }
 
