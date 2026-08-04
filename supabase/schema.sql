@@ -113,6 +113,13 @@ create table if not exists consultation_availability (
     check (status in ('Available', 'Unavailable', 'Booked'))
 );
 
+create unique index if not exists appointments_consultation_slot_unique
+  on appointments (appointment_date, time_window)
+  where status <> 'Canceled' and appointment_type = 'Project Consultation';
+
+create unique index if not exists consultation_availability_slot_unique
+  on consultation_availability (slot_date, time_window);
+
 create table if not exists uploads (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),

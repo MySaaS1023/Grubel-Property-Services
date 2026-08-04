@@ -1,3 +1,7 @@
+export const businessTimeZone = "America/Phoenix";
+export const dayBlockTimeWindow = "DAY";
+export const defaultProjectManagerName = "Grubel Project Manager";
+
 export type ConsultationSlot = {
   id: string;
   date: string;
@@ -6,10 +10,27 @@ export type ConsultationSlot = {
   zoomLink?: string;
 };
 
+export type ConsultationSlotOverride = {
+  id: string;
+  slot_date: string;
+  time_window: string;
+  project_manager_name?: string | null;
+  zoom_link?: string | null;
+  status?: string | null;
+};
+
+export type ConsultationAppointment = {
+  id: string;
+  appointment_date: string;
+  time_window: string;
+  customer_name?: string | null;
+  customer_email?: string | null;
+  status?: string | null;
+  service_request_id?: string | null;
+  zoom_link?: string | null;
+};
+
 export const consultationTimeSlots = [
-  "ASAP",
-  "6:00 AM",
-  "7:00 AM",
   "8:00 AM",
   "9:00 AM",
   "10:00 AM",
@@ -20,54 +41,151 @@ export const consultationTimeSlots = [
   "3:00 PM",
   "4:00 PM",
   "5:00 PM",
-  "6:00 PM",
-  "7:00 PM",
-  "8:00 PM",
 ];
 
-export const consultationSlots: ConsultationSlot[] = [
-  {
-    id: "pm-asap",
-    date: "2026-06-23",
-    timeWindow: "ASAP",
-    projectManagerName: "Grubel Project Manager",
-  },
-  {
-    id: "pm-tue-9am",
-    date: "2026-06-23",
-    timeWindow: "9:00 AM",
-    projectManagerName: "Grubel Project Manager",
-  },
-  {
-    id: "pm-tue-1pm",
-    date: "2026-06-23",
-    timeWindow: "1:00 PM",
-    projectManagerName: "Grubel Project Manager",
-  },
-  {
-    id: "pm-wed-10am",
-    date: "2026-06-24",
-    timeWindow: "10:00 AM",
-    projectManagerName: "Grubel Project Manager",
-  },
-  {
-    id: "pm-wed-6pm",
-    date: "2026-06-24",
-    timeWindow: "6:00 PM",
-    projectManagerName: "Grubel Project Manager",
-  },
-  {
-    id: "pm-thu-2pm",
-    date: "2026-06-25",
-    timeWindow: "2:00 PM",
-    projectManagerName: "Grubel Project Manager",
-  },
-];
+export function generateConsultationSlots({
+  days = 30,
+  now = new Date(),
+  overrides = [],
+}: {
+  days?: number;
+  now?: Date;
+  overrides?: ConsultationSlotOverride[];
+} = {}): ConsultationSlot[] {
+  const today = getBusinessDateParts(now);
+  const slots: ConsultationSlot[] = [];
 
-export function getConsultationSlot(slotId: string) {
-  return consultationSlots.find((slot) => slot.id === slotId);
+  for (let offset = 0; offset < days; offset += 1) {
+    const date = addDays(today.date, offset);
+
+    if (isSunday(date)) {
+      continue;
+    }
+
+    const dateKey = formatDateKey(date);
+    const dayIsBlocked = overrides.some(
+      (override) =>
+        override.slot_date === dateKey &&
+        override.time_window === dayBlockTimeWindow &&
+        override.status === "Unavailable",
+    );
+
+    if (dayIsBlocked) {
+      continue;
+    }
+
+    for (const timeWindow of consultationTimeSlots) {
+      if (dateKey === today.dateKey && isPastTimeSlot(timeWindow, today.minutes)) {
+        continue;
+      }
+
+      const override = overrides.find(
+        (item) => item.slot_date === dateKey && item.time_window === timeWindow,
+      );
+
+      if (override?.status === "Unavailable" || override?.status === "Booked") {
+        continue;
+      }
+
+      slots.push({
+        id: override?.id ?? getGeneratedSlotId(dateKey, timeWindow),
+        date: dateKey,
+        timeWindow,
+        projectManagerName:
+          override?.project_manager_name?.trim() || defaultProjectManagerName,
+        zoomLink: override?.zoom_link?.trim() || undefined,
+      });
+    }
+  }
+
+  return slots;
+}
+
+export function getGeneratedSlotId(date: string, timeWindow: string) {
+  return `generated-${date}-${timeWindow.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 }
 
 export function getSlotKey(date: string, timeWindow: string) {
   return `${date}::${timeWindow}`.toLowerCase();
+}
+
+export function getBusinessDateParts(now = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+    minute: "2-digit",
+    month: "2-digit",
+    timeZone: businessTimeZone,
+    year: "numeric",
+  }).formatToParts(now);
+  const getPart = (type: string) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  const year = getPart("year");
+  const month = getPart("month");
+  const day = getPart("day");
+  const hour = Number(getPart("hour"));
+  const minute = Number(getPart("minute"));
+
+  return {
+    date: new Date(`${year}-${month}-${day}T12:00:00`),
+    dateKey: `${year}-${month}-${day}`,
+    minutes: hour * 60 + minute,
+  };
+}
+
+export function formatScheduledSlot(date: string, timeSlot: string) {
+  const parsedDate = new Date(`${date}T12:00:00`);
+  const formattedDate = Number.isNaN(parsedDate.getTime())
+    ? date
+    : parsedDate.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
+        timeZone: "UTC",
+        weekday: "long",
+        year: "numeric",
+      });
+
+  return `${formattedDate} at ${timeSlot}`;
+}
+
+export function isCancelableAppointment(appointment: ConsultationAppointment | undefined) {
+  if (!appointment) {
+    return false;
+  }
+
+  return appointment.status !== "Canceled";
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setUTCDate(next.getUTCDate() + days);
+  return next;
+}
+
+function formatDateKey(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function isSunday(date: Date) {
+  return date.getUTCDay() === 0;
+}
+
+function isPastTimeSlot(timeWindow: string, currentMinutes: number) {
+  return getMinutesForTimeSlot(timeWindow) <= currentMinutes;
+}
+
+function getMinutesForTimeSlot(timeWindow: string) {
+  const match = /^(\d{1,2}):00 (AM|PM)$/.exec(timeWindow);
+
+  if (!match) {
+    return 0;
+  }
+
+  const hour = Number(match[1]);
+  const period = match[2];
+  const normalizedHour =
+    period === "AM" ? (hour === 12 ? 0 : hour) : hour === 12 ? 12 : hour + 12;
+
+  return normalizedHour * 60;
 }

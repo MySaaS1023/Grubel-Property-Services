@@ -62,6 +62,7 @@ export function ConsultationScheduler({ requestId }: { requestId: string }) {
     () => slots.find((slot) => slot.id === selectedSlotId),
     [selectedSlotId, slots],
   );
+  const groupedSlots = useMemo(() => groupSlotsByDate(slots), [slots]);
 
   async function bookSlot() {
     if (!requestId) {
@@ -122,35 +123,40 @@ export function ConsultationScheduler({ requestId }: { requestId: string }) {
         </p>
       ) : null}
 
-      {slots.length ? (
-        <div className="grid gap-3 md:grid-cols-2">
-          {slots.map((slot) => (
-            <label
-              className={`grid cursor-pointer gap-2 rounded-lg border p-4 text-sm transition ${
-                selectedSlotId === slot.id
-                  ? "border-accent bg-accent/10"
-                  : "border-slate-200 bg-white"
-              } ${slot.available ? "hover:border-accent" : "cursor-not-allowed opacity-50"}`}
-              key={slot.id}
-            >
-              <span className="font-black text-navy">
-                {formatDate(slot.date)} - {slot.timeWindow}
-              </span>
-              <span className="font-semibold text-charcoal/70">
-                {slot.projectManagerName}
-              </span>
-              <span className="text-xs font-bold uppercase tracking-[0.14em] text-charcoal/50">
-                {slot.available ? "Available" : "Booked"}
-              </span>
-              <input
-                checked={selectedSlotId === slot.id}
-                className="sr-only"
-                disabled={!slot.available || state === "booking" || state === "success"}
-                name="consultationSlot"
-                onChange={() => setSelectedSlotId(slot.id)}
-                type="radio"
-              />
-            </label>
+      {groupedSlots.length ? (
+        <div className="grid gap-6">
+          {groupedSlots.map(({ date, slots: dateSlots }) => (
+            <section className="grid gap-3" key={date}>
+              <h2 className="text-lg font-black text-navy">{formatDate(date)}</h2>
+              <div className="grid gap-3 md:grid-cols-2">
+                {dateSlots.map((slot) => (
+                  <label
+                    className={`grid cursor-pointer gap-2 rounded-lg border p-4 text-sm transition ${
+                      selectedSlotId === slot.id
+                        ? "border-accent bg-accent/10"
+                        : "border-slate-200 bg-white"
+                    } hover:border-accent`}
+                    key={slot.id}
+                  >
+                    <span className="font-black text-navy">{slot.timeWindow}</span>
+                    <span className="font-semibold text-charcoal/70">
+                      {slot.projectManagerName}
+                    </span>
+                    <span className="text-xs font-bold uppercase tracking-[0.14em] text-charcoal/50">
+                      Available
+                    </span>
+                    <input
+                      checked={selectedSlotId === slot.id}
+                      className="sr-only"
+                      disabled={state === "booking" || state === "success"}
+                      name="consultationSlot"
+                      onChange={() => setSelectedSlotId(slot.id)}
+                      type="radio"
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       ) : state !== "loading" ? (
@@ -202,9 +208,18 @@ function formatDate(date: string) {
 function formatConfirmedSlot(date: string, timeSlot: string) {
   const formattedDate = formatDate(date);
 
-  if (timeSlot === "ASAP") {
-    return `Confirmed: ${formattedDate} - ASAP`;
+  return `Confirmed: ${formattedDate} at ${timeSlot}`;
+}
+
+function groupSlotsByDate(slots: Slot[]) {
+  const grouped = new Map<string, Slot[]>();
+
+  for (const slot of slots) {
+    grouped.set(slot.date, [...(grouped.get(slot.date) ?? []), slot]);
   }
 
-  return `Confirmed: ${formattedDate} at ${timeSlot}`;
+  return Array.from(grouped.entries()).map(([date, dateSlots]) => ({
+    date,
+    slots: dateSlots,
+  }));
 }

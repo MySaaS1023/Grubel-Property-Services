@@ -1,256 +1,317 @@
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
-import { AdminEmptyState } from "@/components/AdminTable";
+import { AdminConfirmSubmitButton } from "@/components/AdminConfirmSubmitButton";
 import { AdminGuard } from "@/components/AuthGuards";
-import { consultationTimeSlots } from "@/lib/consultation-availability";
+import {
+  type ConsultationAppointment,
+  type ConsultationSlotOverride,
+  businessTimeZone,
+  consultationTimeSlots,
+  dayBlockTimeWindow,
+  defaultProjectManagerName,
+  formatScheduledSlot,
+  generateConsultationSlots,
+  getSlotKey,
+  isCancelableAppointment,
+} from "@/lib/consultation-availability";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import {
-  addAvailabilitySlot,
-  deleteAvailabilitySlot,
-  updateAvailabilitySlot,
+  blockAvailabilityDay,
+  blockAvailabilitySlot,
+  cancelConsultationBooking,
+  saveAvailabilitySlot,
+  unblockAvailabilityDay,
+  unblockAvailabilitySlot,
 } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-type AvailabilitySlot = {
-  id: string;
-  slot_date: string;
-  time_window: string;
-  project_manager_name: string | null;
-  zoom_link: string | null;
-  status: string | null;
-};
-
 const statuses = ["Available", "Unavailable", "Booked"];
 
 export default async function AdminAvailabilityPage() {
-  const { slots, error } = await getAvailabilitySlots();
+  const { appointments, error: appointmentError } = await getConsultationAppointments();
+  const { overrides, error: overrideError } = await getAvailabilityOverrides();
+  const calendarSlots = generateConsultationSlots({ overrides: [] });
+  const appointmentMap = new Map(
+    appointments.map((appointment) => [
+      getSlotKey(appointment.appointment_date, appointment.time_window),
+      appointment,
+    ]),
+  );
+  const overrideMap = new Map(
+    overrides
+      .filter((override) => override.time_window !== dayBlockTimeWindow)
+      .map((override) => [getSlotKey(override.slot_date, override.time_window), override]),
+  );
+  const blockedDays = new Set(
+    overrides
+      .filter(
+        (override) =>
+          override.time_window === dayBlockTimeWindow &&
+          override.status === "Unavailable",
+      )
+      .map((override) => override.slot_date),
+  );
+  const groupedSlots = groupSlotsByDate(calendarSlots);
 
   return (
     <AdminGuard>
       <AdminShell
-        description="Manage available Project Manager consultation times shown on the public scheduler."
+        description={`Manage the Monday through Saturday consultation calendar. Business timezone: ${businessTimeZone}.`}
         title="Consultation Availability"
       >
         <div className="grid gap-6">
           <AdminBackLink />
 
-          {error ? (
+          {overrideError || appointmentError ? (
             <p className="rounded-md bg-red-50 p-4 text-sm font-semibold text-red-800">
-              Availability table is not available yet. Apply the latest
-              Supabase schema before managing slots.
+              {overrideError || appointmentError}
             </p>
           ) : null}
 
           <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-black text-navy">Add Consultation Slot</h2>
-            <form action={addAvailabilitySlot} className="mt-5 grid gap-4 md:grid-cols-5">
-              <label className="grid gap-2 text-sm font-bold text-navy">
-                Date
-                <input
-                  className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal"
-                  name="slotDate"
-                  required
-                  type="date"
-                />
-              </label>
-              <Select
-                name="timeWindow"
-                options={consultationTimeSlots}
-                required
-                title="Time Slot"
-              />
-              <label className="grid gap-2 text-sm font-bold text-navy">
-                Project Manager
-                <input
-                  className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal"
-                  defaultValue="Grubel Project Manager"
-                  name="projectManagerName"
-                  required
-                />
-              </label>
-              <label className="grid gap-2 text-sm font-bold text-navy">
-                Zoom Override
-                <input
-                  className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal"
-                  name="zoomLink"
-                  placeholder="Optional"
-                  type="url"
-                />
-              </label>
-              <div className="flex items-end">
-                <button
-                  className="min-h-11 w-full rounded-md bg-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-accentDark"
-                  type="submit"
-                >
-                  Add Slot
-                </button>
-              </div>
-            </form>
+            <h2 className="text-xl font-black text-navy">
+              Monday-Saturday Consultation Calendar
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-charcoal/70">
+              Default consultation slots run hourly from 8:00 AM through 5:00 PM.
+              Use overrides to block a slot, unblock it, block a whole day, update
+              the Project Manager, or attach a Zoom link.
+            </p>
           </section>
 
-          <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-black text-navy">Available Slots</h2>
-            {!error && slots.length === 0 ? <AdminEmptyState /> : null}
-            {slots.length ? (
-              <div className="mt-5 overflow-x-auto">
-                <table className="w-full min-w-[980px] border-collapse text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
-                      {[
-                        "Date",
-                        "Time Slot",
-                        "Project Manager",
-                        "Zoom Override",
-                        "Status",
-                        "Actions",
-                      ].map((column) => (
-                        <th className="py-3 pr-4" key={column}>
-                          {column}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {slots.map((slot) => {
-                      const formId = `availability-${slot.id}`;
+          <div className="grid gap-6">
+            {groupedSlots.map(({ date, slots }) => {
+              const dayBlocked = blockedDays.has(date);
 
-                      return (
-                        <tr className="border-b border-slate-100 last:border-b-0" key={slot.id}>
-                          <td className="py-3 pr-4">
-                            <input
-                              className="min-h-10 rounded-md border border-slate-300 px-3 text-sm text-charcoal"
-                              defaultValue={slot.slot_date}
-                              form={formId}
-                              name="slotDate"
-                              required
-                              type="date"
-                            />
-                          </td>
-                          <td className="py-3 pr-4">
-                            <Select
-                              defaultValue={slot.time_window}
-                              form={formId}
-                              name="timeWindow"
-                              options={consultationTimeSlots}
-                              required
-                            />
-                          </td>
-                          <td className="py-3 pr-4">
-                            <input
-                              className="min-h-10 rounded-md border border-slate-300 px-3 text-sm text-charcoal"
-                              defaultValue={slot.project_manager_name ?? "Grubel Project Manager"}
-                              form={formId}
-                              name="projectManagerName"
-                              required
-                            />
-                          </td>
-                          <td className="py-3 pr-4">
-                            <input
-                              className="min-h-10 rounded-md border border-slate-300 px-3 text-sm text-charcoal"
-                              defaultValue={slot.zoom_link ?? ""}
-                              form={formId}
-                              name="zoomLink"
-                              placeholder="Optional"
-                              type="url"
-                            />
-                          </td>
-                          <td className="py-3 pr-4">
-                            <Select
-                              defaultValue={slot.status ?? "Available"}
-                              form={formId}
-                              name="status"
-                              options={statuses}
-                              required
-                            />
-                          </td>
-                          <td className="py-3 pr-4">
-                            <form action={updateAvailabilitySlot} id={formId}>
-                              <input name="slotId" type="hidden" value={slot.id} />
-                            </form>
-                            <div className="flex flex-wrap gap-2">
-                              <button
-                                className="rounded-md bg-navy px-3 py-2 text-xs font-bold text-white transition hover:bg-accentDark"
-                                form={formId}
-                                type="submit"
-                              >
-                                Save
-                              </button>
-                              <form action={deleteAvailabilitySlot}>
-                                <input name="slotId" type="hidden" value={slot.id} />
+              return (
+                <section
+                  className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+                  key={date}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h2 className="text-xl font-black text-navy">
+                        {formatDateHeading(date)}
+                      </h2>
+                      <p className="mt-1 text-sm font-semibold text-charcoal/60">
+                        {dayBlocked ? "Day blocked" : "Open business day"}
+                      </p>
+                    </div>
+                    {dayBlocked ? (
+                      <form action={unblockAvailabilityDay}>
+                        <input name="slotDate" type="hidden" value={date} />
+                        <button
+                          className="rounded-md bg-navy px-4 py-2 text-sm font-bold text-white transition hover:bg-accentDark"
+                          type="submit"
+                        >
+                          Unblock Day
+                        </button>
+                      </form>
+                    ) : (
+                      <form action={blockAvailabilityDay}>
+                        <input name="slotDate" type="hidden" value={date} />
+                        <AdminConfirmSubmitButton
+                          className="rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-800 transition hover:bg-red-100"
+                          message="Block this entire consultation day?"
+                        >
+                          Block Entire Day
+                        </AdminConfirmSubmitButton>
+                      </form>
+                    )}
+                  </div>
+
+                  <div className="mt-5 overflow-x-auto">
+                    <table className="w-full min-w-[1220px] border-collapse text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-200 text-xs font-black uppercase tracking-[0.16em] text-charcoal/50">
+                          {[
+                            "Time Slot",
+                            "Status",
+                            "Booked Customer",
+                            "Project Manager",
+                            "Zoom Link",
+                            "Save",
+                            "Actions",
+                          ].map((column) => (
+                            <th className="py-3 pr-4" key={column}>
+                              {column}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {slots.map((slot) => {
+                          const key = getSlotKey(slot.date, slot.timeWindow);
+                          const override = overrideMap.get(key);
+                          const appointment = appointmentMap.get(key);
+                          const status = appointment
+                            ? "Booked"
+                            : dayBlocked
+                              ? "Unavailable"
+                              : override?.status ?? "Available";
+                          const formId = `slot-${slot.date}-${slot.timeWindow.replace(/[^a-z0-9]/gi, "-")}`;
+
+                          return (
+                            <tr
+                              className="border-b border-slate-100 last:border-b-0"
+                              key={key}
+                            >
+                              <td className="py-3 pr-4 font-black text-navy">
+                                {slot.timeWindow}
+                              </td>
+                              <td className="py-3 pr-4 font-semibold text-charcoal">
+                                {status}
+                              </td>
+                              <td className="py-3 pr-4 font-semibold text-charcoal">
+                                {appointment ? (
+                                  <div className="grid gap-1">
+                                    <span>{appointment.customer_name ?? "Customer"}</span>
+                                    <span className="text-xs text-charcoal/60">
+                                      {appointment.customer_email ?? "No email listed"}
+                                    </span>
+                                    <span className="text-xs text-charcoal/60">
+                                      Request: {appointment.service_request_id ?? "Not listed"}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  "Not booked"
+                                )}
+                              </td>
+                              <td className="py-3 pr-4">
+                                <form action={saveAvailabilitySlot} id={formId}>
+                                  <input name="slotDate" type="hidden" value={slot.date} />
+                                  <input
+                                    name="timeWindow"
+                                    type="hidden"
+                                    value={slot.timeWindow}
+                                  />
+                                </form>
+                                <input
+                                  className="min-h-10 rounded-md border border-slate-300 px-3 text-sm text-charcoal"
+                                  defaultValue={
+                                    override?.project_manager_name ??
+                                    defaultProjectManagerName
+                                  }
+                                  form={formId}
+                                  name="projectManagerName"
+                                  required
+                                />
+                              </td>
+                              <td className="py-3 pr-4">
+                                <input
+                                  className="min-h-10 w-72 rounded-md border border-slate-300 px-3 text-sm text-charcoal"
+                                  defaultValue={
+                                    override?.zoom_link ?? appointment?.zoom_link ?? ""
+                                  }
+                                  form={formId}
+                                  name="zoomLink"
+                                  placeholder="Optional Zoom link"
+                                  type="url"
+                                />
+                              </td>
+                              <td className="py-3 pr-4">
+                                <select
+                                  className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-charcoal"
+                                  defaultValue={status}
+                                  form={formId}
+                                  name="status"
+                                  required
+                                >
+                                  {statuses.map((option) => (
+                                    <option key={option} value={option}>
+                                      {option}
+                                    </option>
+                                  ))}
+                                </select>
                                 <button
-                                  className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-800 transition hover:bg-red-100"
+                                  className="ml-2 rounded-md bg-navy px-3 py-2 text-xs font-bold text-white transition hover:bg-accentDark"
+                                  form={formId}
                                   type="submit"
                                 >
-                                  Delete
+                                  Save
                                 </button>
-                              </form>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            ) : null}
-          </section>
+                              </td>
+                              <td className="py-3 pr-4">
+                                <div className="flex flex-wrap gap-2">
+                                  {status === "Unavailable" ? (
+                                    <form action={unblockAvailabilitySlot}>
+                                      <input name="slotDate" type="hidden" value={slot.date} />
+                                      <input
+                                        name="timeWindow"
+                                        type="hidden"
+                                        value={slot.timeWindow}
+                                      />
+                                      <button
+                                        className="rounded-md bg-navy px-3 py-2 text-xs font-bold text-white transition hover:bg-accentDark"
+                                        type="submit"
+                                      >
+                                        Unblock Slot
+                                      </button>
+                                    </form>
+                                  ) : (
+                                    <form action={blockAvailabilitySlot}>
+                                      <input name="slotDate" type="hidden" value={slot.date} />
+                                      <input
+                                        name="timeWindow"
+                                        type="hidden"
+                                        value={slot.timeWindow}
+                                      />
+                                      <button
+                                        className="rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-navy transition hover:border-accent"
+                                        disabled={Boolean(appointment)}
+                                        type="submit"
+                                      >
+                                        Block Slot
+                                      </button>
+                                    </form>
+                                  )}
+                                  {isCancelableAppointment(appointment) ? (
+                                    <form action={cancelConsultationBooking}>
+                                      <input
+                                        name="appointmentId"
+                                        type="hidden"
+                                        value={appointment?.id ?? ""}
+                                      />
+                                      <input name="slotDate" type="hidden" value={slot.date} />
+                                      <input
+                                        name="timeWindow"
+                                        type="hidden"
+                                        value={slot.timeWindow}
+                                      />
+                                      <AdminConfirmSubmitButton
+                                        className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-800 transition hover:bg-red-100"
+                                        message="Cancel this consultation booking?"
+                                      >
+                                        Cancel Booking
+                                      </AdminConfirmSubmitButton>
+                                    </form>
+                                  ) : null}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              );
+            })}
+          </div>
         </div>
       </AdminShell>
     </AdminGuard>
   );
 }
 
-function Select({
-  defaultValue,
-  form,
-  name,
-  options,
-  required,
-  title,
-}: {
-  defaultValue?: string;
-  form?: string;
-  name: string;
-  options: string[];
-  required?: boolean;
-  title?: string;
-}) {
-  const select = (
-    <select
-      className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-charcoal"
-      defaultValue={defaultValue ?? ""}
-      form={form}
-      name={name}
-      required={required}
-    >
-      <option disabled value="">
-        Select
-      </option>
-      {options.map((option) => (
-        <option key={option} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
-  );
-
-  if (!title) {
-    return select;
-  }
-
-  return (
-    <label className="grid gap-2 text-sm font-bold text-navy">
-      {title}
-      {select}
-    </label>
-  );
-}
-
-async function getAvailabilitySlots() {
+async function getAvailabilityOverrides() {
   const supabase = createServiceSupabaseClient();
 
   if (!supabase) {
-    return { slots: [] as AvailabilitySlot[], error: "Supabase is not configured." };
+    return {
+      error: "Supabase is not configured. Availability overrides cannot load.",
+      overrides: [] as ConsultationSlotOverride[],
+    };
   }
 
   const { data, error } = await supabase
@@ -259,9 +320,64 @@ async function getAvailabilitySlots() {
     .order("slot_date", { ascending: true });
 
   if (error) {
-    console.error("[admin-availability] Slot lookup failed", error);
-    return { slots: [] as AvailabilitySlot[], error: error.message };
+    console.error("[admin-availability] Override lookup failed", error);
+    return {
+      error: "Availability overrides could not be loaded.",
+      overrides: [] as ConsultationSlotOverride[],
+    };
   }
 
-  return { slots: (data ?? []) as AvailabilitySlot[], error: "" };
+  return { error: "", overrides: (data ?? []) as ConsultationSlotOverride[] };
+}
+
+async function getConsultationAppointments() {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return {
+      appointments: [] as ConsultationAppointment[],
+      error: "Supabase is not configured. Bookings cannot load.",
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("appointments")
+    .select(
+      "id,appointment_date,time_window,customer_name,customer_email,status,service_request_id,zoom_link",
+    )
+    .neq("status", "Canceled")
+    .order("appointment_date", { ascending: true });
+
+  if (error) {
+    console.error("[admin-availability] Appointment lookup failed", error);
+    return {
+      appointments: [] as ConsultationAppointment[],
+      error: "Consultation bookings could not be loaded.",
+    };
+  }
+
+  return {
+    appointments: (data ?? []) as ConsultationAppointment[],
+    error: "",
+  };
+}
+
+function groupSlotsByDate(slots: ReturnType<typeof generateConsultationSlots>) {
+  const grouped = new Map<string, typeof slots>();
+
+  for (const slot of slots) {
+    grouped.set(slot.date, [...(grouped.get(slot.date) ?? []), slot]);
+  }
+
+  return Array.from(grouped.entries()).map(([date, items]) => ({
+    date,
+    slots: items,
+  }));
+}
+
+function formatDateHeading(date: string) {
+  return formatScheduledSlot(date, consultationTimeSlots[0]).replace(
+    ` at ${consultationTimeSlots[0]}`,
+    "",
+  );
 }

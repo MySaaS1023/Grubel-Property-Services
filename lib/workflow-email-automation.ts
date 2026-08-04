@@ -83,7 +83,7 @@ function formatScheduledDayDateTime(date: string | undefined, timeSlot: string |
   const rawDate = value(date, "Scheduled date to be confirmed");
 
   if (!date) {
-    return timeSlot === "ASAP" ? `${rawDate} - ASAP` : `${rawDate} at ${value(timeSlot)}`;
+    return `${rawDate} at ${value(timeSlot)}`;
   }
 
   const parsedDate = new Date(`${date}T12:00:00`);
@@ -92,11 +92,12 @@ function formatScheduledDayDateTime(date: string | undefined, timeSlot: string |
     : parsedDate.toLocaleDateString("en-US", {
         day: "numeric",
         month: "long",
+        timeZone: "UTC",
         weekday: "long",
         year: "numeric",
       });
 
-  return timeSlot === "ASAP" ? `${dayDate} - ASAP` : `${dayDate} at ${value(timeSlot)}`;
+  return `${dayDate} at ${value(timeSlot)}`;
 }
 
 export async function sendNewRequestCustomerConfirmationEmail(

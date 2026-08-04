@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import {
   type ConsultationSlot,
-  consultationSlots,
+  type ConsultationSlotOverride,
+  defaultProjectManagerName,
+  generateConsultationSlots,
+  getGeneratedSlotId,
   getSlotKey,
 } from "@/lib/consultation-availability";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
@@ -11,13 +14,16 @@ import {
 } from "@/lib/workflow-email-automation";
 
 export async function GET() {
-  const slots = await loadConsultationSlots();
+  const overrides = await loadAvailabilityOverrides();
+  const slots = generateConsultationSlots({ overrides });
   const bookedSlotKeys = await loadBookedSlotKeys();
 
   return NextResponse.json({
-    slots: slots.map((slot) => ({
+    slots: slots
+      .filter((slot) => !bookedSlotKeys.has(getSlotKey(slot.date, slot.timeWindow)))
+      .map((slot) => ({
       ...slot,
-      available: !bookedSlotKeys.has(getSlotKey(slot.date, slot.timeWindow)),
+      available: true,
     })),
     zoomConfigured: Boolean(process.env.ZOOM_CONSULTATION_LINK),
   });
@@ -27,7 +33,8 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const requestId = typeof body?.requestId === "string" ? body.requestId.trim() : "";
   const slotId = typeof body?.slotId === "string" ? body.slotId.trim() : "";
-  const slots = await loadConsultationSlots();
+  const overrides = await loadAvailabilityOverrides();
+  const slots = generateConsultationSlots({ overrides });
   const slot = slots.find((item) => item.id === slotId);
 
   console.log("[consultation-slots] booking request received", {
@@ -181,7 +188,7 @@ export async function POST(request: Request) {
     });
   }
 
-  await markAvailabilityBooked(slot.id);
+  await markAvailabilityBooked(slot);
 
   const emailContext = {
     serviceRequestId: requestId,
@@ -231,11 +238,11 @@ export async function POST(request: Request) {
   });
 }
 
-async function loadConsultationSlots(): Promise<ConsultationSlot[]> {
+async function loadAvailabilityOverrides(): Promise<ConsultationSlotOverride[]> {
   const supabase = createServiceSupabaseClient();
 
   if (!supabase) {
-    return consultationSlots;
+    return [];
   }
 
   const { data, error } = await supabase
@@ -244,24 +251,23 @@ async function loadConsultationSlots(): Promise<ConsultationSlot[]> {
     .order("slot_date", { ascending: true });
 
   if (error) {
-    console.error("[consultation-slots] admin slot lookup failed; using static fallback", {
+    console.error("[consultation-slots] admin slot lookup failed; using generated defaults", {
       error,
     });
-    return consultationSlots;
+    return [];
   }
 
-  const allSlots = data ?? [];
-  const adminSlots = allSlots
-    .filter((slot) => String(slot.status ?? "Available") === "Available")
-    .map((slot) => ({
-      id: String(slot.id),
-      date: String(slot.slot_date),
-      timeWindow: String(slot.time_window),
-      projectManagerName: String(slot.project_manager_name ?? "Grubel Project Manager"),
-      zoomLink: typeof slot.zoom_link === "string" ? slot.zoom_link : undefined,
-    }));
-
-  return allSlots.length ? adminSlots : consultationSlots;
+  return (data ?? []).map((slot) => ({
+    id: String(slot.id),
+    slot_date: String(slot.slot_date),
+    time_window: String(slot.time_window),
+    project_manager_name:
+      typeof slot.project_manager_name === "string"
+        ? slot.project_manager_name
+        : defaultProjectManagerName,
+    zoom_link: typeof slot.zoom_link === "string" ? slot.zoom_link : null,
+    status: typeof slot.status === "string" ? slot.status : "Available",
+  }));
 }
 
 async function loadBookedSlotKeys() {
@@ -379,22 +385,62 @@ async function selectAppointmentsWithFallback() {
     .neq("status", "Canceled");
 }
 
-async function markAvailabilityBooked(slotId: string) {
+async function markAvailabilityBooked(slot: ConsultationSlot) {
   const supabase = createServiceSupabaseClient();
 
   if (!supabase) {
     return;
   }
 
-  const { error } = await supabase
+  const { error: updateError } = await supabase
     .from("consultation_availability")
     .update({ status: "Booked", updated_at: new Date().toISOString() })
-    .eq("id", slotId);
+    .eq("slot_date", slot.date)
+    .eq("time_window", slot.timeWindow);
 
-  if (error && !isMissingColumnError(error)) {
+  if (updateError && !isMissingColumnError(updateError)) {
     console.error("[consultation-slots] availability status update failed", {
-      slotId,
-      error,
+      slot,
+      error: updateError,
+    });
+  }
+
+  const { data: existing, error: existingError } = await supabase
+    .from("consultation_availability")
+    .select("id")
+    .eq("slot_date", slot.date)
+    .eq("time_window", slot.timeWindow)
+    .limit(1);
+
+  if (existingError) {
+    if (!isMissingColumnError(existingError)) {
+      console.error("[consultation-slots] availability booked lookup failed", {
+        slot,
+        error: existingError,
+      });
+    }
+    return;
+  }
+
+  if (existing?.length) {
+    return;
+  }
+
+  const { error: insertError } = await supabase
+    .from("consultation_availability")
+    .insert({
+      slot_date: slot.date,
+      time_window: slot.timeWindow,
+      project_manager_name: slot.projectManagerName || defaultProjectManagerName,
+      zoom_link: slot.zoomLink ?? null,
+      status: "Booked",
+    });
+
+  if (insertError && !isMissingColumnError(insertError)) {
+    console.error("[consultation-slots] availability booked insert failed", {
+      slotId: getGeneratedSlotId(slot.date, slot.timeWindow),
+      slot,
+      error: insertError,
     });
   }
 }

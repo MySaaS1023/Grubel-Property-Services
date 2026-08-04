@@ -197,9 +197,7 @@ function formatScheduledConsultation(
         year: "numeric",
       });
 
-  return timeSlot === "ASAP"
-    ? `${formattedDate} - ASAP`
-    : `${formattedDate} at ${timeSlot || "Time not listed"}`;
+  return `${formattedDate} at ${timeSlot || "Time not listed"}`;
 }
 
 function RequestActionButton({
