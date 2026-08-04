@@ -1,6 +1,8 @@
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
 import { AdminConfirmSubmitButton } from "@/components/AdminConfirmSubmitButton";
+import { AdminSendZoomLink } from "@/components/AdminSendZoomLink";
 import { AdminGuard } from "@/components/AuthGuards";
+import Link from "next/link";
 import {
   type ConsultationAppointment,
   type ConsultationSlotOverride,
@@ -25,7 +27,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const statuses = ["Available", "Unavailable", "Booked"];
+const editableStatuses = ["Available", "Blocked"];
 
 export default async function AdminAvailabilityPage() {
   const { appointments, error: appointmentError } = await getConsultationAppointments();
@@ -144,11 +146,13 @@ export default async function AdminAvailabilityPage() {
                           const key = getSlotKey(slot.date, slot.timeWindow);
                           const override = overrideMap.get(key);
                           const appointment = appointmentMap.get(key);
-                          const status = appointment
+                          const storedStatus = appointment
                             ? "Booked"
                             : dayBlocked
                               ? "Unavailable"
                               : override?.status ?? "Available";
+                          const displayStatus =
+                            storedStatus === "Unavailable" ? "Blocked" : storedStatus;
                           const formId = `slot-${slot.date}-${slot.timeWindow.replace(/[^a-z0-9]/gi, "-")}`;
 
                           return (
@@ -160,7 +164,17 @@ export default async function AdminAvailabilityPage() {
                                 {slot.timeWindow}
                               </td>
                               <td className="py-3 pr-4 font-semibold text-charcoal">
-                                {status}
+                                <span
+                                  className={`rounded-full px-3 py-1 text-xs font-black ${
+                                    displayStatus === "Booked"
+                                      ? "bg-green-50 text-green-800"
+                                      : displayStatus === "Blocked"
+                                        ? "bg-red-50 text-red-800"
+                                        : "bg-slate-100 text-charcoal"
+                                  }`}
+                                >
+                                  {displayStatus}
+                                </span>
                               </td>
                               <td className="py-3 pr-4 font-semibold text-charcoal">
                                 {appointment ? (
@@ -172,6 +186,14 @@ export default async function AdminAvailabilityPage() {
                                     <span className="text-xs text-charcoal/60">
                                       Request: {appointment.service_request_id ?? "Not listed"}
                                     </span>
+                                    {appointment.service_request_id ? (
+                                      <Link
+                                        className="text-xs font-black text-accent underline-offset-4 hover:underline"
+                                        href="/admin/requests"
+                                      >
+                                        View Request
+                                      </Link>
+                                    ) : null}
                                   </div>
                                 ) : (
                                   "Not booked"
@@ -184,6 +206,11 @@ export default async function AdminAvailabilityPage() {
                                     name="timeWindow"
                                     type="hidden"
                                     value={slot.timeWindow}
+                                  />
+                                  <input
+                                    name="appointmentId"
+                                    type="hidden"
+                                    value={appointment?.id ?? ""}
                                   />
                                 </form>
                                 <input
@@ -210,19 +237,25 @@ export default async function AdminAvailabilityPage() {
                                 />
                               </td>
                               <td className="py-3 pr-4">
-                                <select
-                                  className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-charcoal"
-                                  defaultValue={status}
-                                  form={formId}
-                                  name="status"
-                                  required
-                                >
-                                  {statuses.map((option) => (
-                                    <option key={option} value={option}>
-                                      {option}
-                                    </option>
-                                  ))}
-                                </select>
+                                {appointment ? (
+                                  <input form={formId} name="status" type="hidden" value="Booked" />
+                                ) : (
+                                  <select
+                                    className="min-h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-charcoal"
+                                    defaultValue={
+                                      displayStatus === "Blocked" ? "Blocked" : "Available"
+                                    }
+                                    form={formId}
+                                    name="status"
+                                    required
+                                  >
+                                    {editableStatuses.map((option) => (
+                                      <option key={option} value={option}>
+                                        {option}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
                                 <button
                                   className="ml-2 rounded-md bg-navy px-3 py-2 text-xs font-bold text-white transition hover:bg-accentDark"
                                   form={formId}
@@ -233,7 +266,7 @@ export default async function AdminAvailabilityPage() {
                               </td>
                               <td className="py-3 pr-4">
                                 <div className="flex flex-wrap gap-2">
-                                  {status === "Unavailable" ? (
+                                  {displayStatus === "Blocked" ? (
                                     <form action={unblockAvailabilitySlot}>
                                       <input name="slotDate" type="hidden" value={slot.date} />
                                       <input
@@ -248,7 +281,7 @@ export default async function AdminAvailabilityPage() {
                                         Unblock Slot
                                       </button>
                                     </form>
-                                  ) : (
+                                  ) : !appointment ? (
                                     <form action={blockAvailabilitySlot}>
                                       <input name="slotDate" type="hidden" value={slot.date} />
                                       <input
@@ -258,13 +291,22 @@ export default async function AdminAvailabilityPage() {
                                       />
                                       <button
                                         className="rounded-md border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-navy transition hover:border-accent"
-                                        disabled={Boolean(appointment)}
                                         type="submit"
                                       >
                                         Block Slot
                                       </button>
                                     </form>
-                                  )}
+                                  ) : null}
+                                  {appointment?.customer_email && appointment.service_request_id ? (
+                                    <AdminSendZoomLink
+                                      customerEmail={appointment.customer_email}
+                                      requestId={appointment.service_request_id}
+                                      scheduledDateTime={formatScheduledSlot(
+                                        appointment.appointment_date,
+                                        appointment.time_window,
+                                      )}
+                                    />
+                                  ) : null}
                                   {isCancelableAppointment(appointment) ? (
                                     <form action={cancelConsultationBooking}>
                                       <input

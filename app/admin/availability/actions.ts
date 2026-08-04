@@ -15,13 +15,23 @@ export async function saveAvailabilitySlot(formData: FormData) {
   const projectManagerName =
     read(formData.get("projectManagerName")) || defaultProjectManagerName;
   const zoomLink = read(formData.get("zoomLink"));
-  const status = read(formData.get("status")) || "Available";
+  const appointmentId = read(formData.get("appointmentId"));
+  const requestedStatus = read(formData.get("status")) || "Available";
+  const status = requestedStatus === "Blocked" ? "Unavailable" : requestedStatus;
 
   if (!slotDate || !timeWindow || !validStatuses.has(status)) {
     console.error("[admin-availability] Save slot blocked: invalid payload.", {
       slotDate,
       timeWindow,
       status,
+    });
+    return;
+  }
+
+  if (status === "Unavailable" && (await hasActiveConsultationBooking(slotDate, timeWindow))) {
+    console.error("[admin-availability] Save slot blocked: booked slots cannot be blocked.", {
+      slotDate,
+      timeWindow,
     });
     return;
   }
@@ -33,6 +43,14 @@ export async function saveAvailabilitySlot(formData: FormData) {
     timeWindow,
     zoomLink,
   });
+
+  if (appointmentId) {
+    await updateAppointmentDetails({
+      appointmentId,
+      projectManagerName,
+      zoomLink,
+    });
+  }
 }
 
 export async function blockAvailabilitySlot(formData: FormData) {
@@ -43,6 +61,14 @@ export async function blockAvailabilitySlot(formData: FormData) {
     return;
   }
 
+  if (await hasActiveConsultationBooking(slotDate, timeWindow)) {
+    console.error("[admin-availability] Block slot prevented: slot is already booked.", {
+      slotDate,
+      timeWindow,
+    });
+    return;
+  }
+
   await upsertAvailabilityOverride({
     projectManagerName: defaultProjectManagerName,
     slotDate,
@@ -50,6 +76,65 @@ export async function blockAvailabilitySlot(formData: FormData) {
     timeWindow,
     zoomLink: "",
   });
+}
+
+async function hasActiveConsultationBooking(slotDate: string, timeWindow: string) {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from("appointments")
+    .select("id")
+    .eq("appointment_date", slotDate)
+    .eq("time_window", timeWindow)
+    .neq("status", "Canceled")
+    .limit(1);
+
+  if (error) {
+    console.error("[admin-availability] Booking guard lookup failed", {
+      slotDate,
+      timeWindow,
+      error,
+    });
+    return true;
+  }
+
+  return Boolean(data?.length);
+}
+
+async function updateAppointmentDetails({
+  appointmentId,
+  projectManagerName,
+  zoomLink,
+}: {
+  appointmentId: string;
+  projectManagerName: string;
+  zoomLink: string;
+}) {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("appointments")
+    .update({
+      project_manager_name: projectManagerName,
+      updated_at: new Date().toISOString(),
+      zoom_link: zoomLink || null,
+    })
+    .eq("id", appointmentId);
+
+  if (error) {
+    console.error("[admin-availability] Appointment detail update failed", {
+      appointmentId,
+      error,
+    });
+  }
 }
 
 export async function unblockAvailabilitySlot(formData: FormData) {
