@@ -104,7 +104,7 @@ export async function POST(request: Request) {
       to: process.env.BUSINESS_EMAIL ?? "info@grubelps.com",
       from:
         process.env.FROM_EMAIL ??
-        "Grubel Property Services <onboarding@resend.dev>",
+        "Grubel Property Services <info@grubelps.com>",
       subject: `New Contact Message - ${subject}`,
       text: formatContactEmail({
         fullName,

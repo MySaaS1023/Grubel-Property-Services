@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 
+const verifiedGrubelSender = "Grubel Property Services <info@grubelps.com>";
+
 type EmailType =
   | "new_service_request"
   | "quote_issued"
@@ -44,7 +46,7 @@ export async function queueOperationalEmail(payload: EmailPayload) {
   const fromEmail =
     payload.from ??
     process.env.FROM_EMAIL ??
-    "Grubel Property Services <onboarding@resend.dev>";
+    verifiedGrubelSender;
   const to = payload.to ?? businessEmail;
   const requestId = getString(payload.data.serviceRequestId ?? payload.data.requestId);
   const projectId = getString(payload.data.projectId);
@@ -58,7 +60,7 @@ export async function queueOperationalEmail(payload: EmailPayload) {
     projectId,
     resendApiKeyExists: Boolean(resendApiKey),
     businessEmail,
-    fromEmailUsesResendSandbox: fromEmail.includes("onboarding@resend.dev"),
+    fromEmailUsesVerifiedDomain: fromEmail.includes("@grubelps.com"),
   });
 
   if (resendApiKey) {

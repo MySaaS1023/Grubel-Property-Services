@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     recipientEmail: result.recipientEmail,
     fromEmail: result.fromEmail,
     resendApiKeyConfigured: Boolean(process.env.RESEND_API_KEY),
-    fromEmailUsesResendSandbox: result.fromEmail.includes("onboarding@resend.dev"),
+    fromEmailUsesVerifiedDomain: result.fromEmail.includes("@grubelps.com"),
     warning: result.sent ? undefined : "email_not_sent",
     error: result.errorMessage,
   });
