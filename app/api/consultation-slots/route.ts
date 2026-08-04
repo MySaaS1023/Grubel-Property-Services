@@ -12,6 +12,11 @@ import {
   sendConsultationScheduledAdminEmail,
   sendConsultationScheduledCustomerEmail,
 } from "@/lib/workflow-email-automation";
+import {
+  createZoomConsultationMeeting,
+  isZoomConfigured,
+  updateZoomConsultationMeeting,
+} from "@/lib/zoom";
 
 export async function GET() {
   const overrides = await loadAvailabilityOverrides();
@@ -25,7 +30,7 @@ export async function GET() {
       ...slot,
       available: true,
     })),
-    zoomConfigured: Boolean(process.env.ZOOM_CONSULTATION_LINK),
+    zoomConfigured: isZoomConfigured(),
   });
 }
 
@@ -71,7 +76,7 @@ export async function POST(request: Request) {
     projectManagerName: slot.projectManagerName,
   });
 
-  const existingCheck = await hasExistingAppointmentForSlot(slot);
+  const existingCheck = await hasExistingAppointmentForSlot(slot, requestId);
 
   if (existingCheck.error) {
     console.error("[consultation-slots] double-booking check failed", existingCheck.error);
@@ -111,18 +116,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const zoomLink = slot.zoomLink || process.env.ZOOM_CONSULTATION_LINK || "";
   const warnings: string[] = [];
-
-  if (!zoomLink) {
-    warnings.push("zoom_link_missing");
-    console.warn("[consultation-slots] Zoom link missing for booked consultation", {
-      requestId,
-      slotId: slot.id,
-      date: slot.date,
-      timeSlot: slot.timeWindow,
-    });
-  }
+  const existingAppointment = await findActiveAppointmentForRequest(requestId);
+  const existingAppointmentData = existingAppointment.data as Record<string, unknown> | null;
+  const isReschedule = Boolean(existingAppointment.data?.id);
 
   const appointmentPayload = {
     customer_id: serviceRequest.customer_id,
@@ -137,13 +134,15 @@ export async function POST(request: Request) {
     appointment_type: "Project Consultation",
     confirmation_status: "Confirmed",
     project_manager_name: slot.projectManagerName,
-    zoom_link: zoomLink || null,
-    notes: zoomLink
-      ? `Project consultation via Zoom: ${zoomLink}`
-      : "Project consultation scheduled. Zoom link not configured.",
+    property_address: serviceRequest.property_address,
+    zoom_creation_status: "Pending",
+    zoom_link: null,
+    notes: "Project consultation scheduled. Zoom meeting creation pending.",
   };
 
-  const appointmentResult = await insertAppointmentWithFallback(appointmentPayload);
+  const appointmentResult = existingAppointment.data?.id
+    ? await updateAppointmentWithFallback(existingAppointment.data.id, appointmentPayload)
+    : await insertAppointmentWithFallback(appointmentPayload);
 
   if (appointmentResult.error || !appointmentResult.data) {
     console.error("[consultation-slots] appointment insert failed", {
@@ -165,8 +164,70 @@ export async function POST(request: Request) {
 
   console.log("[consultation-slots] appointment insert succeeded", {
     appointmentId: appointmentResult.data.id,
+    rescheduled: isReschedule,
     usedFallback: appointmentResult.usedFallback,
   });
+
+  const appointmentId = String(appointmentResult.data.id);
+  const existingZoomMeetingId = read(existingAppointmentData?.zoom_meeting_id);
+  const zoomResult = existingZoomMeetingId
+    ? await updateZoomConsultationMeeting({
+        date: slot.date,
+        meetingId: existingZoomMeetingId,
+        timeWindow: slot.timeWindow,
+      })
+    : await createZoomConsultationMeeting({
+        appointmentId,
+        customerName: serviceRequest.customer_name,
+        date: slot.date,
+        timeWindow: slot.timeWindow,
+      });
+
+  let zoomLink = read(existingAppointmentData?.zoom_join_url);
+
+  if (zoomResult.success && "meeting" in zoomResult) {
+    zoomLink = zoomResult.meeting.joinUrl;
+    await updateAppointmentZoomFields({
+      appointmentId,
+      zoomCreationStatus: "Created",
+      zoomJoinUrl: zoomResult.meeting.joinUrl,
+      zoomMeetingId: zoomResult.meeting.id,
+      zoomPassword: zoomResult.meeting.password,
+      zoomStartUrl: zoomResult.meeting.startUrl,
+    });
+    console.info("[consultation-slots] Zoom meeting created", {
+      appointmentId,
+      meetingId: zoomResult.meeting.id,
+      requestId,
+    });
+  } else if (zoomResult.success) {
+    await updateAppointmentZoomFields({
+      appointmentId,
+      zoomCreationStatus: "Created",
+      zoomJoinUrl: zoomLink,
+      zoomMeetingId: existingZoomMeetingId,
+    });
+    console.info("[consultation-slots] Zoom meeting updated", {
+      appointmentId,
+      meetingId: existingZoomMeetingId,
+      requestId,
+    });
+  } else {
+    warnings.push("zoom_creation_failed");
+    await updateAppointmentZoomFields({
+      appointmentId,
+      zoomCreationStatus: "Failed",
+      zoomLastError: zoomResult.error,
+      zoomMeetingId: existingZoomMeetingId,
+      zoomJoinUrl: zoomLink,
+    });
+    console.error("[consultation-slots] Zoom meeting creation/update failed", {
+      appointmentId,
+      requestId,
+      status: zoomResult.status,
+      error: zoomResult.error,
+    });
+  }
 
   const { error: updateError } = await supabase
     .from("service_requests")
@@ -188,11 +249,23 @@ export async function POST(request: Request) {
     });
   }
 
+  if (
+    existingAppointmentData?.appointment_date &&
+    existingAppointmentData?.time_window &&
+    (existingAppointmentData.appointment_date !== slot.date ||
+      existingAppointmentData.time_window !== slot.timeWindow)
+  ) {
+    await releaseAvailabilitySlot(
+      String(existingAppointmentData.appointment_date),
+      String(existingAppointmentData.time_window),
+    );
+  }
+
   await markAvailabilityBooked(slot);
 
   const emailContext = {
     serviceRequestId: requestId,
-    appointmentId: appointmentResult.data.id,
+    appointmentId,
     customerName: serviceRequest.customer_name,
     customerEmail: serviceRequest.customer_email,
     serviceType: serviceRequest.service_type,
@@ -291,7 +364,7 @@ async function loadBookedSlotKeys() {
   return bookedSlotKeys;
 }
 
-async function hasExistingAppointmentForSlot(slot: ConsultationSlot) {
+async function hasExistingAppointmentForSlot(slot: ConsultationSlot, requestId: string) {
   const supabase = createServiceSupabaseClient();
   if (!supabase) {
     return { exists: false, error: null };
@@ -303,6 +376,7 @@ async function hasExistingAppointmentForSlot(slot: ConsultationSlot) {
     .eq("appointment_date", slot.date)
     .eq("time_window", slot.timeWindow)
     .eq("appointment_type", "Project Consultation")
+    .neq("service_request_id", requestId)
     .neq("status", "Canceled");
 
   if (!primary.error) {
@@ -318,6 +392,7 @@ async function hasExistingAppointmentForSlot(slot: ConsultationSlot) {
     .select("id")
     .eq("appointment_date", slot.date)
     .eq("time_window", slot.timeWindow)
+    .neq("service_request_id", requestId)
     .neq("status", "Canceled");
 
   return fallback.error
@@ -335,7 +410,7 @@ async function insertAppointmentWithFallback(payload: Record<string, unknown>) {
   const primary = await supabase
     .from("appointments")
     .insert(payload)
-    .select("id")
+    .select("id,appointment_date,time_window,zoom_meeting_id,zoom_join_url")
     .single();
 
   if (!primary.error || !isMissingColumnError(primary.error)) {
@@ -356,10 +431,130 @@ async function insertAppointmentWithFallback(payload: Record<string, unknown>) {
   const fallback = await supabase
     .from("appointments")
     .insert(fallbackPayload)
-    .select("id")
+    .select("id,appointment_date,time_window")
     .single();
 
   return { ...fallback, usedFallback: true };
+}
+
+async function updateAppointmentWithFallback(
+  appointmentId: string,
+  payload: Record<string, unknown>,
+) {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return { data: null, error: "Supabase is not configured.", usedFallback: false };
+  }
+
+  const primary = await supabase
+    .from("appointments")
+    .update({
+      ...payload,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", appointmentId)
+    .select("id,appointment_date,time_window,zoom_meeting_id,zoom_join_url")
+    .single();
+
+  if (!primary.error || !isMissingColumnError(primary.error)) {
+    return { ...primary, usedFallback: false };
+  }
+
+  const fallbackPayload = {
+    appointment_date: payload.appointment_date,
+    notes: payload.notes,
+    status: payload.status,
+    time_window: payload.time_window,
+    updated_at: new Date().toISOString(),
+  };
+
+  const fallback = await supabase
+    .from("appointments")
+    .update(fallbackPayload)
+    .eq("id", appointmentId)
+    .select("id,appointment_date,time_window")
+    .single();
+
+  return { ...fallback, usedFallback: true };
+}
+
+async function findActiveAppointmentForRequest(requestId: string) {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return { data: null, error: "Supabase is not configured." };
+  }
+
+  const primary = await supabase
+    .from("appointments")
+    .select(
+      "id,appointment_date,time_window,zoom_meeting_id,zoom_join_url,zoom_start_url,zoom_password,zoom_creation_status",
+    )
+    .eq("service_request_id", requestId)
+    .neq("status", "Canceled")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!primary.error || !isMissingColumnError(primary.error)) {
+    return primary;
+  }
+
+  return supabase
+    .from("appointments")
+    .select("id,appointment_date,time_window")
+    .eq("service_request_id", requestId)
+    .neq("status", "Canceled")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+}
+
+async function updateAppointmentZoomFields({
+  appointmentId,
+  zoomCreationStatus,
+  zoomJoinUrl,
+  zoomLastError,
+  zoomMeetingId,
+  zoomPassword,
+  zoomStartUrl,
+}: {
+  appointmentId: string;
+  zoomCreationStatus: string;
+  zoomJoinUrl?: string;
+  zoomLastError?: string;
+  zoomMeetingId?: string;
+  zoomPassword?: string;
+  zoomStartUrl?: string;
+}) {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("appointments")
+    .update({
+      updated_at: new Date().toISOString(),
+      zoom_created_at: zoomCreationStatus === "Created" ? new Date().toISOString() : null,
+      zoom_creation_status: zoomCreationStatus,
+      zoom_join_url: zoomJoinUrl || null,
+      zoom_last_error: zoomLastError || null,
+      zoom_link: zoomJoinUrl || null,
+      zoom_meeting_id: zoomMeetingId || null,
+      zoom_password: zoomPassword || null,
+      zoom_start_url: zoomStartUrl || null,
+    })
+    .eq("id", appointmentId);
+
+  if (error && !isMissingColumnError(error)) {
+    console.error("[consultation-slots] Zoom metadata update failed", {
+      appointmentId,
+      error,
+    });
+  }
 }
 
 async function selectAppointmentsWithFallback() {
@@ -445,6 +640,28 @@ async function markAvailabilityBooked(slot: ConsultationSlot) {
   }
 }
 
+async function releaseAvailabilitySlot(slotDate: string, timeWindow: string) {
+  const supabase = createServiceSupabaseClient();
+
+  if (!supabase) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("consultation_availability")
+    .update({ status: "Available", updated_at: new Date().toISOString() })
+    .eq("slot_date", slotDate)
+    .eq("time_window", timeWindow);
+
+  if (error && !isMissingColumnError(error)) {
+    console.error("[consultation-slots] previous slot release failed", {
+      slotDate,
+      timeWindow,
+      error,
+    });
+  }
+}
+
 function isMissingColumnError(error: { code?: string; message?: string; details?: string | null }) {
   const searchable = `${error.code ?? ""} ${error.message ?? ""} ${error.details ?? ""}`;
   return (
@@ -452,7 +669,19 @@ function isMissingColumnError(error: { code?: string; message?: string; details?
     searchable.toLowerCase().includes("customer_email") ||
     searchable.toLowerCase().includes("project_manager_name") ||
     searchable.toLowerCase().includes("zoom_link") ||
+    searchable.toLowerCase().includes("zoom_meeting_id") ||
+    searchable.toLowerCase().includes("zoom_join_url") ||
+    searchable.toLowerCase().includes("zoom_start_url") ||
+    searchable.toLowerCase().includes("zoom_password") ||
+    searchable.toLowerCase().includes("zoom_creation_status") ||
+    searchable.toLowerCase().includes("zoom_created_at") ||
+    searchable.toLowerCase().includes("zoom_last_error") ||
+    searchable.toLowerCase().includes("property_address") ||
     searchable.toLowerCase().includes("appointment_type") ||
     searchable.toLowerCase().includes("consultation_availability")
   );
+}
+
+function read(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
 }

@@ -28,6 +28,15 @@ export type ConsultationAppointment = {
   status?: string | null;
   service_request_id?: string | null;
   zoom_link?: string | null;
+  zoom_meeting_id?: string | null;
+  zoom_join_url?: string | null;
+  zoom_start_url?: string | null;
+  zoom_password?: string | null;
+  zoom_creation_status?: string | null;
+  zoom_created_at?: string | null;
+  zoom_last_error?: string | null;
+  project_manager_name?: string | null;
+  property_address?: string | null;
 };
 
 export const consultationTimeSlots = [

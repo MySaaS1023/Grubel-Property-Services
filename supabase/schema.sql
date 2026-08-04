@@ -93,11 +93,24 @@ create table if not exists appointments (
   service_request_id uuid references service_requests(id) on delete set null,
   quote_id uuid references quotes(id) on delete set null,
   customer_name text not null,
+  customer_email text,
   service_type text not null,
+  property_address text,
   appointment_date date,
   time_window text,
+  appointment_type text,
   contact_method text,
+  confirmation_status text,
   status text not null default 'Requested',
+  project_manager_name text,
+  zoom_link text,
+  zoom_meeting_id text,
+  zoom_join_url text,
+  zoom_start_url text,
+  zoom_password text,
+  zoom_creation_status text,
+  zoom_created_at timestamptz,
+  zoom_last_error text,
   notes text
 );
 
@@ -232,6 +245,14 @@ alter table if exists appointments add column if not exists confirmation_status 
 alter table if exists appointments add column if not exists customer_email text;
 alter table if exists appointments add column if not exists project_manager_name text;
 alter table if exists appointments add column if not exists zoom_link text;
+alter table if exists appointments add column if not exists property_address text;
+alter table if exists appointments add column if not exists zoom_meeting_id text;
+alter table if exists appointments add column if not exists zoom_join_url text;
+alter table if exists appointments add column if not exists zoom_start_url text;
+alter table if exists appointments add column if not exists zoom_password text;
+alter table if exists appointments add column if not exists zoom_creation_status text;
+alter table if exists appointments add column if not exists zoom_created_at timestamptz;
+alter table if exists appointments add column if not exists zoom_last_error text;
 
 alter table if exists uploads add column if not exists storage_bucket text;
 alter table if exists uploads add column if not exists storage_path text;

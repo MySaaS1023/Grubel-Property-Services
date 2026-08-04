@@ -7,6 +7,7 @@ type EmailType =
   | "quote_issued"
   | "payment_received"
   | "appointment_scheduled"
+  | "appointment_canceled"
   | "project_scheduled"
   | "subcontractor_application_received"
   | "job_assignment_notification"

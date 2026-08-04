@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
 import { AdminDeleteButton } from "@/components/AdminDeleteButton";
 import { AdminScheduleLiveCallButton } from "@/components/AdminScheduleLiveCallButton";
-import { AdminSendZoomLink } from "@/components/AdminSendZoomLink";
+import { AdminZoomMeetingActions } from "@/components/AdminZoomMeetingActions";
 import { AdminEmptyState } from "@/components/AdminTable";
 import { AdminGuard } from "@/components/AuthGuards";
 import { getAdminData, readDate, readText } from "@/lib/admin-data";
@@ -119,13 +119,16 @@ export default async function AdminRequestsPage() {
                               ) : null}
                               {status === "Consultation Scheduled" ? (
                                 <>
-                                  <AdminSendZoomLink
-                                    customerEmail={readText(request, "customer_email")}
-                                    requestId={requestId}
-                                    scheduledDateTime={formatScheduledConsultation(
-                                      appointment,
-                                    )}
-                                  />
+                                  {appointment ? (
+                                    <AdminZoomMeetingActions
+                                      appointmentId={readText(appointment, "id")}
+                                      customerJoinUrl={
+                                        readText(appointment, "zoom_join_url", "") ||
+                                        readText(appointment, "zoom_link", "")
+                                      }
+                                      requestId={requestId}
+                                    />
+                                  ) : null}
                                   <RequestActionButton
                                     action="Start Vendor Pricing"
                                     requestId={requestId}
@@ -161,7 +164,7 @@ async function getScheduledConsultations() {
 
   const { data, error } = await supabase
     .from("appointments")
-    .select("id,service_request_id,appointment_date,time_window,status,created_at")
+    .select("id,service_request_id,appointment_date,time_window,status,created_at,zoom_join_url,zoom_link")
     .neq("status", "Canceled")
     .order("created_at", { ascending: false });
 
@@ -171,33 +174,6 @@ async function getScheduledConsultations() {
   }
 
   return data ?? [];
-}
-
-function formatScheduledConsultation(
-  appointment: Record<string, unknown> | undefined,
-) {
-  if (!appointment) {
-    return "Scheduled time not found";
-  }
-
-  const date = readText(appointment, "appointment_date", "");
-  const timeSlot = readText(appointment, "time_window", "");
-
-  if (!date) {
-    return timeSlot || "Scheduled time not found";
-  }
-
-  const parsedDate = new Date(`${date}T12:00:00`);
-  const formattedDate = Number.isNaN(parsedDate.getTime())
-    ? date
-    : parsedDate.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "long",
-        weekday: "long",
-        year: "numeric",
-      });
-
-  return `${formattedDate} at ${timeSlot || "Time not listed"}`;
 }
 
 function RequestActionButton({

@@ -6,6 +6,11 @@ import {
   defaultProjectManagerName,
 } from "@/lib/consultation-availability";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
+import {
+  sendConsultationCanceledAdminEmail,
+  sendConsultationCanceledCustomerEmail,
+} from "@/lib/workflow-email-automation";
+import { deleteZoomConsultationMeeting } from "@/lib/zoom";
 
 const validStatuses = new Set(["Available", "Unavailable", "Booked"]);
 
@@ -201,12 +206,37 @@ export async function cancelConsultationBooking(formData: FormData) {
     return;
   }
 
+  const { data: appointment } = await supabase
+    .from("appointments")
+    .select("id,service_request_id,customer_name,customer_email,appointment_date,time_window,project_manager_name,zoom_meeting_id")
+    .eq("id", appointmentId)
+    .maybeSingle();
+  const zoomMeetingId = read(appointment?.zoom_meeting_id);
+
+  if (zoomMeetingId) {
+    const zoomResult = await deleteZoomConsultationMeeting(zoomMeetingId);
+
+    if (!zoomResult.success) {
+      console.warn("[admin-availability] Zoom cancellation failed", {
+        appointmentId,
+        status: "status" in zoomResult ? zoomResult.status : undefined,
+        error: zoomResult.error,
+      });
+    }
+  }
+
+  const cancelPayload: Record<string, string> = {
+    status: "Canceled",
+    updated_at: new Date().toISOString(),
+  };
+
+  if (zoomMeetingId) {
+    cancelPayload.zoom_creation_status = "Canceled";
+  }
+
   const { error } = await supabase
     .from("appointments")
-    .update({
-      status: "Canceled",
-      updated_at: new Date().toISOString(),
-    })
+    .update(cancelPayload)
     .eq("id", appointmentId);
 
   if (error) {
@@ -225,6 +255,23 @@ export async function cancelConsultationBooking(formData: FormData) {
       timeWindow,
       zoomLink: "",
     });
+  }
+
+  if (appointment) {
+    const emailContext = {
+      appointmentDate: read(appointment.appointment_date),
+      appointmentId,
+      customerEmail: read(appointment.customer_email),
+      customerName: read(appointment.customer_name),
+      projectManagerName: read(appointment.project_manager_name),
+      serviceRequestId: read(appointment.service_request_id),
+      timeWindow: read(appointment.time_window),
+    };
+
+    await Promise.allSettled([
+      sendConsultationCanceledCustomerEmail(emailContext),
+      sendConsultationCanceledAdminEmail(emailContext),
+    ]);
   }
 
   refreshAvailabilityPaths();

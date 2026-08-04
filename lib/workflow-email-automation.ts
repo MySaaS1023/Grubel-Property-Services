@@ -208,10 +208,9 @@ export async function sendConsultationScheduledCustomerEmail(
     "<p>Your consultation with Grubel Property Services has been booked.</p>",
     "<p>We will speak with you on:</p>",
     `<p><strong>${escapeHtml(scheduledDayDateTime)}</strong></p>`,
-    "<p><strong>Zoom Link:</strong><br>",
     context.zoomLink
-      ? `<a href="${safeZoomLine}">${safeZoomLine}</a></p>`
-      : `${safeZoomLine}</p>`,
+      ? `<p><strong>Project Manager:</strong> ${escapeHtml(value(context.projectManagerName, "Grubel Project Manager"))}</p><p><a href="${safeZoomLine}" style="display:inline-block;background:#c98f43;color:#08213d;text-decoration:none;font-weight:700;padding:12px 18px;border-radius:6px;">Join Zoom Consultation</a></p><p>Plain-text Zoom link:<br><a href="${safeZoomLine}">${safeZoomLine}</a></p>`
+      : `<p><strong>Project Manager:</strong> ${escapeHtml(value(context.projectManagerName, "Grubel Project Manager"))}</p><p><strong>Zoom Link:</strong><br>${safeZoomLine}</p>`,
     "<p>During the consultation, we will review your project request, discuss your property details, and go over the next steps.</p>",
     '<p>If you have any questions before your appointment, please contact us at (480) 420-7398 or <a href="mailto:info@grubelps.com">info@grubelps.com</a>.</p>',
     "<p>Thank you,</p>",
@@ -232,6 +231,8 @@ export async function sendConsultationScheduledCustomerEmail(
       "",
       scheduledDayDateTime,
       "",
+      `Assigned Project Manager: ${value(context.projectManagerName, "Grubel Project Manager")}`,
+      "",
       "Zoom Link:",
       zoomLine,
       "",
@@ -247,6 +248,55 @@ export async function sendConsultationScheduledCustomerEmail(
     ]),
     html,
     data: { ...context, status: "Consultation Scheduled" },
+  });
+}
+
+export async function sendConsultationCanceledCustomerEmail(
+  context: ConsultationEmailContext,
+) {
+  if (!context.customerEmail) {
+    console.error("[workflow-email] Consultation cancellation skipped: missing email");
+    return { queued: false, sent: false, skipped: true };
+  }
+
+  return queueOperationalEmail({
+    type: "appointment_canceled",
+    to: context.customerEmail,
+    subject: "Your Grubel Consultation Was Canceled",
+    text: lines([
+      `Hi ${value(context.customerName, "there")},`,
+      "",
+      "Your consultation with Grubel Property Services has been canceled.",
+      "",
+      `Scheduled Time: ${formatScheduledDayDateTime(context.appointmentDate, context.timeWindow)}`,
+      "",
+      "If you need help rescheduling, please contact us at (480) 420-7398 or info@grubelps.com.",
+      "",
+      "Grubel Property Services",
+      "(480) 420-7398",
+      "info@grubelps.com",
+    ]),
+    data: { ...context, status: "Canceled" },
+  });
+}
+
+export async function sendConsultationCanceledAdminEmail(
+  context: ConsultationEmailContext,
+) {
+  return queueOperationalEmail({
+    type: "appointment_canceled",
+    to: businessEmail(),
+    subject: "Consultation Canceled - Grubel Property Services",
+    text: lines([
+      "A consultation was canceled.",
+      "",
+      `Customer: ${value(context.customerName)}`,
+      `Email: ${value(context.customerEmail)}`,
+      `Date/Time: ${formatScheduledDayDateTime(context.appointmentDate, context.timeWindow)}`,
+      `Request ID: ${value(context.serviceRequestId)}`,
+      `Appointment ID: ${value(context.appointmentId)}`,
+    ]),
+    data: { ...context, status: "Canceled" },
   });
 }
 

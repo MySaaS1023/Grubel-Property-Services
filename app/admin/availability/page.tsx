@@ -1,6 +1,6 @@
 import { AdminBackLink, AdminShell } from "@/components/AdminShell";
 import { AdminConfirmSubmitButton } from "@/components/AdminConfirmSubmitButton";
-import { AdminSendZoomLink } from "@/components/AdminSendZoomLink";
+import { AdminZoomMeetingActions } from "@/components/AdminZoomMeetingActions";
 import { AdminGuard } from "@/components/AuthGuards";
 import Link from "next/link";
 import {
@@ -130,8 +130,10 @@ export default async function AdminAvailabilityPage() {
                             "Time Slot",
                             "Status",
                             "Booked Customer",
+                            "Property",
                             "Project Manager",
                             "Zoom Link",
+                            "Zoom Status",
                             "Save",
                             "Actions",
                           ].map((column) => (
@@ -199,6 +201,9 @@ export default async function AdminAvailabilityPage() {
                                   "Not booked"
                                 )}
                               </td>
+                              <td className="py-3 pr-4 font-semibold text-charcoal">
+                                {appointment?.property_address ?? "Not booked"}
+                              </td>
                               <td className="py-3 pr-4">
                                 <form action={saveAvailabilitySlot} id={formId}>
                                   <input name="slotDate" type="hidden" value={slot.date} />
@@ -228,13 +233,35 @@ export default async function AdminAvailabilityPage() {
                                 <input
                                   className="min-h-10 w-72 rounded-md border border-slate-300 px-3 text-sm text-charcoal"
                                   defaultValue={
-                                    override?.zoom_link ?? appointment?.zoom_link ?? ""
+                                    override?.zoom_link ??
+                                    appointment?.zoom_join_url ??
+                                    appointment?.zoom_link ??
+                                    ""
                                   }
                                   form={formId}
                                   name="zoomLink"
                                   placeholder="Optional Zoom link"
                                   type="url"
                                 />
+                              </td>
+                              <td className="py-3 pr-4 font-semibold text-charcoal">
+                                {appointment ? (
+                                  <div className="grid gap-1">
+                                    <span>{appointment.zoom_creation_status ?? "Pending"}</span>
+                                    {appointment.zoom_meeting_id ? (
+                                      <span className="text-xs text-charcoal/60">
+                                        Meeting: {appointment.zoom_meeting_id}
+                                      </span>
+                                    ) : null}
+                                    {appointment.zoom_last_error ? (
+                                      <span className="text-xs text-red-700">
+                                        {appointment.zoom_last_error}
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                ) : (
+                                  "Not booked"
+                                )}
                               </td>
                               <td className="py-3 pr-4">
                                 {appointment ? (
@@ -297,14 +324,13 @@ export default async function AdminAvailabilityPage() {
                                       </button>
                                     </form>
                                   ) : null}
-                                  {appointment?.customer_email && appointment.service_request_id ? (
-                                    <AdminSendZoomLink
-                                      customerEmail={appointment.customer_email}
+                                  {appointment ? (
+                                    <AdminZoomMeetingActions
+                                      appointmentId={appointment.id}
+                                      customerJoinUrl={
+                                        appointment.zoom_join_url ?? appointment.zoom_link
+                                      }
                                       requestId={appointment.service_request_id}
-                                      scheduledDateTime={formatScheduledSlot(
-                                        appointment.appointment_date,
-                                        appointment.time_window,
-                                      )}
                                     />
                                   ) : null}
                                   {isCancelableAppointment(appointment) ? (
@@ -324,7 +350,7 @@ export default async function AdminAvailabilityPage() {
                                         className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-800 transition hover:bg-red-100"
                                         message="Cancel this consultation booking?"
                                       >
-                                        Cancel Booking
+                                        Cancel Consultation
                                       </AdminConfirmSubmitButton>
                                     </form>
                                   ) : null}
@@ -385,7 +411,7 @@ async function getConsultationAppointments() {
   const { data, error } = await supabase
     .from("appointments")
     .select(
-      "id,appointment_date,time_window,customer_name,customer_email,status,service_request_id,zoom_link",
+      "id,appointment_date,time_window,customer_name,customer_email,status,service_request_id,zoom_link,zoom_meeting_id,zoom_join_url,zoom_password,zoom_creation_status,zoom_created_at,zoom_last_error,project_manager_name,property_address",
     )
     .neq("status", "Canceled")
     .order("appointment_date", { ascending: true });
