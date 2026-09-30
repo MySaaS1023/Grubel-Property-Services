@@ -7,8 +7,8 @@ export function Footer() {
         <div className="lg:pr-4">
           <div className="text-lg font-black">Grubel Property Services</div>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
-            Reliable cleaning and property care for homes, rentals, and
-            properties that need dependable attention.
+            Dependable cleaning and property care for homes, rentals, and
+            properties that need reliable attention.
           </p>
           <p className="mt-3 text-xs font-semibold text-white/60">
             All payments are processed securely.
@@ -19,9 +19,9 @@ export function Footer() {
             Work With Us
           </div>
           <div className="mt-4 grid gap-2 text-sm text-white/80">
-            <Link href="/work-with-us/handyman">Handy Man</Link>
-            <Link href="/work-with-us/residential">Residential</Link>
-            <Link href="/work-with-us/commercial">Commercial</Link>
+            <Link href="/work-with-us/handyman">Cleaning Professionals</Link>
+            <Link href="/work-with-us/residential">Property Care Professionals</Link>
+            <Link href="/work-with-us/commercial">Work With Us</Link>
           </div>
         </div>
         <div>

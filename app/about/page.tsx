@@ -13,8 +13,9 @@ export default function AboutPage() {
               Grubel Property Services
             </h1>
             <p className="mt-5 text-lg leading-8 text-charcoal/75">
-              Construction-minded property service support for maintenance,
-              repair, turnover preparation, and project coordination.
+              Dependable cleaning and property care designed to help homeowners,
+              rental properties, and property owners keep their spaces clean,
+              cared for, and ready.
             </p>
           </div>
         </div>
@@ -25,18 +26,20 @@ export default function AboutPage() {
           <h2 className="text-3xl font-black text-navy">Founder Story</h2>
           <div className="space-y-4 leading-7 text-charcoal/75">
             <p>
-              Grubel Property Services was started by a founder with years of
-              project management and contracting experience, including work
-              around overseas military base contracting environments where
-              coordination, readiness, and follow-through matter every day.
+              Grubel Property Services was founded with a simple goal: make
+              dependable property care easier to access and easier to manage.
             </p>
             <p>
-              That background created a hands-on understanding of construction,
-              maintenance, repair coordination, property readiness, and the
-              practical details that keep projects moving. The company was built
-              to help local homeowners, landlords, property managers, and
-              businesses find reliable support and the right service solutions
-              for their properties.
+              Built on years of project management and contracting experience,
+              Grubel brings organization, communication, and attention to detail
+              to every service. We understand that maintaining a property takes
+              time, coordination, and people you can rely on.
+            </p>
+            <p>
+              Today, we are beginning with professional cleaning and routine
+              property care while building a foundation that allows Grubel
+              Property Services to grow alongside the needs of the customers and
+              properties we serve.
             </p>
           </div>
         </div>
@@ -47,16 +50,20 @@ export default function AboutPage() {
           <h2 className="text-3xl font-black text-navy">Who We Are</h2>
           <div className="space-y-4 leading-7 text-charcoal/75">
             <p>
-              Grubel Property Services is a construction-minded property
-              services company focused on maintenance support, repair
-              coordination, turnover preparation, property readiness, and
-              practical project support.
+              Grubel Property Services is a property services company focused on
+              dependable cleaning and routine property care for homes, rentals,
+              and other properties.
             </p>
             <p>
-              The company values clear communication, reliability, practical
-              solutions, responsive customer support, and careful property care.
-              The goal is to make property service needs easier to understand,
-              coordinate, and complete.
+              We believe property services should be straightforward, reliable,
+              and easy to coordinate. Our approach combines clear communication,
+              organized service management, and dependable professionals to help
+              customers take care of their properties with less stress.
+            </p>
+            <p>
+              As Grubel grows, our services may expand, but our focus will remain
+              the same: reliable service, clear communication, and property care
+              customers can count on.
             </p>
           </div>
         </div>
@@ -69,15 +76,15 @@ export default function AboutPage() {
           </h2>
           <div className="space-y-4 leading-7 text-charcoal/75">
             <p>
-              Our mission is to help property owners make informed decisions,
-              avoid unnecessary problems, and receive reliable service
-              coordination for residential and commercial property needs.
+              Our mission is to provide dependable cleaning and property care
+              while making the service experience simple, organized, and reliable
+              for our customers.
             </p>
             <p>
               Grubel Property Services is committed to building long-term
-              community trust, supporting dependable contractor relationships,
-              and helping customers keep their properties ready, maintained, and
-              cared for.
+              customer relationships, supporting dependable service
+              professionals, and creating a trusted property services company
+              that can grow with the needs of the communities we serve.
             </p>
           </div>
         </div>
@@ -87,15 +94,15 @@ export default function AboutPage() {
         <div className="site-container flex flex-col items-start gap-6 py-12 md:flex-row md:items-center md:justify-between">
           <div className="max-w-3xl">
             <h2 className="max-w-3xl text-3xl font-black leading-tight text-white">
-              Need reliable property support?
+              Need dependable cleaning or property care?
             </h2>
             <p className="mt-3 max-w-2xl leading-7 text-white/85">
-              Contact Grubel Property Services to discuss your property, repair,
-              inspection, or turnover needs.
+              Tell us what your property needs and let Grubel Property Services
+              help take care of the rest.
             </p>
           </div>
-          <Button className="shrink-0 md:self-center" href="/contact">
-            Contact Us
+          <Button className="shrink-0 md:self-center" href="/request-service">
+            Request Service
           </Button>
         </div>
       </section>
