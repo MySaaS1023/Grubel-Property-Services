@@ -146,12 +146,41 @@ export function HomeCoreServices() {
             />
           </button>
         ))}
-        <div className="group block rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <CardContent
-            description="Additional property maintenance services are planned as Grubel Property Services continues to grow."
-            locked
-            title="Property Maintenance"
-          />
+        <div
+          aria-label="Property Maintenance — Coming Soon"
+          className="group block rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+          role="img"
+        >
+          <div className="h-1.5 w-14 rounded-full bg-accent" />
+          <h3 className="mt-6 text-xl font-black text-navy">Property Maintenance</h3>
+          <div className="relative mt-3 min-h-32 overflow-hidden rounded-md">
+            <div className="pointer-events-none select-none blur-[2px]">
+              <p className="text-sm leading-6 text-charcoal/72">
+                Additional property maintenance services are planned as Grubel Property
+                Services continues to grow.
+              </p>
+              <div className="mt-5 h-4 w-28 rounded-full bg-accentDark/25" />
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center bg-white/35">
+              <div
+                aria-hidden="true"
+                className="flex h-14 w-14 items-center justify-center rounded-full border border-accent/60 bg-navy text-accent shadow-sm"
+              >
+                <svg
+                  className="h-7 w-7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.2"
+                  viewBox="0 0 24 24"
+                >
+                  <rect height="10" rx="2" width="14" x="5" y="11" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -240,12 +269,10 @@ export function HomeCoreServices() {
 function CardContent({
   description,
   items = [],
-  locked = false,
   title,
 }: {
   description: string;
   items?: string[];
-  locked?: boolean;
   title: string;
 }) {
   return (
@@ -261,7 +288,7 @@ function CardContent({
         </ul>
       ) : null}
       <span className="mt-5 inline-flex text-sm font-bold text-accentDark transition group-hover:text-navy">
-        {locked ? "Phase 3 — Coming Soon" : "Learn More"}
+        Learn More
       </span>
     </>
   );
