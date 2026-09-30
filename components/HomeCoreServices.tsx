@@ -17,6 +17,11 @@ type ActiveService = {
   details: ServiceDetail[];
 };
 
+type HomeCoreServicesProps = {
+  ctaLabels?: Partial<Record<ActiveService["title"], string>>;
+  showStatus?: boolean;
+};
+
 const activeServices: ActiveService[] = [
   {
     title: "Cleaning Services",
@@ -105,7 +110,10 @@ const activeServices: ActiveService[] = [
   },
 ];
 
-export function HomeCoreServices() {
+export function HomeCoreServices({
+  ctaLabels = {},
+  showStatus = false,
+}: HomeCoreServicesProps = {}) {
   const [activeService, setActiveService] = useState<ActiveService | null>(null);
   const [expandedItem, setExpandedItem] = useState("");
 
@@ -142,6 +150,8 @@ export function HomeCoreServices() {
             <CardContent
               description={service.description}
               items={service.items}
+              linkLabel={ctaLabels[service.title] ?? "Learn More"}
+              status={showStatus ? "Available Now" : undefined}
               title={service.title}
             />
           </button>
@@ -269,15 +279,24 @@ export function HomeCoreServices() {
 function CardContent({
   description,
   items = [],
+  linkLabel = "Learn More",
+  status,
   title,
 }: {
   description: string;
   items?: string[];
+  linkLabel?: string;
+  status?: string;
   title: string;
 }) {
   return (
     <>
       <div className="h-1.5 w-14 rounded-full bg-accent" />
+      {status ? (
+        <span className="mt-5 inline-flex rounded-full bg-accent/20 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-accentDark">
+          {status}
+        </span>
+      ) : null}
       <h3 className="mt-6 text-xl font-black text-navy">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-charcoal/72">{description}</p>
       {items.length ? (
@@ -288,7 +307,7 @@ function CardContent({
         </ul>
       ) : null}
       <span className="mt-5 inline-flex text-sm font-bold text-accentDark transition group-hover:text-navy">
-        Learn More
+        {linkLabel}
       </span>
     </>
   );
