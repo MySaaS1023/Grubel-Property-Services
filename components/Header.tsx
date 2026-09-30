@@ -92,7 +92,7 @@ export function Header() {
             Call Us: (480) 420-7398
           </a>
           <Button className="px-3 text-xs sm:px-5 sm:text-sm" href="/request-service">
-            Request Service
+            Request Cleaning
           </Button>
         </div>
       </div>

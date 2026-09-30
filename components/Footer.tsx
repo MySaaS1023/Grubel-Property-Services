@@ -7,8 +7,8 @@ export function Footer() {
         <div className="lg:pr-4">
           <div className="text-lg font-black">Grubel Property Services</div>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
-            Construction-minded property maintenance, repair, turnover prep, and
-            project support for residential and commercial properties.
+            Reliable cleaning and property care for homes, rentals, and
+            properties that need dependable attention.
           </p>
           <p className="mt-3 text-xs font-semibold text-white/60">
             All payments are processed securely.

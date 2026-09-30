@@ -4,22 +4,24 @@ import { ServiceCard } from "@/components/ServiceCard";
 
 const services = [
   {
-    title: "Maintenance & Repair",
+    title: "Cleaning Services",
     description:
-      "Hands-on maintenance, repair, and property support services designed to keep residential, rental, and commercial properties functional and operational.",
-    href: "/repair",
+      "Professional cleaning for the spaces that matter most in your home or property.",
+    href: "/request-service",
+    items: ["Whole House", "Garage", "Pantry", "Closet", "Bedroom"],
   },
   {
-    title: "Property Preservation",
+    title: "Property Management",
     description:
-      "Property preservation and occupancy-readiness services focused on vacancy upkeep, turnover support, and overall property condition.",
-    href: "/turnover-prep",
+      "Routine property checks to help you stay informed about the condition of your property.",
+    href: "/request-service",
+    items: ["Routine Check"],
   },
   {
-    title: "Builds & Remodels",
+    title: "Property Maintenance",
     description:
-      "Construction-minded improvement and remodeling services for residential, rental, and commercial properties.",
-    href: "/builds-remodels",
+      "Additional property maintenance services are planned as Grubel Property Services continues to grow.",
+    locked: true,
   },
 ];
 
@@ -34,14 +36,15 @@ export default function Home() {
               Grubel Property Services
             </p>
             <h1 className="mt-5 text-4xl font-black leading-[1.08] text-white sm:text-6xl sm:leading-[1.06]">
-              Property Maintenance, Repair & Preservation You Can Count On
+              Reliable Cleaning & Property Care You Can Count On
             </h1>
             <p className="mt-4 text-lg leading-8 text-white/90">
-              Grubel Property Services helps homeowners, landlords, and property
-              managers keep properties maintained, repaired, and move-in ready.
+              Grubel Property Services provides dependable cleaning and routine
+              property care for homeowners, rentals, and properties that need
+              reliable attention.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-              <Button href="/contact">Contact Us</Button>
+              <Button href="/request-service">Request Cleaning</Button>
               <Button
                 className="border-white/25 bg-white text-navy hover:border-white hover:text-accentDark"
                 href="/services"
@@ -76,9 +79,9 @@ export default function Home() {
 
       <CTASection
         buttonHref="/request-service"
-        buttonLabel="Request Service"
-        description="Request service today and tell us what your property needs."
-        title="Ready to keep your property in shape?"
+        buttonLabel="Request Cleaning"
+        description="Tell us what you need and let Grubel Property Services take it from there."
+        title="Ready for a cleaner, better-cared-for property?"
       />
     </>
   );
