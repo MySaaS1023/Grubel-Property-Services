@@ -218,14 +218,6 @@ export function HomeCoreServices() {
                             ))}
                           </ul>
                         </div>
-                        <div>
-                          <h4 className="text-sm font-black uppercase tracking-[0.14em] text-accentDark">
-                            Estimated Price Range
-                          </h4>
-                          <p className="mt-2 text-sm font-semibold text-charcoal/75">
-                            Price range coming soon
-                          </p>
-                        </div>
                         <Link
                           className="inline-flex w-fit items-center justify-center rounded-md bg-accent px-4 py-2 text-xs font-black uppercase tracking-[0.14em] text-navy transition hover:bg-accentDark hover:text-white"
                           href="/request-service"
