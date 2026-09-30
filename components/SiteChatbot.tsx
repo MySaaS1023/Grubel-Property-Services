@@ -36,7 +36,6 @@ const responses: Record<string, ChatResponse> = {
     links: [
       { href: "/work-with-us/handyman", label: "Cleaning Professionals" },
       { href: "/work-with-us/residential", label: "Property Care Professionals" },
-      { href: "/work-with-us/commercial", label: "Vendor Application" },
     ],
   },
   unknown: {

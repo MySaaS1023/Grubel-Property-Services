@@ -21,7 +21,6 @@ export function Footer() {
           <div className="mt-4 grid gap-2 text-sm text-white/80">
             <Link href="/work-with-us/handyman">Cleaning Professionals</Link>
             <Link href="/work-with-us/residential">Property Care Professionals</Link>
-            <Link href="/work-with-us/commercial">Vendor Application</Link>
           </div>
         </div>
         <div>

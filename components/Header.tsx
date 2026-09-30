@@ -68,12 +68,6 @@ export function Header() {
               >
                 Property Care Professionals
               </Link>
-              <Link
-                className="block rounded-md px-3 py-2 text-sm font-semibold text-charcoal/80 hover:bg-stonewash hover:text-accentDark"
-                href="/work-with-us/commercial"
-              >
-                Vendor Application
-              </Link>
             </div>
           </div>
         </nav>
@@ -120,9 +114,6 @@ export function Header() {
             </Link>
             <Link className="hover:text-accentDark" href="/work-with-us/residential">
               Property Care Professionals
-            </Link>
-            <Link className="hover:text-accentDark" href="/work-with-us/commercial">
-              Vendor Application
             </Link>
           </div>
         </details>
