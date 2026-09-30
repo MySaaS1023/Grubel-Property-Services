@@ -19,7 +19,6 @@ type ActiveService = {
 
 type HomeCoreServicesProps = {
   ctaLabels?: Partial<Record<ActiveService["title"], string>>;
-  showStatus?: boolean;
 };
 
 const activeServices: ActiveService[] = [
@@ -112,7 +111,6 @@ const activeServices: ActiveService[] = [
 
 export function HomeCoreServices({
   ctaLabels = {},
-  showStatus = false,
 }: HomeCoreServicesProps = {}) {
   const [activeService, setActiveService] = useState<ActiveService | null>(null);
   const [expandedItem, setExpandedItem] = useState("");
@@ -142,7 +140,7 @@ export function HomeCoreServices({
       <div className="mt-8 grid gap-5 md:grid-cols-3">
         {activeServices.map((service) => (
           <button
-            className="group block rounded-lg border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-accent/50 hover:shadow-soft"
+            className="group flex h-full flex-col items-start rounded-lg border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-accent/50 hover:shadow-soft"
             key={service.title}
             onClick={() => openService(service)}
             type="button"
@@ -151,14 +149,13 @@ export function HomeCoreServices({
               description={service.description}
               items={service.items}
               linkLabel={ctaLabels[service.title] ?? "Learn More"}
-              status={showStatus ? "Available Now" : undefined}
               title={service.title}
             />
           </button>
         ))}
         <div
           aria-label="Property Maintenance — Coming Soon"
-          className="group block rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
+          className="group flex h-full flex-col items-start rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
           role="img"
         >
           <div className="h-1.5 w-14 rounded-full bg-accent" />
@@ -280,23 +277,16 @@ function CardContent({
   description,
   items = [],
   linkLabel = "Learn More",
-  status,
   title,
 }: {
   description: string;
   items?: string[];
   linkLabel?: string;
-  status?: string;
   title: string;
 }) {
   return (
     <>
       <div className="h-1.5 w-14 rounded-full bg-accent" />
-      {status ? (
-        <span className="mt-5 inline-flex rounded-full bg-accent/20 px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-accentDark">
-          {status}
-        </span>
-      ) : null}
       <h3 className="mt-6 text-xl font-black text-navy">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-charcoal/72">{description}</p>
       {items.length ? (
