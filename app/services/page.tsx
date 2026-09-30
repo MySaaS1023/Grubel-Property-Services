@@ -30,7 +30,6 @@ export default function ServicesPage() {
                 "Cleaning Services": "View Cleaning Services",
                 "Property Management": "View Property Care",
               }}
-              showStatus
             />
           </div>
         </div>
