@@ -20,9 +20,12 @@ type ValidationResult =
   | { success: false; error: string };
 
 const allowedServices = new Set([
-  "Maintenance & Repair",
-  "Property Preservation",
-  "Builds & Remodels",
+  "Whole House",
+  "Garage",
+  "Pantry",
+  "Closet",
+  "Bedroom",
+  "Routine Check",
 ]);
 
 const allowedWalkthroughOptions = new Set([

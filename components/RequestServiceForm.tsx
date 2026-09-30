@@ -4,9 +4,12 @@ import { ChangeEvent, FormEvent, ReactNode, useState } from "react";
 import { Button } from "@/components/Button";
 
 const services = [
-  "Maintenance & Repair",
-  "Property Preservation",
-  "Builds & Remodels",
+  "Whole House",
+  "Garage",
+  "Pantry",
+  "Closet",
+  "Bedroom",
+  "Routine Check",
 ];
 const walkthroughOptions = [
   "Live Zoom Consultation",

@@ -1,29 +1,6 @@
 import { Button } from "@/components/Button";
 import { CTASection } from "@/components/CTASection";
-import { ServiceCard } from "@/components/ServiceCard";
-
-const services = [
-  {
-    title: "Cleaning Services",
-    description:
-      "Professional cleaning for the spaces that matter most in your home or property.",
-    href: "/request-service",
-    items: ["Whole House", "Garage", "Pantry", "Closet", "Bedroom"],
-  },
-  {
-    title: "Property Management",
-    description:
-      "Routine property checks to help you stay informed about the condition of your property.",
-    href: "/request-service",
-    items: ["Routine Check"],
-  },
-  {
-    title: "Property Maintenance",
-    description:
-      "Additional property maintenance services are planned as Grubel Property Services continues to grow.",
-    locked: true,
-  },
-];
+import { HomeCoreServices } from "@/components/HomeCoreServices";
 
 export default function Home() {
   return (
@@ -69,11 +46,7 @@ export default function Home() {
           <div className="max-w-2xl">
             <h2 className="text-3xl font-black text-navy">Our Core Services</h2>
           </div>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {services.map((service) => (
-              <ServiceCard key={service.title} {...service} />
-            ))}
-          </div>
+          <HomeCoreServices />
         </div>
       </section>
 
