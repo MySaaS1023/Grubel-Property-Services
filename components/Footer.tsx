@@ -19,8 +19,7 @@ export function Footer() {
             Work With Us
           </div>
           <div className="mt-4 grid gap-2 text-sm text-white/80">
-            <Link href="/work-with-us/handyman">Cleaning Professionals</Link>
-            <Link href="/work-with-us/residential">Property Care Professionals</Link>
+            <Link href="/work-with-us">Work With Us</Link>
           </div>
         </div>
         <div>

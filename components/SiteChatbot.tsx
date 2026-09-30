@@ -32,11 +32,8 @@ const responses: Record<string, ChatResponse> = {
     links: [{ href: "/contact", label: "Contact Us" }],
   },
   work: {
-    text: "Interested subcontractors can apply under Work With Us.",
-    links: [
-      { href: "/work-with-us/handyman", label: "Cleaning Professionals" },
-      { href: "/work-with-us/residential", label: "Property Care Professionals" },
-    ],
+    text: "Interested cleaning and property care professionals can apply under Work With Us.",
+    links: [{ href: "/work-with-us", label: "Work With Us" }],
   },
   unknown: {
     text: "I can help with services, quotes, customer portal access, contact information, or Work With Us applications. Please choose one of the options below.",

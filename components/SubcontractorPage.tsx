@@ -1,13 +1,14 @@
 import { PageHero } from "@/components/PageHero";
 import { SubcontractorApplicationForm } from "@/components/SubcontractorApplicationForm";
 
-type ApplicationType = "handyman" | "residential" | "commercial";
+type ApplicationType = "handyman" | "residential" | "commercial" | "general";
 
 type FieldConfig = {
   label: string;
   name: string;
+  options?: string[];
   required?: boolean;
-  type?: "text" | "email" | "tel" | "textarea" | "file";
+  type?: "text" | "email" | "tel" | "textarea" | "file" | "select";
 };
 
 type SubcontractorPageProps = {
@@ -20,10 +21,10 @@ type SubcontractorPageProps = {
 const noticeItems = [
   "Approval required before performing work",
   "No unauthorized subcontracting",
-  "Approved subcontractors operate as independent contractors and are responsible for maintaining any required licensing, insurance, and compliance related to their services.",
-  "Work must meet company standards",
+  "Approved service professionals operate as independent contractors and are responsible for applicable licensing, insurance, and compliance requirements.",
+  "Work must meet Grubel Property Services standards",
   "Additional documentation may be required",
-  "Insurance may be required depending on project scope",
+  "Insurance may be required depending on the services or project",
 ];
 
 export function SubcontractorPage({

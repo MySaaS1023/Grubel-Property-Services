@@ -38,11 +38,31 @@ export default async function AdminSubcontractorsPage() {
                           {readText(application, "applicant_name")}
                         </h3>
                         <p className="mt-2 text-sm font-semibold leading-6 text-charcoal/70">
-                          {readText(application, "application_type")} - {status}
+                          Role: {readText(application, "application_type")} - {status}
                         </p>
                         <p className="mt-1 text-sm font-semibold leading-6 text-charcoal/70">
                           {readText(application, "email")} - {readText(application, "phone")}
                         </p>
+                        <div className="mt-3 grid gap-1 text-sm font-semibold leading-6 text-charcoal/70 md:grid-cols-2">
+                          <p>
+                            Years Experience:{" "}
+                            {readText(application, "experience")}
+                          </p>
+                          <p>
+                            Service Areas: {readText(application, "service_areas")}
+                          </p>
+                          <p>
+                            Transportation:{" "}
+                            {readRawSubmissionText(
+                              application,
+                              "transportationAvailable",
+                            )}
+                          </p>
+                          <p>
+                            Relevant Experience:{" "}
+                            {readText(application, "services_offered")}
+                          </p>
+                        </div>
                         <p className="mt-1 text-sm font-semibold leading-6 text-charcoal/70">
                           Submitted {readDate(application, "created_at", "Not listed")}
                         </p>
@@ -115,6 +135,22 @@ export default async function AdminSubcontractorsPage() {
       </AdminShell>
     </AdminGuard>
   );
+}
+
+function readRawSubmissionText(
+  application: Record<string, unknown>,
+  key: string,
+  fallback = "Not listed",
+) {
+  const rawSubmission = application.raw_submission;
+
+  if (!rawSubmission || typeof rawSubmission !== "object" || Array.isArray(rawSubmission)) {
+    return fallback;
+  }
+
+  const value = (rawSubmission as Record<string, unknown>)[key];
+
+  return typeof value === "string" && value.trim() ? value : fallback;
 }
 
 function StatusButton({

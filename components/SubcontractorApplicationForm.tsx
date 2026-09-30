@@ -6,8 +6,9 @@ import { Button } from "@/components/Button";
 type FieldConfig = {
   label: string;
   name: string;
+  options?: string[];
   required?: boolean;
-  type?: "text" | "email" | "tel" | "textarea" | "file";
+  type?: "text" | "email" | "tel" | "textarea" | "file" | "select";
 };
 
 type SubcontractorApplicationFormProps = {
@@ -114,9 +115,30 @@ export function SubcontractorApplicationForm({
 function FormField({
   label,
   name,
+  options = [],
   required = false,
   type = "text",
 }: FieldConfig) {
+  if (type === "select") {
+    return (
+      <label className="grid gap-2 text-sm font-bold text-navy">
+        {label}
+        <select
+          className="min-h-11 rounded-md border border-slate-300 px-3 text-sm font-normal text-charcoal outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          name={name}
+          required={required}
+        >
+          <option value="">Select an option</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </label>
+    );
+  }
+
   if (type === "textarea") {
     return (
       <label className="grid gap-2 text-sm font-bold text-navy md:col-span-2">

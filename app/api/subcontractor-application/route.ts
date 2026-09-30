@@ -7,7 +7,7 @@ import {
   validateUploadFile,
 } from "@/lib/uploads";
 
-const applicationTypes = new Set(["handyman", "residential", "commercial"]);
+const applicationTypes = new Set(["handyman", "residential", "commercial", "general"]);
 
 const requiredCoreFields = ["fullName", "phone", "email"] as const;
 
@@ -48,6 +48,7 @@ export async function POST(request: Request) {
   }
 
   const fullName = String(formData.get("fullName"));
+  const selectedRole = getString(formData.get("roleInterested"));
   const fallbackRelatedId = `${applicationType}-${String(formData.get("email"))}`;
   let applicationId = fallbackRelatedId;
   let supabaseConfigured = false;
@@ -86,6 +87,7 @@ export async function POST(request: Request) {
     servicesOffered:
       formData.get("servicesOffered") ??
       formData.get("tradesOffered") ??
+      formData.get("relevantExperience") ??
       formData.get("handymanSkills") ??
       formData.get("tradeSkill"),
     serviceAreas:
@@ -96,6 +98,8 @@ export async function POST(request: Request) {
     licensingInsuranceInfo:
       formData.get("licensedInsured") ?? formData.get("licensingInsuranceInfo"),
     notes: formData.get("notes") ?? formData.get("additionalNotes"),
+    selectedRole,
+    transportationAvailable: formData.get("transportationAvailable"),
     uploadedFiles,
     rawSubmission: submission,
   };
@@ -108,7 +112,7 @@ export async function POST(request: Request) {
     const { data: application, error: applicationError } = await supabase
       .from("subcontractor_applications")
       .insert({
-        application_type: applicationType,
+        application_type: selectedRole || applicationType,
         applicant_name: fullName,
         company_name: payload.applicant.companyName || null,
         email: payload.applicant.email,
@@ -177,7 +181,7 @@ export async function POST(request: Request) {
       actor: fullName,
       related_quote_or_project: applicationId,
       status: "New",
-      notes: `New ${applicationType} subcontractor application received.`,
+      notes: `New ${selectedRole || applicationType} application received.`,
     });
   } else {
     console.info("Supabase not configured. Subcontractor application logged only.", {
@@ -205,6 +209,10 @@ export async function POST(request: Request) {
       category: file.category,
     })),
   });
+}
+
+function getString(value: FormDataEntryValue | null) {
+  return typeof value === "string" ? value.trim() : "";
 }
 
 function normalizeApplicationType(value: FormDataEntryValue | null) {
