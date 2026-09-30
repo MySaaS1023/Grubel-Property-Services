@@ -38,12 +38,6 @@ export function Header() {
           </Link>
           <Link
             className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
-            href="/faq"
-          >
-            FAQ
-          </Link>
-          <Link
-            className="text-sm font-semibold text-charcoal/80 transition hover:text-accentDark"
             href="/contact"
           >
             Contact
@@ -66,19 +60,19 @@ export function Header() {
                 className="block rounded-md px-3 py-2 text-sm font-semibold text-charcoal/80 hover:bg-stonewash hover:text-accentDark"
                 href="/work-with-us/handyman"
               >
-                Handy Man
+                Cleaning Professionals
               </Link>
               <Link
                 className="block rounded-md px-3 py-2 text-sm font-semibold text-charcoal/80 hover:bg-stonewash hover:text-accentDark"
                 href="/work-with-us/residential"
               >
-                Residential
+                Property Care Professionals
               </Link>
               <Link
                 className="block rounded-md px-3 py-2 text-sm font-semibold text-charcoal/80 hover:bg-stonewash hover:text-accentDark"
                 href="/work-with-us/commercial"
               >
-                Commercial
+                Vendor Application
               </Link>
             </div>
           </div>
@@ -110,9 +104,6 @@ export function Header() {
         <Link className="shrink-0 hover:text-accentDark" href="/services">
           Services
         </Link>
-        <Link className="shrink-0 hover:text-accentDark" href="/faq">
-          FAQ
-        </Link>
         <Link className="shrink-0 hover:text-accentDark" href="/contact">
           Contact
         </Link>
@@ -125,13 +116,13 @@ export function Header() {
           </summary>
           <div className="mt-2 grid gap-2 rounded-md border border-slate-200 bg-white p-3 shadow-sm">
             <Link className="whitespace-nowrap hover:text-accentDark" href="/work-with-us/handyman">
-              Handy Man
+              Cleaning Professionals
             </Link>
             <Link className="hover:text-accentDark" href="/work-with-us/residential">
-              Residential
+              Property Care Professionals
             </Link>
             <Link className="hover:text-accentDark" href="/work-with-us/commercial">
-              Commercial
+              Vendor Application
             </Link>
           </div>
         </details>

@@ -34,14 +34,10 @@ const responses: Record<string, ChatResponse> = {
   work: {
     text: "Interested subcontractors can apply under Work With Us.",
     links: [
-      { href: "/work-with-us/handyman", label: "Handy Man" },
-      { href: "/work-with-us/residential", label: "Residential" },
-      { href: "/work-with-us/commercial", label: "Commercial" },
+      { href: "/work-with-us/handyman", label: "Cleaning Professionals" },
+      { href: "/work-with-us/residential", label: "Property Care Professionals" },
+      { href: "/work-with-us/commercial", label: "Vendor Application" },
     ],
-  },
-  faq: {
-    text: "You can find common questions about services, quotes, payments, subcontractors, and policies on the FAQ page.",
-    links: [{ href: "/faq", label: "FAQ" }],
   },
   unknown: {
     text: "I can help with services, quotes, customer portal access, contact information, or Work With Us applications. Please choose one of the options below.",
@@ -54,7 +50,6 @@ const quickActions = [
   { key: "portal", label: "Customer Portal" },
   { key: "contact", label: "Contact" },
   { key: "work", label: "Work With Us" },
-  { key: "faq", label: "FAQ" },
 ];
 
 export function SiteChatbot() {
@@ -176,12 +171,8 @@ function detectIntent(value: string) {
     return "contact";
   }
 
-  if (/subcontractor|work|handyman|residential|commercial/.test(normalized)) {
+  if (/subcontractor|work|vendor|cleaning professional|property care|handyman|residential|commercial/.test(normalized)) {
     return "work";
-  }
-
-  if (/faq|question|help/.test(normalized)) {
-    return "faq";
   }
 
   return "unknown";
